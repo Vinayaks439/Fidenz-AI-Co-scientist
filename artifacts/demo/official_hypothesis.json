@@ -1,6 +1,6 @@
 {
   "run_id": "demo",
-  "statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+  "statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
   "origin": {
     "action": "select",
     "selected_ids": [
@@ -8,45 +8,44 @@
     ],
     "statement": null,
     "notes": "",
-    "decided_at": "2026-07-01T11:28:11.921498+00:00"
+    "decided_at": "2026-07-01T17:05:36.485251+00:00"
   },
   "state_graph": {
     "supporting_evidence": [
       {
-        "statement": "Literature links precursor to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+        "statement": "Pyridine-catalyzed inhibition enhances oxide/nitride selectivity in AS-ALD.",
         "stance": "supporting",
         "source_ids": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402"
+          "crossref:10.2139/ssrn.6097349"
         ],
-        "strength": 0.6
+        "strength": 0.9
       }
     ],
     "contradicting_evidence": [
       {
-        "statement": "Some sources do not isolate precursor's specific effect.",
+        "statement": "Pyridine may physisorb on SiO2, potentially reducing growth rates on the target surface.",
         "stance": "contradicting",
         "source_ids": [
-          "mock:255973a5c3fe"
+          "seed_asald:parsons-clark-2020"
         ],
         "strength": 0.4
       }
     ],
     "assumptions": [
-      "precursor is measurable in the relevant system."
+      "Pyridine binding energy to a-SiN is significantly higher than to a-SiO2.",
+      "BDEAS precursor does not displace pyridine at the target growth temperature."
     ],
     "related_concept_ids": [
-      "precursor",
-      "surface"
+      "inhibitor",
+      "a-sin",
+      "a-sio2",
+      "atomic-layer",
+      "selectivity"
     ],
-    "confidence": 0.491,
+    "confidence": 0.85,
     "references": [
-      "mock:030c07b09e5d",
-      "mock:05c19ce21ee0",
-      "mock:0971be21e402",
-      "mock:255973a5c3fe",
-      "mock:2e7bcae76b27"
+      "crossref:10.2139/ssrn.6097349",
+      "seed_asald:parsons-clark-2020"
     ]
   },
   "source_hypothesis_ids": [
@@ -55,18 +54,15 @@
   "asald": {
     "growth_surface": "a-SiO2",
     "non_growth_surface": "a-SiN",
-    "inhibitor": "acetic acid",
+    "inhibitor": "aniline",
     "precursor": "BDEAS",
     "target_film": "SiOx",
     "target_thickness_nm": 10.0,
     "target_selectivity": 0.9,
     "provenance_refs": [
-      "mock:030c07b09e5d",
-      "mock:05c19ce21ee0",
-      "mock:0971be21e402",
-      "mock:255973a5c3fe",
-      "mock:2e7bcae76b27"
+      "crossref:10.2139/ssrn.6097349",
+      "seed_asald:parsons-clark-2020"
     ]
   },
-  "finalized_at": "2026-07-01T11:28:11.921611+00:00"
+  "finalized_at": "2026-07-01T17:05:36.485282+00:00"
 }

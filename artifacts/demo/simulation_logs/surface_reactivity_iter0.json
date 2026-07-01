@@ -1,6 +1,6 @@
 {
-  "engine": "tier0-literature-priors",
-  "tier": 0,
-  "verdict": "supported",
-  "S_at_target_mean": 0.9231
+  "engine": "mace-mp@cpu",
+  "tier": 1,
+  "verdict": "rejected",
+  "S_at_target_mean": 0.0747
 }

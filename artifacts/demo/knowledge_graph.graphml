@@ -1,169 +1,779 @@
 <?xml version='1.0' encoding='utf-8'?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d7" for="edge" attr.name="source_ids" attr.type="string" />
-  <key id="d6" for="edge" attr.name="description" attr.type="string" />
-  <key id="d5" for="edge" attr.name="relation" attr.type="string" />
-  <key id="d4" for="node" attr.name="source_ids" attr.type="string" />
-  <key id="d3" for="node" attr.name="domains" attr.type="string" />
-  <key id="d2" for="node" attr.name="description" attr.type="string" />
-  <key id="d1" for="node" attr.name="type" attr.type="string" />
-  <key id="d0" for="node" attr.name="name" attr.type="string" />
-  <graph edgedefault="directed">
-    <node id="inhibitor">
-      <data key="d0">inhibitor</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </node>
-    <node id="precursor">
-      <data key="d0">precursor</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </node>
-    <node id="surface">
-      <data key="d0">surface</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
-    </node>
-    <node id="growth">
-      <data key="d0">growth</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </node>
-    <node id="area-selective">
-      <data key="d0">area-selective</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="selectivity">
-      <data key="d0">selectivity</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="deposition">
-      <data key="d0">deposition</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="while">
-      <data key="d0">while</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="film">
-      <data key="d0">film</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="area-selective-deposition">
-      <data key="d0">area-selective deposition</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </node>
-    <node id="synthetic">
-      <data key="d0">synthetic</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a</data>
-    </node>
-    <node id="abstract">
-      <data key="d0">abstract</data>
-      <data key="d1">concept</data>
-      <data key="d2">Concept extracted from Amorphous surface models literature.</data>
-      <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
-      <data key="d4">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a</data>
-    </node>
-    <node id="validation_result:demo-surface_reactivity">
-      <data key="d0">Validation demo-surface_reactivity (supported)</data>
-      <data key="d1">validation_result</data>
-      <data key="d2">surface_reactivity in-silico validation: supported (confidence 0.559).</data>
-      <data key="d3">surface_reactivity</data>
-      <data key="d4">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter0.json</data>
-    </node>
-    <edge source="inhibitor" target="precursor" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </edge>
-    <edge source="precursor" target="surface" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </edge>
-    <edge source="surface" target="growth" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
-    </edge>
-    <edge source="growth" target="area-selective" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="area-selective" target="selectivity" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="selectivity" target="deposition" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="deposition" target="while" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="while" target="film" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="film" target="area-selective-deposition" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a,seed_asald:parsons-clark-2020</data>
-    </edge>
-    <edge source="area-selective-deposition" target="synthetic" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a</data>
-    </edge>
-    <edge source="synthetic" target="abstract" id="0">
-      <data key="d5">associated_with</data>
-      <data key="d6">Co-occurrence in domain literature.</data>
-      <data key="d7">mock:030c07b09e5d,mock:05c19ce21ee0,mock:0971be21e402,mock:255973a5c3fe,mock:2e7bcae76b27,mock:3aac389187b2,mock:42c2b65ed3ae,mock:479281fc43be,mock:47fcea5e8200,mock:5537079ab1cb,mock:623e4c5571a6,mock:62b7adf56bba,mock:6e39836363fd,mock:8bce2172077b,mock:8de299140626,mock:8df92b96055d,mock:926247b6bf7c,mock:9594e6907e3e,mock:961a5ad1bd52,mock:9d136ef0b2ce,mock:a9d122132677,mock:b8ed1f18251f,mock:b8f93159e166,mock:bfb8110910a9,mock:c9179a147440,mock:d18205b6684b,mock:d41b6b6f4e2d,mock:e0a5bc798596,mock:e1e449b9aebb,mock:ea080107e28a,mock:efe66f6848df,mock:f99279d4270e,mock:fcc3ce8076a8,mock:ff1908afcb8a</data>
-    </edge>
-    <edge source="validation_result:demo-surface_reactivity" target="precursor" id="0">
-      <data key="d5">evidence_for</data>
-      <data key="d6">In-silico evidence (supported) for this concept.</data>
-      <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter0.json</data>
-    </edge>
-    <edge source="validation_result:demo-surface_reactivity" target="surface" id="0">
-      <data key="d5">evidence_for</data>
-      <data key="d6">In-silico evidence (supported) for this concept.</data>
-      <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter0.json</data>
-    </edge>
-  </graph>
-</graphml>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d7" for="edge" attr.name="source_ids" attr.type="string"/>
+<key id="d6" for="edge" attr.name="description" attr.type="string"/>
+<key id="d5" for="edge" attr.name="relation" attr.type="string"/>
+<key id="d4" for="node" attr.name="source_ids" attr.type="string"/>
+<key id="d3" for="node" attr.name="domains" attr.type="string"/>
+<key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="type" attr.type="string"/>
+<key id="d0" for="node" attr.name="name" attr.type="string"/>
+<graph edgedefault="directed"><node id="surface">
+  <data key="d0">surface</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1007/s10450-015-9733-1,crossref:10.1007/s10450-020-00247-y,crossref:10.1016/j.susc.2005.01.008,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.inorgchem.5c00722.s001,crossref:10.1021/acs.jpcc.7b01990.s001,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/jp805206z,crossref:10.1063/1.339324,crossref:10.1139/v56-190,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.4348083,crossref:10.26434/chemrxiv.15002016/v1,pubmed:21690809,pubmed:23061923,pubmed:25485760,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:ca0fa46640fc7a198bdbe3956eebf512a2624f93,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</node>
+<node id="investigate">
+  <data key="d0">investigate</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1007/978-1-4419-8396-1_1,crossref:10.1007/978-1-4939-6890-9_4,crossref:10.1007/978-3-319-26027-3_1,crossref:10.1039/d5ra00686d,crossref:10.1093/law/9780192855985.003.0008,crossref:10.1093/oed/2037345933,crossref:10.1093/oso/9780190908300.003.0073,crossref:10.2172/2005191,crossref:10.26434/chemrxiv.15002016/v1,crossref:10.4324/9781315692999-4,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba</data>
+</node>
+<node id="deposition">
+  <data key="d0">deposition</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1063/1.339324,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821,seed_asald:parsons-clark-2020</data>
+</node>
+<node id="amorphous">
+  <data key="d0">amorphous</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models</data>
+  <data key="d4">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025</data>
+</node>
+<node id="silica">
+  <data key="d0">silica</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models</data>
+  <data key="d4">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025</data>
+</node>
+<node id="area-selective">
+  <data key="d0">area-selective</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.2139/ssrn.6097349,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</node>
+<node id="amorphous-silica">
+  <data key="d0">amorphous silica</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models</data>
+  <data key="d4">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025</data>
+</node>
+<node id="solve">
+  <data key="d0">solve</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781483387314.n8,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4</data>
+</node>
+<node id="selectivity">
+  <data key="d0">selectivity</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1063/1.339324,crossref:10.2139/ssrn.6097349,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</node>
+<node id="atomic">
+  <data key="d0">atomic</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3</data>
+</node>
+<node id="layer">
+  <data key="d0">layer</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</node>
+<node id="atomic-layer">
+  <data key="d0">atomic layer</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Amorphous surface models literature.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</node>
+<node id="aniline">
+  <data key="d0">aniline</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">arxiv:0907.5569v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1111.6077v1,arxiv:1206.4030v2,arxiv:1307.1644v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1309.5852v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1403.5576v2,arxiv:1405.7618v2,arxiv:1501.03770v1,arxiv:1603.04372v1,arxiv:1605.03511v2,arxiv:1608.02456v1,arxiv:1705.00570v1,arxiv:1705.09144v1,arxiv:1710.10200v1,arxiv:1711.10024v2,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1909.03882v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2003.08873v1,arxiv:2004.03654v1,arxiv:2007.13895v3,arxiv:2008.06316v4,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2106.01214v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2111.06657v1,arxiv:2203.07076v2,arxiv:2208.04072v3,arxiv:2208.11988v1,arxiv:2312.06111v1,arxiv:2504.19604v3,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2510.27204v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,arxiv:hep-th/9503200v2,crossref:10.1002/anie.news-61443,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/11499893_4,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1039/c2dt11837h,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1116/1.574522,crossref:10.1116/6.0001665,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781003087519-9,crossref:10.1380/jsssj.14.597,crossref:10.2172/1656634,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42344298,pubmed:42346939,pubmed:42347378,pubmed:42348075,pubmed:42351373,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42362683,pubmed:42364646,pubmed:42366566,pubmed:42366813,pubmed:42368107,pubmed:42368141,pubmed:42372438,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42379434,pubmed:42380094,pubmed:42380204,pubmed:42381305,pubmed:42381499,pubmed:42381898,pubmed:42382379,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="ru">
+  <data key="d0">Ru</data>
+  <data key="d1">surface</data>
+  <data key="d2">Surface referenced in seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023</data>
+</node>
+<node id="ru-terminal-site">
+  <data key="d0">Ru terminal site</data>
+  <data key="d1">surface_site</data>
+  <data key="d2">Reactive site type from seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023</data>
+</node>
+<node id="aniline-chemisorption-on-ru-terminal-de-3-59-ev">
+  <data key="d0">aniline chemisorption on Ru terminal (dE=-3.59 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Chemisorption energy -3.59 eV from seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023</data>
+</node>
+<node id="aniline-chemisorption-on-ru-terminal-de-2-17-ev">
+  <data key="d0">aniline chemisorption on Ru terminal (dE=-2.17 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Chemisorption energy -2.17 eV from seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023</data>
+</node>
+<node id="sio2">
+  <data key="d0">SiO2</data>
+  <data key="d1">surface</data>
+  <data key="d2">Surface referenced in seed_asald:tezsevin-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023</data>
+</node>
+<node id="methanesulfonic-acid">
+  <data key="d0">methanesulfonic acid</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in seed_asald:msa-al2o3-2024.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1106.1202v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1501.03770v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1710.10200v1,arxiv:1802.08085v1,arxiv:1812.09298v2,arxiv:1909.03882v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2007.13895v3,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2208.11988v1,arxiv:2312.06111v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:hep-th/9503200v2,crossref:10.1007/11499893_4,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1039/c2dt11837h,crossref:10.1116/6.0001665,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42351373,pubmed:42368141,pubmed:42379434,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="ethylbutyric-acid">
+  <data key="d0">ethylbutyric acid</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in seed_asald:carboxylic-smi-adma-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1106.1202v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1501.03770v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1710.10200v1,arxiv:1802.08085v1,arxiv:1812.09298v2,arxiv:1909.03882v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2007.13895v3,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2208.11988v1,arxiv:2312.06111v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:hep-th/9503200v2,crossref:10.1007/11499893_4,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1039/c2dt11837h,crossref:10.1116/6.0001665,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42351373,pubmed:42368141,pubmed:42379434,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="sio2-terminal-site">
+  <data key="d0">SiO2 terminal site</data>
+  <data key="d1">surface_site</data>
+  <data key="d2">Reactive site type from seed_asald:carboxylic-smi-adma-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:carboxylic-smi-adma-2023</data>
+</node>
+<node id="ethylbutyric-acid-chemisorption-on-sio2-terminal-de-1-23-ev">
+  <data key="d0">ethylbutyric acid chemisorption on SiO2 terminal (dE=1.23 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Chemisorption energy 1.23 eV from seed_asald:carboxylic-smi-adma-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:carboxylic-smi-adma-2023</data>
+</node>
+<node id="pivalic-acid">
+  <data key="d0">pivalic acid</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in seed_asald:carboxylic-smi-adma-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1106.1202v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1501.03770v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1710.10200v1,arxiv:1802.08085v1,arxiv:1812.09298v2,arxiv:1909.03882v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2007.13895v3,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2208.11988v1,arxiv:2312.06111v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:hep-th/9503200v2,crossref:10.1007/11499893_4,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1039/c2dt11837h,crossref:10.1116/6.0001665,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42351373,pubmed:42368141,pubmed:42379434,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="pivalic-acid-chemisorption-on-sio2-terminal-de-1-23-ev">
+  <data key="d0">pivalic acid chemisorption on SiO2 terminal (dE=1.23 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Chemisorption energy 1.23 eV from seed_asald:carboxylic-smi-adma-2023.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Amorphous surface models,Inhibitors and passivation,Passivation Chemistry,Precursors and film growth,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">seed_asald:carboxylic-smi-adma-2023</data>
+</node>
+<node id="pyridine">
+  <data key="d0">pyridine</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in crossref:10.2139/ssrn.6097349.</data>
+  <data key="d3">Amorphous surface models,Inhibitors and passivation,Precursors and film growth,Selectivity mechanisms</data>
+  <data key="d4">crossref:10.2139/ssrn.6097349</data>
+</node>
+<node id="inhibitor">
+  <data key="d0">inhibitor</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Inhibitors and passivation literature.</data>
+  <data key="d3">Inhibitors and passivation</data>
+  <data key="d4">crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/acschembio.0c00615.s001,crossref:10.1021/acschembio.6b00232.s001,crossref:10.1021/cb600352f.s001,crossref:10.1021/ja073914v.s002,crossref:10.1111/febs.16199/v2/review1,crossref:10.2210/pdb5fdo/pdb,crossref:10.7717/peerj.5449/fig-4,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
+</node>
+<node id="small">
+  <data key="d0">small</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Inhibitors and passivation literature.</data>
+  <data key="d3">Inhibitors and passivation</data>
+  <data key="d4">crossref:10.1021/cb600352f.s001,crossref:10.1021/ja073914v.s002,crossref:10.1063/1.339324,crossref:10.1111/febs.16199/v2/review1,crossref:10.2210/pdb5fdo/pdb,crossref:10.7717/peerj.5449/fig-4</data>
+</node>
+<node id="selective">
+  <data key="d0">selective</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Inhibitors and passivation literature.</data>
+  <data key="d3">Inhibitors and passivation</data>
+  <data key="d4">crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1063/1.339324,seed_asald:msa-al2o3-2024,seed_asald:tezsevin-2023</data>
+</node>
+<node id="layer-deposition">
+  <data key="d0">layer deposition</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Precursors and film growth literature.</data>
+  <data key="d3">Precursors and film growth</data>
+  <data key="d4">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</node>
+<node id="precursor">
+  <data key="d0">precursor</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Precursors and film growth literature.</data>
+  <data key="d3">Precursors and film growth</data>
+  <data key="d4">crossref:10.1021/acsanm.5c05042.s001,crossref:10.1039/d5nr00457h/v1/review2,crossref:10.1039/d5nr00457h/v2/decision1,crossref:10.1039/d5ra00686d,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.14332/svc16.proc.0001,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
+</node>
+<node id="growth">
+  <data key="d0">growth</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Precursors and film growth literature.</data>
+  <data key="d3">Precursors and film growth</data>
+  <data key="d4">crossref:10.1039/d5ra00686d,crossref:10.1149/ma2024-02302247mtgabs,pubmed:28178779,pubmed:34821888,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
+</node>
+<node id="adsorption">
+  <data key="d0">adsorption</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1007/s10450-015-9733-1,crossref:10.1007/s10450-020-00247-y,crossref:10.1016/j.susc.2005.01.008,crossref:10.1016/j.susc.2021.121808,crossref:10.1016/j.susc.2021.121860,crossref:10.1021/acs.inorgchem.5c00722.s001,crossref:10.1021/acs.jpcc.7b01990.s001,crossref:10.2139/ssrn.4348083,pubmed:42363018,pubmed:42368119,seed_asald:mace-mad-surf-2026,seed_asald:tezsevin-2023,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:ca0fa46640fc7a198bdbe3956eebf512a2624f93,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</node>
+<node id="energy">
+  <data key="d0">energy</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">crossref:10.2139/ssrn.4348083,pubmed:42380144,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</node>
+<node id="density">
+  <data key="d0">density</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</node>
+<node id="molecular">
+  <data key="d0">molecular</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">seed_asald:mace-mad-surf-2026,seed_asald:parsons-clark-2020,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:ca0fa46640fc7a198bdbe3956eebf512a2624f93</data>
+</node>
+<node id="surfaces">
+  <data key="d0">surfaces</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,pubmed:42380641,seed_asald:carboxylic-smi-adma-2023,seed_asald:mace-mad-surf-2026,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb</data>
+</node>
+<node id="theory">
+  <data key="d0">theory</data>
+  <data key="d1">concept</data>
+  <data key="d2">Concept extracted from Selectivity mechanisms literature.</data>
+  <data key="d3">Selectivity mechanisms</data>
+  <data key="d4">semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</node>
+<node id="ets">
+  <data key="d0">ets</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in pubmed:42366813.</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Passivation Chemistry,Selectivity Mechanisms,Selectivity mechanisms</data>
+  <data key="d4">arxiv:1410.8440v2,arxiv:1802.08085v1,arxiv:cond-mat/0105500v1,pubmed:42366813,seed_asald:ets-chlorosilane-2024</data>
+</node>
+<node id="a-sin">
+  <data key="d0">a-SiN</data>
+  <data key="d1">surface</data>
+  <data key="d2">surface {material: a-SiN, phase: amorphous}</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Passivation Chemistry</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1101.5151v1,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1211.0310v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1311.5019v1,arxiv:1403.1776v1,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1410.8440v2,arxiv:1501.03770v1,arxiv:1510.02938v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1705.07750v3,arxiv:1706.08993v2,arxiv:1710.10200v1,arxiv:1711.03710v1,arxiv:1801.10221v1,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1909.03882v1,arxiv:1910.14360v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2007.13895v3,arxiv:2010.15691v1,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.11698v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2203.05744v3,arxiv:2204.12317v1,arxiv:2208.11988v1,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2312.06111v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0606663v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9909167v1,arxiv:hep-th/9503200v2,arxiv:physics/0510094v1,crossref:10.1002/chin.198816023,crossref:10.1007/11499893_4,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/j100021a040,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c2dt11837h,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/6.0001665,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2582079.6228118910001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42349952,pubmed:42349953,pubmed:42351373,pubmed:42353044,pubmed:42357506,pubmed:42357544,pubmed:42365720,pubmed:42367056,pubmed:42368141,pubmed:42374590,pubmed:42379434,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381514,pubmed:42382006,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="a-sio2">
+  <data key="d0">a-SiO2</data>
+  <data key="d1">surface</data>
+  <data key="d2">surface {material: a-SiO2, phase: amorphous, site_type: silanol, site_density: 0.35-2.0 OH/nm2}</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Passivation Chemistry,Selectivity Mechanisms</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0907.5569v2,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1101.5151v1,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1111.6077v1,arxiv:1206.4030v2,arxiv:1211.0310v1,arxiv:1307.1644v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1309.5852v1,arxiv:1311.2691v1,arxiv:1311.5019v1,arxiv:1403.1776v1,arxiv:1403.5576v2,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1405.7618v2,arxiv:1410.8440v2,arxiv:1501.03770v1,arxiv:1510.02938v1,arxiv:1603.04372v1,arxiv:1605.03511v2,arxiv:1608.02456v1,arxiv:1705.00570v1,arxiv:1705.07750v3,arxiv:1705.09144v1,arxiv:1706.08993v2,arxiv:1710.10200v1,arxiv:1711.03710v1,arxiv:1711.10024v2,arxiv:1801.10221v1,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1909.03882v1,arxiv:1910.14360v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2003.08873v1,arxiv:2004.03654v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2007.13895v3,arxiv:2008.06316v4,arxiv:2010.15691v1,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.01214v2,arxiv:2106.11698v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2111.06657v1,arxiv:2203.05744v3,arxiv:2203.07076v2,arxiv:2204.12317v1,arxiv:2208.04072v3,arxiv:2208.11988v1,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2312.06111v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2504.19604v3,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2510.27204v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/0606663v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,arxiv:hep-th/9503200v2,arxiv:physics/0510094v1,crossref:10.1002/anie.news-61443,crossref:10.1002/chin.198816023,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/11499893_4,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/j100021a040,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c2dt11837h,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/1.574522,crossref:10.1116/6.0001665,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2582079.6228118910001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781003087519-9,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1380/jsssj.14.597,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.2172/1656634,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42344298,pubmed:42346939,pubmed:42347378,pubmed:42348075,pubmed:42349952,pubmed:42349953,pubmed:42351373,pubmed:42353044,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42357506,pubmed:42357544,pubmed:42362683,pubmed:42364646,pubmed:42365720,pubmed:42366566,pubmed:42366813,pubmed:42367056,pubmed:42368107,pubmed:42368141,pubmed:42372438,pubmed:42374590,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42379434,pubmed:42380094,pubmed:42380204,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381305,pubmed:42381499,pubmed:42381514,pubmed:42381898,pubmed:42382006,pubmed:42382379,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="siox">
+  <data key="d0">SiOx</data>
+  <data key="d1">film</data>
+  <data key="d2">target_film: SiOx</data>
+  <data key="d3">ALD Precursor Growth,Amorphous Surface Characterization,Passivation Chemistry</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1101.5151v1,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1211.0310v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1311.5019v1,arxiv:1403.1776v1,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1410.8440v2,arxiv:1501.03770v1,arxiv:1510.02938v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1705.07750v3,arxiv:1706.08993v2,arxiv:1710.10200v1,arxiv:1711.03710v1,arxiv:1801.10221v1,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1909.03882v1,arxiv:1910.14360v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2007.13895v3,arxiv:2010.15691v1,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.11698v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2203.05744v3,arxiv:2204.12317v1,arxiv:2208.11988v1,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2312.06111v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0606663v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9909167v1,arxiv:hep-th/9503200v2,arxiv:physics/0510094v1,crossref:10.1002/chin.198816023,crossref:10.1007/11499893_4,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/j100021a040,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c2dt11837h,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/6.0001665,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2582079.6228118910001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42349952,pubmed:42349953,pubmed:42351373,pubmed:42353044,pubmed:42357506,pubmed:42357544,pubmed:42365720,pubmed:42367056,pubmed:42368141,pubmed:42374590,pubmed:42379434,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381514,pubmed:42382006,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="molecular-inhibitor">
+  <data key="d0">molecular_inhibitor</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">inhibitor {removability: high if physisorbed, low if chemisorbed}</data>
+  <data key="d3">Amorphous Surface Characterization</data>
+  <data key="d4">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</node>
+<node id="chemisorption">
+  <data key="d0">chemisorption</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">mechanism {type: chemisorb, dE: strong negative energy}</data>
+  <data key="d3">Amorphous Surface Characterization,Passivation Chemistry,Selectivity Mechanisms</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0907.5569v2,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:1101.5151v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1111.6077v1,arxiv:1211.0310v1,arxiv:1307.1644v1,arxiv:1309.5852v1,arxiv:1311.5019v1,arxiv:1403.5576v2,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1405.7618v2,arxiv:1410.8440v2,arxiv:1510.02938v1,arxiv:1603.04372v1,arxiv:1608.02456v1,arxiv:1705.07750v3,arxiv:1705.09144v1,arxiv:1706.08993v2,arxiv:1711.03710v1,arxiv:1711.10024v2,arxiv:1801.10221v1,arxiv:1807.01248v1,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1910.14360v1,arxiv:2003.08873v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2008.06316v4,arxiv:2010.15691v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.01214v2,arxiv:2106.11698v2,arxiv:2111.06657v1,arxiv:2203.05744v3,arxiv:2203.07076v2,arxiv:2204.12317v1,arxiv:2208.04072v3,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2504.19604v3,arxiv:2510.27204v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/0606663v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,arxiv:physics/0510094v1,crossref:10.1002/anie.news-61443,crossref:10.1002/chin.198816023,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/j100021a040,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/1.574522,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1201/9781003087519-9,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1380/jsssj.14.597,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.2172/1656634,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42344298,pubmed:42347378,pubmed:42348075,pubmed:42349952,pubmed:42349953,pubmed:42353044,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42357506,pubmed:42357544,pubmed:42362683,pubmed:42364646,pubmed:42365720,pubmed:42366566,pubmed:42366813,pubmed:42367056,pubmed:42368107,pubmed:42372438,pubmed:42374590,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42380094,pubmed:42380204,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381305,pubmed:42381499,pubmed:42381514,pubmed:42381898,pubmed:42382006,pubmed:42382379,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="physisorption">
+  <data key="d0">physisorption</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">mechanism {type: physisorb, dE: weak negative energy}</data>
+  <data key="d3">Amorphous Surface Characterization,Passivation Chemistry,Selectivity Mechanisms</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0907.5569v2,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:1101.5151v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1111.6077v1,arxiv:1211.0310v1,arxiv:1307.1644v1,arxiv:1309.5852v1,arxiv:1311.5019v1,arxiv:1403.5576v2,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1405.7618v2,arxiv:1410.8440v2,arxiv:1510.02938v1,arxiv:1603.04372v1,arxiv:1608.02456v1,arxiv:1705.07750v3,arxiv:1705.09144v1,arxiv:1706.08993v2,arxiv:1711.03710v1,arxiv:1711.10024v2,arxiv:1801.10221v1,arxiv:1807.01248v1,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1910.14360v1,arxiv:2003.08873v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2008.06316v4,arxiv:2010.15691v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.01214v2,arxiv:2106.11698v2,arxiv:2111.06657v1,arxiv:2203.05744v3,arxiv:2203.07076v2,arxiv:2204.12317v1,arxiv:2208.04072v3,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2504.19604v3,arxiv:2510.27204v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/0606663v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,arxiv:physics/0510094v1,crossref:10.1002/anie.news-61443,crossref:10.1002/chin.198816023,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/j100021a040,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/1.574522,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1201/9781003087519-9,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1380/jsssj.14.597,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.2172/1656634,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42344298,pubmed:42347378,pubmed:42348075,pubmed:42349952,pubmed:42349953,pubmed:42353044,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42357506,pubmed:42357544,pubmed:42362683,pubmed:42364646,pubmed:42365720,pubmed:42366566,pubmed:42366813,pubmed:42367056,pubmed:42368107,pubmed:42372438,pubmed:42374590,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42380094,pubmed:42380204,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381305,pubmed:42381499,pubmed:42381514,pubmed:42381898,pubmed:42382006,pubmed:42382379,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="selectivity-result">
+  <data key="d0">selectivity_result</data>
+  <data key="d1">selectivity_result</data>
+  <data key="d2">selectivity_result {film: SiOx, thickness: 10 nm, %: 90%, method: area-selective ALD}</data>
+  <data key="d3">Amorphous Surface Characterization</data>
+  <data key="d4">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</node>
+<node id="selectivity-target">
+  <data key="d0">selectivity_target</data>
+  <data key="d1">selectivity_result</data>
+  <data key="d2">selectivity_result {film: SiOx, thickness: 10 nm, %: 90%}</data>
+  <data key="d3">ALD Precursor Growth,Passivation Chemistry</data>
+  <data key="d4">arxiv:0710.1289v1,arxiv:0908.2744v1,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1101.5151v1,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1405.6533v1,arxiv:1410.8440v2,arxiv:1501.03770v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1705.07750v3,arxiv:1706.08993v2,arxiv:1710.10200v1,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1909.03882v1,arxiv:1910.14360v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2004.09857v1,arxiv:2007.13895v3,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2104.04547v3,arxiv:2106.11698v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2204.12317v1,arxiv:2208.11988v1,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2312.06111v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2601.10763v1,arxiv:astro-ph/0401545v2,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0606663v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9909167v1,arxiv:hep-th/9503200v2,arxiv:physics/0510094v1,crossref:10.1007/11499893_4,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c2dt11837h,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1116/6.0001665,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781482283662-7,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42351373,pubmed:42368141,pubmed:42379434,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381514,pubmed:42382006,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="acetic-acid">
+  <data key="d0">acetic acid</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in arxiv:2012.04465v1.</data>
+  <data key="d3">ALD Precursor Growth</data>
+  <data key="d4">arxiv:2012.04465v1</data>
+</node>
+<node id="dmatms">
+  <data key="d0">dmatms</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">AS-ALD inhibitor cited in arxiv:2510.17356v1.</data>
+  <data key="d3">ALD Precursor Growth,Selectivity Mechanisms</data>
+  <data key="d4">arxiv:0907.5569v2,arxiv:1106.1529v2,arxiv:1111.6077v1,arxiv:1307.1644v1,arxiv:1309.5852v1,arxiv:1403.5576v2,arxiv:1405.7618v2,arxiv:1603.04372v1,arxiv:1608.02456v1,arxiv:1705.09144v1,arxiv:1711.10024v2,arxiv:1807.01248v1,arxiv:2003.08873v1,arxiv:2008.06316v4,arxiv:2106.01214v2,arxiv:2111.06657v1,arxiv:2203.07076v2,arxiv:2208.04072v3,arxiv:2504.19604v3,arxiv:2510.17356v1,arxiv:2510.27204v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,crossref:10.1002/anie.news-61443,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1116/1.574522,crossref:10.1201/9781003087519-9,crossref:10.1380/jsssj.14.597,crossref:10.2172/1656634,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,pubmed:42344298,pubmed:42347378,pubmed:42348075,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42362683,pubmed:42364646,pubmed:42366566,pubmed:42366813,pubmed:42368107,pubmed:42372438,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42380094,pubmed:42380204,pubmed:42381305,pubmed:42381499,pubmed:42381898,pubmed:42382379,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</node>
+<node id="a-sinx">
+  <data key="d0">a-SiNx</data>
+  <data key="d1">surface</data>
+  <data key="d2">surface {material: amorphous silicon nitride, site_type: -NH2, -NH-}</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,arxiv:1603.04372v1,arxiv:2203.07076v2,arxiv:1403.5576v2,arxiv:cond-mat/0603275v1,arxiv:1307.1644v1,arxiv:2008.06316v4,arxiv:1111.6077v1,arxiv:cond-mat/0511440v1,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1039/c3cp51728d,crossref:10.1002/cphc.201000245,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,seed_asald:parsons-clark-2020,seed_asald:msa-al2o3-2024,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,pubmed:42366566,pubmed:42364646,pubmed:42362683,pubmed:42357049,pubmed:42355064,pubmed:42348075,pubmed:42347378,pubmed:42344298,arxiv:0907.5569v2,arxiv:1807.01248v1,arxiv:1711.10024v2,arxiv:2003.08873v1,arxiv:2208.04072v3,arxiv:2111.06657v1,arxiv:cond-mat/9608140v1,arxiv:1309.5852v1,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/es030572u.s002,crossref:10.1021/ma00046a056,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1002/kin.21597,arxiv:1705.09144v1,arxiv:2106.01214v2,arxiv:cond-mat/9805128v1,arxiv:cond-mat/0405525v1,arxiv:1405.7618v2,arxiv:1608.02456v1,arxiv:2510.27204v1,arxiv:2504.19604v3,pubmed:42382379,pubmed:42381898,pubmed:42381499,pubmed:42381305,pubmed:42380204,pubmed:42380094,pubmed:42379062,pubmed:42378829,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1007/978-94-009-5734-3_7,crossref:10.2172/1656634,crossref:10.1116/1.574522,crossref:10.1201/9781003087519-9,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.1002/anie.news-61443,arxiv:cond-mat/0502199v3,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:cs/0611047v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,pubmed:42378898,pubmed:42378198,pubmed:42375811,pubmed:42374925,pubmed:42372438,pubmed:42368107,pubmed:42366813,pubmed:42353168,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1380/jsssj.14.597,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsengineeringau.2c00031.s001</data>
+</node>
+<node id="ethyltrichlorosilane-ets">
+  <data key="d0">Ethyltrichlorosilane (ETS)</data>
+  <data key="d1">inhibitor</data>
+  <data key="d2">inhibitor {functional_group: chlorosilane, removability: high on oxide}</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:tezsevin-2023,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,arxiv:1603.04372v1,arxiv:2203.07076v2,arxiv:1403.5576v2,arxiv:cond-mat/0603275v1,arxiv:1307.1644v1,arxiv:2008.06316v4,arxiv:1111.6077v1,arxiv:cond-mat/0511440v1,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1039/c3cp51728d,crossref:10.1002/cphc.201000245,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,seed_asald:parsons-clark-2020,seed_asald:msa-al2o3-2024,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,pubmed:42366566,pubmed:42364646,pubmed:42362683,pubmed:42357049,pubmed:42355064,pubmed:42348075,pubmed:42347378,pubmed:42344298,arxiv:0907.5569v2,arxiv:1807.01248v1,arxiv:1711.10024v2,arxiv:2003.08873v1,arxiv:2208.04072v3,arxiv:2111.06657v1,arxiv:cond-mat/9608140v1,arxiv:1309.5852v1,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/es030572u.s002,crossref:10.1021/ma00046a056,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1002/kin.21597,arxiv:1705.09144v1,arxiv:2106.01214v2,arxiv:cond-mat/9805128v1,arxiv:cond-mat/0405525v1,arxiv:1405.7618v2,arxiv:1608.02456v1,arxiv:2510.27204v1,arxiv:2504.19604v3,pubmed:42382379,pubmed:42381898,pubmed:42381499,pubmed:42381305,pubmed:42380204,pubmed:42380094,pubmed:42379062,pubmed:42378829,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1007/978-94-009-5734-3_7,crossref:10.2172/1656634,crossref:10.1116/1.574522,crossref:10.1201/9781003087519-9,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.1002/anie.news-61443,arxiv:cond-mat/0502199v3,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:cs/0611047v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,pubmed:42378898,pubmed:42378198,pubmed:42375811,pubmed:42374925,pubmed:42372438,pubmed:42368107,pubmed:42366813,pubmed:42353168,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1380/jsssj.14.597,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsengineeringau.2c00031.s001</data>
+</node>
+<node id="sio2-oh-site">
+  <data key="d0">SiO2 OH site</data>
+  <data key="d1">surface_site</data>
+  <data key="d2">Reactive site type from seed_asald:dmatms-asd-2020.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:dmatms-asd-2020</data>
+</node>
+<node id="dmatms-chemisorption-on-sio2-oh-de-0-48-ev">
+  <data key="d0">dmatms chemisorption on SiO2 OH (dE=0.48 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Chemisorption energy 0.48 eV from seed_asald:dmatms-asd-2020.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:dmatms-asd-2020</data>
+</node>
+<node id="dmatms-activation-at-oh-ea-0-48-ev">
+  <data key="d0">dmatms activation at OH (Ea=0.48 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Activation energy 0.48 eV from seed_asald:dmatms-asd-2020.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:dmatms-asd-2020</data>
+</node>
+<node id="sin-nh-bridge-site">
+  <data key="d0">SiN NH_bridge site</data>
+  <data key="d1">surface_site</data>
+  <data key="d2">Reactive site type from seed_asald:ets-chlorosilane-2024.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:ets-chlorosilane-2024</data>
+</node>
+<node id="ets-activation-at-nh-bridge-ea-0-79-ev">
+  <data key="d0">ets activation at NH_bridge (Ea=0.79 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Activation energy 0.79 eV from seed_asald:ets-chlorosilane-2024.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:ets-chlorosilane-2024</data>
+</node>
+<node id="ets-activation-at-nh-bridge-ea-0-8-ev">
+  <data key="d0">ets activation at NH_bridge (Ea=0.8 eV)</data>
+  <data key="d1">mechanism</data>
+  <data key="d2">Activation energy 0.8 eV from seed_asald:ets-chlorosilane-2024.</data>
+  <data key="d3">Selectivity Mechanisms</data>
+  <data key="d4">seed_asald:ets-chlorosilane-2024</data>
+</node>
+<node id="validation_result:demo-surface_reactivity">
+  <data key="d0">Validation demo-surface_reactivity (rejected)</data>
+  <data key="d1">validation_result</data>
+  <data key="d2">surface_reactivity in-silico validation: rejected (confidence 0.75).</data>
+  <data key="d3">surface_reactivity</data>
+  <data key="d4">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</node>
+<edge source="surface" target="investigate" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.26434/chemrxiv.15002016/v1</data>
+</edge>
+<edge source="surface" target="selective" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1063/1.339324,seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="surface" target="precursor" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="surface" target="energy" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.2139/ssrn.4348083,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</edge>
+<edge source="investigate" target="deposition" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1007/978-1-4419-8396-1_1,crossref:10.1007/978-1-4939-6890-9_4,crossref:10.1007/978-3-319-26027-3_1,crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1063/1.339324,crossref:10.1093/law/9780192855985.003.0008,crossref:10.1093/oed/2037345933,crossref:10.1093/oso/9780190908300.003.0073,crossref:10.2139/ssrn.6097349,crossref:10.2172/2005191,crossref:10.26434/chemrxiv.15002016/v1,crossref:10.4324/9781315692999-4,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="investigate" target="solve" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.4324/9781315692999-4</data>
+</edge>
+<edge source="investigate" target="growth" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1039/d5ra00686d</data>
+</edge>
+<edge source="deposition" target="amorphous" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/jp805206z,crossref:10.1063/1.339324,crossref:10.1139/v56-190,crossref:10.2139/ssrn.6097349,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:jpcc-silica-2021,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025</data>
+</edge>
+<edge source="deposition" target="area-selective" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.2139/ssrn.6097349,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="deposition" target="atomic" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</edge>
+<edge source="deposition" target="density" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1063/1.339324,crossref:10.2139/ssrn.6097349,seed_asald:jpcc-silica-2021,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</edge>
+<edge source="amorphous" target="silica" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025</data>
+</edge>
+<edge source="silica" target="area-selective" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.9b04137.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.2139/ssrn.6097349,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025</data>
+</edge>
+<edge source="area-selective" target="amorphous-silica" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/jp805206z,crossref:10.1139/v56-190,crossref:10.2139/ssrn.6097349,crossref:10.26434/chemrxiv.15002016/v1,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025</data>
+</edge>
+<edge source="area-selective" target="investigate" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1007/978-1-4419-8396-1_1,crossref:10.1007/978-1-4939-6890-9_4,crossref:10.1007/978-3-319-26027-3_1,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1093/law/9780192855985.003.0008,crossref:10.1093/oso/9780190908300.003.0073,crossref:10.2139/ssrn.6097349,crossref:10.2172/2005191,crossref:10.4324/9781315692999-4,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="area-selective" target="selectivity" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.2139/ssrn.6097349,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="area-selective" target="molecular" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="amorphous-silica" target="solve" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/0039-6028(89)90928-x,crossref:10.1016/s0039-6028(97)00582-7,crossref:10.1021/jp805206z,crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.1139/v56-190,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.26434/chemrxiv.15002016/v1,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4,seed_asald:jpcc-silica-2021,seed_asald:silica-silanol-2025</data>
+</edge>
+<edge source="solve" target="selectivity" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1063/1.339324,crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.2139/ssrn.6097349,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="solve" target="area-selective" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.2139/ssrn.6097349,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781483387314.n8,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="solve" target="theory" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</edge>
+<edge source="selectivity" target="atomic" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.2139/ssrn.6097349</data>
+</edge>
+<edge source="atomic" target="layer" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</edge>
+<edge source="atomic" target="area-selective" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.2139/ssrn.6097349</data>
+</edge>
+<edge source="layer" target="atomic-layer" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</edge>
+<edge source="atomic-layer" target="small" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1021/cb600352f.s001,crossref:10.1021/ja073914v.s002,crossref:10.1063/1.339324,crossref:10.1111/febs.16199/v2/review1,crossref:10.2139/ssrn.6097349,crossref:10.2210/pdb5fdo/pdb,crossref:10.7717/peerj.5449/fig-4</data>
+</edge>
+<edge source="atomic-layer" target="layer-deposition" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2139/ssrn.6097349,pubmed:21690809,pubmed:23061923,pubmed:23432093,pubmed:25485760,pubmed:28178779,pubmed:33885104,pubmed:34821888,pubmed:35943821</data>
+</edge>
+<edge source="aniline" target="ru" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">dE=-3.59 eV</data>
+  <data key="d7">seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="aniline" target="ru-terminal-site" id="0">
+  <data key="d5">reacts_at</data>
+  <data key="d6">dE=-3.59 eV at terminal</data>
+  <data key="d7">seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="aniline" target="aniline-chemisorption-on-ru-terminal-de-3-59-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="aniline" target="aniline-chemisorption-on-ru-terminal-de-2-17-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="aniline" target="sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">dE=-0.57 eV</data>
+  <data key="d7">seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="aniline" target="a-sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">Aniline physisorbs on SiO2 with dE = -0.57 eV</data>
+  <data key="d7">arxiv:0907.5569v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1111.6077v1,arxiv:1206.4030v2,arxiv:1307.1644v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1309.5852v1,arxiv:1311.2691v1,arxiv:1403.1776v1,arxiv:1403.5576v2,arxiv:1405.7618v2,arxiv:1501.03770v1,arxiv:1603.04372v1,arxiv:1605.03511v2,arxiv:1608.02456v1,arxiv:1705.00570v1,arxiv:1705.09144v1,arxiv:1710.10200v1,arxiv:1711.10024v2,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1909.03882v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2003.08873v1,arxiv:2004.03654v1,arxiv:2007.13895v3,arxiv:2008.06316v4,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2106.01214v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2111.06657v1,arxiv:2203.07076v2,arxiv:2208.04072v3,arxiv:2208.11988v1,arxiv:2312.06111v1,arxiv:2504.19604v3,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2510.27204v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0405525v1,arxiv:cond-mat/0502199v3,arxiv:cond-mat/0511440v1,arxiv:cond-mat/0603275v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9608140v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9805128v1,arxiv:cond-mat/9909167v1,arxiv:cs/0611047v1,arxiv:hep-th/9503200v2,crossref:10.1002/anie.news-61443,crossref:10.1002/cphc.201000245,crossref:10.1002/kin.21597,crossref:10.1007/11499893_4,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.1007/978-94-009-5734-3_7,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsengineeringau.2c00031.s001,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1021/es030572u.s002,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1021/ma00046a056,crossref:10.1039/c2dt11837h,crossref:10.1039/c3cp51728d,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,crossref:10.1116/1.574522,crossref:10.1116/6.0001665,crossref:10.1117/12.2582079.6228118910001,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781003087519-9,crossref:10.1380/jsssj.14.597,crossref:10.2172/1656634,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42344298,pubmed:42346939,pubmed:42347378,pubmed:42348075,pubmed:42351373,pubmed:42353168,pubmed:42355064,pubmed:42357049,pubmed:42362683,pubmed:42364646,pubmed:42366566,pubmed:42366813,pubmed:42368107,pubmed:42368141,pubmed:42372438,pubmed:42374925,pubmed:42375811,pubmed:42378198,pubmed:42378829,pubmed:42378898,pubmed:42379062,pubmed:42379434,pubmed:42380094,pubmed:42380204,pubmed:42381305,pubmed:42381499,pubmed:42381898,pubmed:42382379,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="methanesulfonic-acid" target="a-sio2" id="0">
+  <data key="d5">inhibits_nucleation</data>
+  <data key="d6">Higher reaction barriers on SiO2 compared to metal surfaces</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:0912.4524v1,arxiv:1802.08085v1,arxiv:1308.2064v1,arxiv:2312.06111v1,arxiv:1107.5401v1,arxiv:1106.1202v1,arxiv:2208.11988v1,arxiv:2011.03930v1,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1007/11499893_4,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1039/c2dt11837h,crossref:10.1149/ma2005-02/12/465,arxiv:2107.11348v2,arxiv:2107.11341v2,arxiv:hep-th/9503200v2,arxiv:1605.03511v2,arxiv:1109.6837v2,arxiv:1309.3071v1,arxiv:2007.13895v3,arxiv:cond-mat/0610840v2,pubmed:42379434,pubmed:42368141,pubmed:42351373,pubmed:42346939,pubmed:42341716,pubmed:42326662,pubmed:42301272,pubmed:42279934,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1130/abs/2018am-316863,crossref:10.46427/gold2022.10873,crossref:10.46427/gold2020.2247,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acschemneuro.1c00489.s001,arxiv:2004.03654v1,arxiv:2003.01308v1,arxiv:1501.03770v1,arxiv:1206.4030v2,arxiv:1705.00570v1,arxiv:1911.08248v2,arxiv:1403.1776v1,arxiv:1311.2691v1,arxiv:2012.04465v1,arxiv:1812.09298v2,arxiv:1710.10200v1,arxiv:1909.03882v1,arxiv:2510.17356v1,arxiv:1010.3795v2,arxiv:2507.06635v1,arxiv:cond-mat/0701671v1,crossref:10.1117/12.2582079.6228118910001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1116/6.0001665</data>
+</edge>
+<edge source="ethylbutyric-acid" target="sio2" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">dE=1.23 eV</data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="ethylbutyric-acid" target="sio2-terminal-site" id="0">
+  <data key="d5">reacts_at</data>
+  <data key="d6">dE=1.23 eV at terminal</data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="ethylbutyric-acid" target="ethylbutyric-acid-chemisorption-on-sio2-terminal-de-1-23-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="ethylbutyric-acid" target="a-sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">Endothermic chemisorption (dE = 0.41 to 1.23 eV) leads to physisorption</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:0912.4524v1,arxiv:1802.08085v1,arxiv:1308.2064v1,arxiv:2312.06111v1,arxiv:1107.5401v1,arxiv:1106.1202v1,arxiv:2208.11988v1,arxiv:2011.03930v1,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1007/11499893_4,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1039/c2dt11837h,crossref:10.1149/ma2005-02/12/465,arxiv:2107.11348v2,arxiv:2107.11341v2,arxiv:hep-th/9503200v2,arxiv:1605.03511v2,arxiv:1109.6837v2,arxiv:1309.3071v1,arxiv:2007.13895v3,arxiv:cond-mat/0610840v2,pubmed:42379434,pubmed:42368141,pubmed:42351373,pubmed:42346939,pubmed:42341716,pubmed:42326662,pubmed:42301272,pubmed:42279934,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1130/abs/2018am-316863,crossref:10.46427/gold2022.10873,crossref:10.46427/gold2020.2247,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acschemneuro.1c00489.s001,arxiv:2004.03654v1,arxiv:2003.01308v1,arxiv:1501.03770v1,arxiv:1206.4030v2,arxiv:1705.00570v1,arxiv:1911.08248v2,arxiv:1403.1776v1,arxiv:1311.2691v1,arxiv:2012.04465v1,arxiv:1812.09298v2,arxiv:1710.10200v1,arxiv:1909.03882v1,arxiv:2510.17356v1,arxiv:1010.3795v2,arxiv:2507.06635v1,arxiv:cond-mat/0701671v1,crossref:10.1117/12.2582079.6228118910001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1116/6.0001665</data>
+</edge>
+<edge source="pivalic-acid" target="sio2" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">dE=1.23 eV</data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="pivalic-acid" target="sio2-terminal-site" id="0">
+  <data key="d5">reacts_at</data>
+  <data key="d6">dE=1.23 eV at terminal</data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="pivalic-acid" target="pivalic-acid-chemisorption-on-sio2-terminal-de-1-23-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:carboxylic-smi-adma-2023</data>
+</edge>
+<edge source="pivalic-acid" target="a-sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">Endothermic chemisorption (dE = 0.41 to 1.23 eV) leads to physisorption</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:0912.4524v1,arxiv:1802.08085v1,arxiv:1308.2064v1,arxiv:2312.06111v1,arxiv:1107.5401v1,arxiv:1106.1202v1,arxiv:2208.11988v1,arxiv:2011.03930v1,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1007/11499893_4,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1039/c2dt11837h,crossref:10.1149/ma2005-02/12/465,arxiv:2107.11348v2,arxiv:2107.11341v2,arxiv:hep-th/9503200v2,arxiv:1605.03511v2,arxiv:1109.6837v2,arxiv:1309.3071v1,arxiv:2007.13895v3,arxiv:cond-mat/0610840v2,pubmed:42379434,pubmed:42368141,pubmed:42351373,pubmed:42346939,pubmed:42341716,pubmed:42326662,pubmed:42301272,pubmed:42279934,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1130/abs/2018am-316863,crossref:10.46427/gold2022.10873,crossref:10.46427/gold2020.2247,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acschemneuro.1c00489.s001,arxiv:2004.03654v1,arxiv:2003.01308v1,arxiv:1501.03770v1,arxiv:1206.4030v2,arxiv:1705.00570v1,arxiv:1911.08248v2,arxiv:1403.1776v1,arxiv:1311.2691v1,arxiv:2012.04465v1,arxiv:1812.09298v2,arxiv:1710.10200v1,arxiv:1909.03882v1,arxiv:2510.17356v1,arxiv:1010.3795v2,arxiv:2507.06635v1,arxiv:cond-mat/0701671v1,crossref:10.1117/12.2582079.6228118910001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1116/6.0001665</data>
+</edge>
+<edge source="inhibitor" target="deposition" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acsanm.5c05042.s001,seed_asald:parsons-clark-2020</data>
+</edge>
+<edge source="small" target="surface" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1063/1.339324</data>
+</edge>
+<edge source="layer-deposition" target="surface" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1021/acsanm.5c05042.s001,crossref:10.1149/ma2024-02302247mtgabs,pubmed:21690809,pubmed:23061923,pubmed:25485760</data>
+</edge>
+<edge source="precursor" target="investigate" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1039/d5ra00686d</data>
+</edge>
+<edge source="growth" target="solve" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1039/d5ra00686d,crossref:10.1093/hesc/9780199390434.003.0002,crossref:10.1149/ma2024-02302247mtgabs,crossref:10.2307/j.ctvc773pk.10,crossref:10.2307/j.ctvc773pk.6,crossref:10.4135/9781483387314.n1,crossref:10.4135/9781483387314.n8,crossref:10.4135/9781506304816.n12,crossref:10.4135/9781506304816.n13,crossref:10.4324/9781315692999-4,pubmed:28178779,pubmed:34821888,seed_asald:carboxylic-smi-adma-2023,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="adsorption" target="surface" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1007/s10450-015-9733-1,crossref:10.1007/s10450-020-00247-y,crossref:10.1016/j.susc.2005.01.008,crossref:10.1021/acs.inorgchem.5c00722.s001,crossref:10.1021/acs.jpcc.7b01990.s001,crossref:10.2139/ssrn.4348083,seed_asald:tezsevin-2023,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:ca0fa46640fc7a198bdbe3956eebf512a2624f93,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</edge>
+<edge source="energy" target="deposition" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.chemmater.0c03227.s001,crossref:10.1021/acs.chemmater.1c00823.s001,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acsanm.5c05042.s001,crossref:10.1063/1.339324,crossref:10.2139/ssrn.4348083,crossref:10.2139/ssrn.6097349,pubmed:42380144,seed_asald:parsons-clark-2020,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:1f67b46fe5d71dc8ceeeed6be4f714a2b1c9a297,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3,semantic_scholar:9087db067f37e3dea68cf02a60f54b9589b4e974,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba,semantic_scholar:c23d91b3fcec9e29edd0efb6d4d5ef1bdb125276,semantic_scholar:e9eb714f7ca1a73203a7b0c53309219cd69e2f5b</data>
+</edge>
+<edge source="density" target="atomic" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:675a30dd5cff29a5135c8e8983fefadf78d48da3</data>
+</edge>
+<edge source="molecular" target="surfaces" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">seed_asald:mace-mad-surf-2026,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb</data>
+</edge>
+<edge source="surfaces" target="investigate" id="0">
+  <data key="d5">associated_with</data>
+  <data key="d6">Co-occurrence in domain literature.</data>
+  <data key="d7">crossref:10.1007/978-1-4419-8396-1_1,crossref:10.1007/978-1-4939-6890-9_4,crossref:10.1007/978-3-319-26027-3_1,crossref:10.1016/s0169-4332(98)00083-x,crossref:10.1021/acs.jpcc.8b10782.s001,crossref:10.1021/acs.jpclett.5c01138.s001,crossref:10.1093/law/9780192855985.003.0008,crossref:10.2172/2005191,crossref:10.4324/9781315692999-4,pubmed:42380641,seed_asald:carboxylic-smi-adma-2023,seed_asald:mace-mad-surf-2026,semantic_scholar:000149619c82f5b4431c2aa2a831fa29d33eddcb,semantic_scholar:c11805aa133dd884ac3a29733f8fc8fd030f88ba</data>
+</edge>
+<edge source="ets" target="sin-nh-bridge-site" id="0">
+  <data key="d5">reacts_at</data>
+  <data key="d6">Ea=0.79 eV at NH_bridge</data>
+  <data key="d7">seed_asald:ets-chlorosilane-2024</data>
+</edge>
+<edge source="ets" target="ets-activation-at-nh-bridge-ea-0-79-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:ets-chlorosilane-2024</data>
+</edge>
+<edge source="ets" target="ets-activation-at-nh-bridge-ea-0-8-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:ets-chlorosilane-2024</data>
+</edge>
+<edge source="siox" target="a-sio2" id="0">
+  <data key="d5">grows_on</data>
+  <data key="d6">SiOx grows selectively on a-SiO2</data>
+  <data key="d7">arxiv:0710.1289v1,arxiv:0808.2903v1,arxiv:0809.2008v1,arxiv:0908.1888v1,arxiv:0908.2744v1,arxiv:0910.1797v2,arxiv:0912.4524v1,arxiv:1010.3795v2,arxiv:1101.5151v1,arxiv:1106.1202v1,arxiv:1106.1529v2,arxiv:1106.4061v1,arxiv:1107.5401v1,arxiv:1109.6837v2,arxiv:1206.4030v2,arxiv:1211.0310v1,arxiv:1308.2064v1,arxiv:1309.3071v1,arxiv:1311.2691v1,arxiv:1311.5019v1,arxiv:1403.1776v1,arxiv:1403.6862v1,arxiv:1405.6533v1,arxiv:1410.8440v2,arxiv:1501.03770v1,arxiv:1510.02938v1,arxiv:1605.03511v2,arxiv:1705.00570v1,arxiv:1705.07750v3,arxiv:1706.08993v2,arxiv:1710.10200v1,arxiv:1711.03710v1,arxiv:1801.10221v1,arxiv:1802.08085v1,arxiv:1807.01248v1,arxiv:1812.09298v2,arxiv:1907.00329v1,arxiv:1907.02713v3,arxiv:1909.03882v1,arxiv:1910.14360v1,arxiv:1911.08248v2,arxiv:2003.01308v1,arxiv:2004.03654v1,arxiv:2004.09857v1,arxiv:2007.05851v4,arxiv:2007.13895v3,arxiv:2010.15691v1,arxiv:2011.03930v1,arxiv:2012.04465v1,arxiv:2012.11259v2,arxiv:2104.04547v3,arxiv:2106.11698v2,arxiv:2107.11341v2,arxiv:2107.11348v2,arxiv:2203.05744v3,arxiv:2204.12317v1,arxiv:2208.11988v1,arxiv:2307.10858v2,arxiv:2309.05899v1,arxiv:2312.06111v1,arxiv:2409.01450v1,arxiv:2411.02235v1,arxiv:2507.06635v1,arxiv:2510.17356v1,arxiv:2601.10763v1,arxiv:2601.21154v1,arxiv:astro-ph/0401545v2,arxiv:astro-ph/0507457v2,arxiv:astro-ph/0510346v1,arxiv:cond-mat/0012274v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0206415v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0208513v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0306062v4,arxiv:cond-mat/0606663v1,arxiv:cond-mat/0610840v2,arxiv:cond-mat/0701671v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/9704070v1,arxiv:cond-mat/9909167v1,arxiv:hep-th/9503200v2,arxiv:physics/0510094v1,crossref:10.1002/chin.198816023,crossref:10.1007/11499893_4,crossref:10.1007/978-3-319-22611-8_4,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1007/s10787-025-01758-2,crossref:10.1007/springerreference_36801,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1016/j.apsusc.2012.01.140,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/j.susc.2008.05.005,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/s0069-8040(08)70075-x,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acs.chemmater.0c02588.s001,crossref:10.1021/acs.chemmater.4c03238.s001,crossref:10.1021/acs.chemmater.6b01869.s001,crossref:10.1021/acs.chemmater.8b03165.s001,crossref:10.1021/acs.chemmater.9b00193.s001,crossref:10.1021/acs.jpcc.1c07071,crossref:10.1021/acs.jpcc.3c02933.s001,crossref:10.1021/acs.jpcc.4c01512.s001,crossref:10.1021/acs.jpcc.5c02266.s001,crossref:10.1021/acs.jpcc.6b03818,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1021/acsami.0c08117.s001,crossref:10.1021/acsami.4c22420.s001,crossref:10.1021/acsami.9b13827.s001,crossref:10.1021/acsami.9b22973.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acschemneuro.1c00489.s001,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1021/j100021a040,crossref:10.1021/jacs.4c07539.s001,crossref:10.1021/nl071637k.s002,crossref:10.1021/scimeetings.5c10799,crossref:10.1039/9781782624011-00125,crossref:10.1039/c2dt11837h,crossref:10.1080/13642818708211224,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1103/physrevb.53.13725,crossref:10.1116/6.0001665,crossref:10.1117/12.2514793.6013968818001,crossref:10.1117/12.2582079.6228118910001,crossref:10.1117/12.2614003.6305845482112,crossref:10.1126/science.319.5862.381c,crossref:10.1130/abs/2018am-316863,crossref:10.1149/ma2005-02/12/465,crossref:10.1201/9781482283662-7,crossref:10.1208/s12249-011-9655-5,crossref:10.1515/amm-2015-0232,crossref:10.2139/ssrn.5223183,crossref:10.31274/etd-180810-5320,crossref:10.32657/10356/65469,crossref:10.37473/dac/10.1002/cphc.202100261,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.46427/gold2020.2247,crossref:10.46427/gold2022.10873,crossref:10.48048/tis.2023.6558,crossref:10.6028/nbs.nsrds.20,crossref:10.6028/nbs.sp.449,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.7717/peerj.19708/table-1,crossref:10.7717/peerj.20971/table-1,pubmed:12366178,pubmed:19041228,pubmed:22148467,pubmed:27153212,pubmed:31968732,pubmed:33749254,pubmed:41159759,pubmed:41170597,pubmed:41430077,pubmed:41470388,pubmed:41638284,pubmed:41785309,pubmed:41830293,pubmed:42153943,pubmed:42179131,pubmed:42250706,pubmed:42279934,pubmed:42301272,pubmed:42326662,pubmed:42341716,pubmed:42346939,pubmed:42349952,pubmed:42349953,pubmed:42351373,pubmed:42353044,pubmed:42357506,pubmed:42357544,pubmed:42365720,pubmed:42367056,pubmed:42368141,pubmed:42374590,pubmed:42379434,pubmed:42380603,pubmed:42380680,pubmed:42380703,pubmed:42381038,pubmed:42381514,pubmed:42382006,pubmed:42382795,pubmed:42383338,seed_asald:carboxylic-smi-adma-2023,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,seed_asald:msa-al2o3-2024,seed_asald:parsons-clark-2020,seed_asald:silica-silanol-2025,seed_asald:tezsevin-2023</data>
+</edge>
+<edge source="molecular-inhibitor" target="a-sin" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">inhibitor blocks growth surface by chemisorption</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</edge>
+<edge source="molecular-inhibitor" target="a-sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">inhibitor is removed during purge due to weak physisorption</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</edge>
+<edge source="molecular-inhibitor" target="siox" id="0">
+  <data key="d5">blocks</data>
+  <data key="d6">inhibitor blocks precursor nucleation on non-growth surface</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</edge>
+<edge source="chemisorption" target="a-sin" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">Inhibitor chemisorbs on non-growth surface to block precursor</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:1410.8440v2,arxiv:1907.00329v1,arxiv:1910.14360v1,arxiv:2104.04547v3,arxiv:2004.09857v1,arxiv:2106.11698v2,arxiv:1907.02713v3,arxiv:0710.1289v1,crossref:10.1007/springerreference_36801,crossref:10.1007/s10787-025-01758-2,crossref:10.7717/peerj.19708/table-1,crossref:10.1039/9781782624011-00125,crossref:10.7717/peerj.20971/table-1,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.31274/etd-180810-5320,arxiv:1706.08993v2,arxiv:1101.5151v1,arxiv:1405.6533v1,arxiv:2411.02235v1,arxiv:physics/0510094v1,arxiv:0908.2744v1,arxiv:cond-mat/0606663v1,arxiv:2307.10858v2,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1201/9781482283662-7,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.1021/acsami.0c08117.s001,crossref:10.1007/978-3-319-22611-8_4,crossref:10.37473/dac/10.1002/cphc.202100261,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0012274v1,pubmed:42383338,pubmed:42382795,pubmed:42382006,pubmed:42381514,pubmed:42381038,pubmed:42380703,pubmed:42380680,pubmed:42380603,crossref:10.1021/nl071637k.s002,crossref:10.32657/10356/65469,crossref:10.1117/12.2514793.6013968818001,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acsami.9b13827.s001,arxiv:1807.01248v1,arxiv:cond-mat/0306062v4,arxiv:astro-ph/0401545v2,arxiv:1705.07750v3,arxiv:2409.01450v1,arxiv:2204.12317v1,arxiv:2309.05899v1,arxiv:2601.10763v1,pubmed:41170597,pubmed:41159759,pubmed:33749254,pubmed:27153212,pubmed:31968732,pubmed:22148467,pubmed:19041228,pubmed:12366178,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.6028/nbs.sp.449,crossref:10.6028/nbs.nsrds.20,crossref:10.1021/scimeetings.5c10799,crossref:10.1016/s0069-8040(08)70075-x</data>
+</edge>
+<edge source="physisorption" target="a-sio2" id="0">
+  <data key="d5">physisorbs_on</data>
+  <data key="d6">Inhibitor physisorbs on growth surface allowing precursor reaction</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:1410.8440v2,arxiv:1907.00329v1,arxiv:1910.14360v1,arxiv:2104.04547v3,arxiv:2004.09857v1,arxiv:2106.11698v2,arxiv:1907.02713v3,arxiv:0710.1289v1,crossref:10.1007/springerreference_36801,crossref:10.1007/s10787-025-01758-2,crossref:10.7717/peerj.19708/table-1,crossref:10.1039/9781782624011-00125,crossref:10.7717/peerj.20971/table-1,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.31274/etd-180810-5320,arxiv:1706.08993v2,arxiv:1101.5151v1,arxiv:1405.6533v1,arxiv:2411.02235v1,arxiv:physics/0510094v1,arxiv:0908.2744v1,arxiv:cond-mat/0606663v1,arxiv:2307.10858v2,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1201/9781482283662-7,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.1021/acsami.0c08117.s001,crossref:10.1007/978-3-319-22611-8_4,crossref:10.37473/dac/10.1002/cphc.202100261,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0012274v1,pubmed:42383338,pubmed:42382795,pubmed:42382006,pubmed:42381514,pubmed:42381038,pubmed:42380703,pubmed:42380680,pubmed:42380603,crossref:10.1021/nl071637k.s002,crossref:10.32657/10356/65469,crossref:10.1117/12.2514793.6013968818001,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acsami.9b13827.s001,arxiv:1807.01248v1,arxiv:cond-mat/0306062v4,arxiv:astro-ph/0401545v2,arxiv:1705.07750v3,arxiv:2409.01450v1,arxiv:2204.12317v1,arxiv:2309.05899v1,arxiv:2601.10763v1,pubmed:41170597,pubmed:41159759,pubmed:33749254,pubmed:27153212,pubmed:31968732,pubmed:22148467,pubmed:19041228,pubmed:12366178,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.6028/nbs.sp.449,crossref:10.6028/nbs.nsrds.20,crossref:10.1021/scimeetings.5c10799,crossref:10.1016/s0069-8040(08)70075-x</data>
+</edge>
+<edge source="selectivity-result" target="siox" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6">90% selectivity at 10 nm thickness</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:cond-mat/9704070v1,arxiv:0908.1888v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:1510.02938v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,crossref:10.1021/jacs.4c07539.s001,crossref:10.48048/tis.2023.6558,crossref:10.1016/j.apsusc.2011.08.035,crossref:10.1021/acsearthspacechem.1c00240.s001,crossref:10.2139/ssrn.5223183,crossref:10.1515/amm-2015-0232,crossref:10.1016/j.apsusc.2004.10.141,crossref:10.1002/chin.198816023,arxiv:2203.05744v3,arxiv:0910.1797v2,arxiv:2601.21154v1,arxiv:1801.10221v1,arxiv:1106.4061v1,arxiv:2010.15691v1,arxiv:cond-mat/0210671v2,arxiv:cond-mat/0206415v1,crossref:10.1103/physrevb.53.13725,crossref:10.1021/acs.nanolett.6b04125.s001,crossref:10.1021/acsaelm.1c00123.s001,crossref:10.1016/s0921-5093(00)00849-2,crossref:10.1021/acsnano.6b03590.s001,crossref:10.1126/science.319.5862.381c,crossref:10.1007/978-3-319-51847-3_7,crossref:10.1080/13642818708211224,arxiv:2012.11259v2,arxiv:cond-mat/0208513v1,arxiv:2007.05851v4,arxiv:1311.5019v1,pubmed:42374590,pubmed:42367056,pubmed:42365720,pubmed:42357544,pubmed:42357506,pubmed:42353044,pubmed:42349953,pubmed:42349952,crossref:10.1016/j.susc.2006.07.033,crossref:10.1016/s0039-6028(98)00419-1,crossref:10.1016/0039-6028(89)90722-x,crossref:10.1093/hesc/9780198503286.003.0004,crossref:10.1016/s0039-6028(96)01125-9,crossref:10.1021/j100021a040,crossref:10.1016/j.susc.2008.05.005,pubmed:42250706,pubmed:42179131,pubmed:42153943,pubmed:41830293,pubmed:41785309,pubmed:41638284,pubmed:41470388,pubmed:41430077,arxiv:astro-ph/0510346v1,arxiv:1211.0310v1,arxiv:0808.2903v1,arxiv:1711.03710v1,arxiv:0809.2008v1,arxiv:astro-ph/0507457v2,arxiv:1403.6862v1,crossref:10.1016/j.apsusc.2016.06.044,crossref:10.1208/s12249-011-9655-5,crossref:10.1016/j.apsusc.2006.08.006,crossref:10.1016/s0169-4332(00)00057-x,crossref:10.1016/0927-0248(94)90097-3,crossref:10.1117/12.2614003.6305845482112,crossref:10.1016/j.apsusc.2010.04.106,crossref:10.1016/j.apsusc.2012.01.140</data>
+</edge>
+<edge source="selectivity-target" target="siox" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6">Target selectivity for SiOx growth</data>
+  <data key="d7">seed_asald:parsons-clark-2020,seed_asald:tezsevin-2023,seed_asald:msa-al2o3-2024,seed_asald:carboxylic-smi-adma-2023,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,arxiv:1410.8440v2,arxiv:1907.00329v1,arxiv:1910.14360v1,arxiv:2104.04547v3,arxiv:2004.09857v1,arxiv:2106.11698v2,arxiv:1907.02713v3,arxiv:0710.1289v1,crossref:10.1007/springerreference_36801,crossref:10.1007/s10787-025-01758-2,crossref:10.7717/peerj.19708/table-1,crossref:10.1039/9781782624011-00125,crossref:10.7717/peerj.20971/table-1,crossref:10.1021/acsinfecdis.8b00222.s001,crossref:10.31274/etd-180810-5320,arxiv:1706.08993v2,arxiv:1101.5151v1,arxiv:1405.6533v1,arxiv:2411.02235v1,arxiv:physics/0510094v1,arxiv:0908.2744v1,arxiv:cond-mat/0606663v1,arxiv:2307.10858v2,crossref:10.1093/oxfordhb/9780199533060.013.9,crossref:10.1201/9781482283662-7,crossref:10.37473/dac/10.3390/catal10121458,crossref:10.1021/acsami.0c08117.s001,crossref:10.1007/978-3-319-22611-8_4,crossref:10.37473/dac/10.1002/cphc.202100261,arxiv:cond-mat/0110236v1,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,arxiv:cond-mat/0208134v1,arxiv:cond-mat/0012274v1,pubmed:42383338,pubmed:42382795,pubmed:42382006,pubmed:42381514,pubmed:42381038,pubmed:42380703,pubmed:42380680,pubmed:42380603,crossref:10.1021/nl071637k.s002,crossref:10.32657/10356/65469,crossref:10.1117/12.2514793.6013968818001,crossref:10.70675/4ef20da1z89fez4460zaabbz505458f6bc1e,crossref:10.1021/acs.analchem.1c04541.s001,crossref:10.1021/acsanm.4c01065.s001,crossref:10.1021/acsami.9b13827.s001,arxiv:1807.01248v1,arxiv:cond-mat/0306062v4,arxiv:astro-ph/0401545v2,arxiv:1705.07750v3,arxiv:2409.01450v1,arxiv:2204.12317v1,arxiv:2309.05899v1,arxiv:2601.10763v1,pubmed:41170597,pubmed:41159759,pubmed:33749254,pubmed:27153212,pubmed:31968732,pubmed:22148467,pubmed:19041228,pubmed:12366178,crossref:10.1016/s0069-8040(08)70076-1,crossref:10.1016/s0069-8040(08)x7007-4,crossref:10.1016/s0069-8040(08)70081-5,crossref:10.6028/nbs.sp.449,crossref:10.6028/nbs.nsrds.20,crossref:10.1021/scimeetings.5c10799,crossref:10.1016/s0069-8040(08)70075-x</data>
+</edge>
+<edge source="dmatms" target="a-sinx" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">Chemisorbs via proton transfer at -NH2 and -NH- sites</data>
+  <data key="d7">seed_asald:tezsevin-2023,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,arxiv:1603.04372v1,arxiv:2203.07076v2,arxiv:1403.5576v2,arxiv:cond-mat/0603275v1,arxiv:1307.1644v1,arxiv:2008.06316v4,arxiv:1111.6077v1,arxiv:cond-mat/0511440v1,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1039/c3cp51728d,crossref:10.1002/cphc.201000245,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,seed_asald:parsons-clark-2020,seed_asald:msa-al2o3-2024,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,pubmed:42366566,pubmed:42364646,pubmed:42362683,pubmed:42357049,pubmed:42355064,pubmed:42348075,pubmed:42347378,pubmed:42344298,arxiv:0907.5569v2,arxiv:1807.01248v1,arxiv:1711.10024v2,arxiv:2003.08873v1,arxiv:2208.04072v3,arxiv:2111.06657v1,arxiv:cond-mat/9608140v1,arxiv:1309.5852v1,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/es030572u.s002,crossref:10.1021/ma00046a056,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1002/kin.21597,arxiv:1705.09144v1,arxiv:2106.01214v2,arxiv:cond-mat/9805128v1,arxiv:cond-mat/0405525v1,arxiv:1405.7618v2,arxiv:1608.02456v1,arxiv:2510.27204v1,arxiv:2504.19604v3,pubmed:42382379,pubmed:42381898,pubmed:42381499,pubmed:42381305,pubmed:42380204,pubmed:42380094,pubmed:42379062,pubmed:42378829,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1007/978-94-009-5734-3_7,crossref:10.2172/1656634,crossref:10.1116/1.574522,crossref:10.1201/9781003087519-9,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.1002/anie.news-61443,arxiv:cond-mat/0502199v3,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:cs/0611047v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,pubmed:42378898,pubmed:42378198,pubmed:42375811,pubmed:42374925,pubmed:42372438,pubmed:42368107,pubmed:42366813,pubmed:42353168,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1380/jsssj.14.597,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsengineeringau.2c00031.s001</data>
+</edge>
+<edge source="dmatms" target="a-sio2" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">Chemisorbs at silanol -OH sites</data>
+  <data key="d7">seed_asald:tezsevin-2023,seed_asald:carboxylic-smi-adma-2023,seed_asald:dmatms-asd-2020,seed_asald:ets-chlorosilane-2024,arxiv:1603.04372v1,arxiv:2203.07076v2,arxiv:1403.5576v2,arxiv:cond-mat/0603275v1,arxiv:1307.1644v1,arxiv:2008.06316v4,arxiv:1111.6077v1,arxiv:cond-mat/0511440v1,crossref:10.1021/acsnanoscienceau.5c00170.s001,crossref:10.1039/c3cp51728d,crossref:10.1002/cphc.201000245,crossref:10.1021/acsnano.5b05222.s001,crossref:10.1021/acs.jpclett.4c02357.s001,crossref:10.1007/978-94-009-7870-6_4,crossref:10.1039/c7cp01653k,crossref:10.1063/1.1850091,seed_asald:parsons-clark-2020,seed_asald:msa-al2o3-2024,seed_asald:silica-silanol-2025,seed_asald:jpcc-silica-2021,seed_asald:mace-mad-surf-2026,seed_asald:mlip-barrier-2025,pubmed:42366566,pubmed:42364646,pubmed:42362683,pubmed:42357049,pubmed:42355064,pubmed:42348075,pubmed:42347378,pubmed:42344298,arxiv:0907.5569v2,arxiv:1807.01248v1,arxiv:1711.10024v2,arxiv:2003.08873v1,arxiv:2208.04072v3,arxiv:2111.06657v1,arxiv:cond-mat/9608140v1,arxiv:1309.5852v1,crossref:10.1021/acsomega.5c04371.s001,crossref:10.1007/s10450-013-9566-8,crossref:10.1021/es030572u.s002,crossref:10.1021/ma00046a056,crossref:10.1021/acs.iecr.3c00961.s001,crossref:10.1021/acs.est.4c01127.s001,crossref:10.1002/kin.21597,arxiv:1705.09144v1,arxiv:2106.01214v2,arxiv:cond-mat/9805128v1,arxiv:cond-mat/0405525v1,arxiv:1405.7618v2,arxiv:1608.02456v1,arxiv:2510.27204v1,arxiv:2504.19604v3,pubmed:42382379,pubmed:42381898,pubmed:42381499,pubmed:42381305,pubmed:42380204,pubmed:42380094,pubmed:42379062,pubmed:42378829,crossref:10.1021/acsaelm.1c01348.s001,crossref:10.1007/978-94-009-5734-3_7,crossref:10.2172/1656634,crossref:10.1116/1.574522,crossref:10.1201/9781003087519-9,crossref:10.1007/978-1-4613-2247-4_7,crossref:10.70675/f355e183z838fz41d4za2f8z6fd06a95fa2e,crossref:10.1002/anie.news-61443,arxiv:cond-mat/0502199v3,arxiv:cond-mat/9604012v1,arxiv:cond-mat/0110236v1,arxiv:cond-mat/0105500v1,arxiv:cond-mat/9704070v1,arxiv:cs/0611047v1,arxiv:1106.1529v2,arxiv:cond-mat/9909167v1,pubmed:42378898,pubmed:42378198,pubmed:42375811,pubmed:42374925,pubmed:42372438,pubmed:42368107,pubmed:42366813,pubmed:42353168,crossref:10.1021/acs.jpcc.4c00179.s001,crossref:10.1021/jacs.1c07276.s001,crossref:10.1021/jacs.6b07557.s002,crossref:10.1380/jsssj.14.597,crossref:10.1021/acs.iecr.5c03958.s001,crossref:10.1021/acscatal.1c04966.s001,crossref:10.1021/acsengineeringau.2c00031.s001</data>
+</edge>
+<edge source="dmatms" target="sio2" id="0">
+  <data key="d5">chemisorbs_on</data>
+  <data key="d6">dE=0.48 eV</data>
+  <data key="d7">seed_asald:dmatms-asd-2020</data>
+</edge>
+<edge source="dmatms" target="sio2-oh-site" id="0">
+  <data key="d5">reacts_at</data>
+  <data key="d6">dE=0.48 eV at OH</data>
+  <data key="d7">seed_asald:dmatms-asd-2020</data>
+</edge>
+<edge source="dmatms" target="dmatms-chemisorption-on-sio2-oh-de-0-48-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:dmatms-asd-2020</data>
+</edge>
+<edge source="dmatms" target="dmatms-activation-at-oh-ea-0-48-ev" id="0">
+  <data key="d5">measured_by</data>
+  <data key="d6"></data>
+  <data key="d7">seed_asald:dmatms-asd-2020</data>
+</edge>
+<edge source="validation_result:demo-surface_reactivity" target="inhibitor" id="0">
+  <data key="d5">evidence_for</data>
+  <data key="d6">In-silico evidence (rejected) for this concept.</data>
+  <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</edge>
+<edge source="validation_result:demo-surface_reactivity" target="a-sin" id="0">
+  <data key="d5">evidence_for</data>
+  <data key="d6">In-silico evidence (rejected) for this concept.</data>
+  <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</edge>
+<edge source="validation_result:demo-surface_reactivity" target="a-sio2" id="0">
+  <data key="d5">evidence_for</data>
+  <data key="d6">In-silico evidence (rejected) for this concept.</data>
+  <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</edge>
+<edge source="validation_result:demo-surface_reactivity" target="atomic-layer" id="0">
+  <data key="d5">evidence_for</data>
+  <data key="d6">In-silico evidence (rejected) for this concept.</data>
+  <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</edge>
+<edge source="validation_result:demo-surface_reactivity" target="selectivity" id="0">
+  <data key="d5">evidence_for</data>
+  <data key="d6">In-silico evidence (rejected) for this concept.</data>
+  <data key="d7">artifacts/demo/asald_results.json,artifacts/demo/surface_fidelity.json,artifacts/demo/simulation_logs/surface_reactivity_iter1.json</data>
+</edge>
+</graph></graphml>

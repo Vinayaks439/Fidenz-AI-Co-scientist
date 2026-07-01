@@ -2,75 +2,21 @@
   "scores": [
     {
       "id": "H01",
-      "statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+      "statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
       "evidence_quality": 1.0,
-      "novelty": 0.78,
+      "novelty": 0.968,
       "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
+      "confidence": 0.85,
+      "composite": 0.855
     },
     {
       "id": "H02",
-      "statement": "Chemisorption of surface on the non-growth surface blocks growth precursor adsorption, delaying nucleation enough to reach the selectivity target for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+      "statement": "A methanesulfonic acid (MSA) inhibitor selectively passivates a-SiN sites, enabling Si(OEt)4-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
       "evidence_quality": 1.0,
-      "novelty": 0.78,
+      "novelty": 0.957,
       "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H03",
-      "statement": "growth and area-selective form a compatible inhibitor/precursor pair whose differential adsorption drives area-selective growth in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H04",
-      "statement": "The selectivity in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm is governed by the differential blocking coverage of area-selective between the growth and non-growth surfaces rather than by selectivity alone.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H05",
-      "statement": "selectivity is a viable non-growth-surface passivant enabling deposition-based selective deposition in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H06",
-      "statement": "A deposition-based small-molecule inhibitor selectively passivates the non-growth surface while while grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H07",
-      "statement": "Chemisorption of while on the non-growth surface blocks film precursor adsorption, delaying nucleation enough to reach the selectivity target for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
-    },
-    {
-      "id": "H08",
-      "statement": "film and area-selective deposition form a compatible inhibitor/precursor pair whose differential adsorption drives area-selective growth in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "evidence_quality": 1.0,
-      "novelty": 0.78,
-      "consistency": 0.5,
-      "confidence": 0.491,
-      "composite": 0.718
+      "confidence": 0.7,
+      "composite": 0.814
     }
   ]
 }

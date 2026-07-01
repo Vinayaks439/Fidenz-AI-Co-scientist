@@ -1,42 +1,52 @@
 {
   "run_id": "demo",
-  "hypothesis_statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+  "hypothesis_statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
   "result": {
     "run_id": "demo",
-    "hypothesis_statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+    "hypothesis_statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
     "plan": {
       "domain": "surface_reactivity",
       "method": "AS-ALD differential-reactivity protocol (ADR-009): inhibitor adsorption screen on a-SiN (NGS) vs a-SiO2 (GS) over a gated surface ensemble, blocking coverage -> nucleation delay -> S(N).",
-      "rationale": "'acetic acid' (carboxylic acid) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
+      "rationale": "'aniline' (aromatic amine) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
       "reasoning_trace": [
-        "Retrieved 7 inhibitor candidates grounded in the KG (criteria: selection_criteria.md).",
-        "Ranked by differential adsorption + volatility + removability; selected 'acetic acid' (rank 1).",
-        "Paired with precursor 'BDEAS' for target film SiOx."
+        "Prior sources merged (mode=auto): 5 KG-mined, 8 manual, 8 built-in defaults.",
+        "Retrieved 10 inhibitor candidates; ranked by differential adsorption + volatility + removability.",
+        "Selected 'aniline' (rank 1); dE_ngs from 'kg-mined' [extrapolated from another NGS material].",
+        "Paired with precursor 'BDEAS' for target film SiOx.",
+        "dE_ngs supported by citations: crossref:10.1002/kin.21597, seed_asald:tezsevin-2023.",
+        "AI planner chose Tier-1 (real MLIP confirmation): Given the previous failure and high calibration error, I am performing a high-fidelity Tier 1 validation of the committed aniline hypothesis on the a-SiN/a-SiO2 system. This will use the foundation-MLIP to accurately capture the adsorption energy on the actual 3D slab structures, bypassing the unreliable literature-prior estimates and testing the hypothesis under rigorous conditions.",
+        "Refinement: The experiment failed to meet selectivity and differential blocking thresholds, and the high calibration absolute error (2.348 eV) indicates that the underlying force field or quantum mechanical method is unreliable for this chemical system, rendering the current results untrustworthy."
       ],
       "parameters": {},
       "data_spec": {
-        "inhibitor": "acetic acid",
+        "inhibitor": "aniline",
         "precursor": "BDEAS",
         "growth_surface": "a-SiO2",
         "non_growth_surface": "a-SiN",
         "target_film": "SiOx",
         "target_thickness_nm": 10.0,
         "target_selectivity": 0.9,
-        "dE_ngs_eV": -1.0,
-        "dE_gs_eV": -0.2,
+        "inhibitor_smiles": null,
+        "dE_ngs_eV": -3.59,
+        "dE_gs_eV": -0.57,
         "dE_prior_std": 0.08,
-        "literature_dE_ngs_eV": -1.0,
+        "literature_dE_ngs_eV": -3.59,
         "temperature_K": 423.0,
         "dose_ratio": 1.0,
-        "ensemble_n": 5,
-        "compute_tier": 0,
+        "ensemble_n": 1,
+        "compute_tier": 1,
         "provenance_refs": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
+          "crossref:10.2139/ssrn.6097349",
+          "seed_asald:parsons-clark-2020"
+        ],
+        "prior_source": "kg-mined",
+        "prior_extrapolated": true,
+        "prior_source_ids": [
+          "crossref:10.1002/kin.21597",
+          "seed_asald:tezsevin-2023"
+        ],
+        "site_reactivity": {},
+        "literature_Ea_ngs_eV": null
       },
       "success_criteria": [
         {
@@ -63,37 +73,37 @@
         "Only chemisorbed, purge-surviving inhibitor blocks the precursor.",
         "Selectivity is reported as mean +/- std over the surface ensemble."
       ],
-      "seed": 42,
-      "iteration": 0
+      "seed": 43,
+      "iteration": 1
     },
     "metrics": [
       {
         "name": "S_at_target",
-        "value": 0.9231,
+        "value": 0.0,
         "unit": "",
         "threshold": 0.9,
-        "passed": true,
+        "passed": false,
         "note": "selectivity at 10.0 nm (mean over ensemble, +/-0.000)"
       },
       {
         "name": "differential_blocking",
-        "value": 0.9449,
+        "value": -0.5236,
         "unit": "",
         "threshold": 0.5,
-        "passed": true,
+        "passed": false,
         "note": "theta_block(NGS) - theta_block(GS): the selectivity driver"
       },
       {
         "name": "dE_ngs_mean_eV",
-        "value": -1.013,
+        "value": -0.2729,
         "unit": "",
         "threshold": -0.7,
-        "passed": true,
+        "passed": false,
         "note": "inhibitor adsorption on NGS (chemisorption expected < -0.7)"
       },
       {
         "name": "dE_gs_mean_eV",
-        "value": -0.1835,
+        "value": -3.2621,
         "unit": "",
         "threshold": null,
         "passed": null,
@@ -101,60 +111,69 @@
       },
       {
         "name": "calibration_abs_error_eV",
-        "value": 0.013,
+        "value": 3.3171,
         "unit": "",
         "threshold": null,
         "passed": null,
-        "note": "MLIP-vs-literature dE delta; flag=ok"
+        "note": "MLIP-vs-literature dE delta; flag=review"
       }
     ],
-    "verdict": "supported",
-    "confidence": 0.559,
-    "narrative": "Tested 'acetic acid' inhibitor / 'BDEAS' precursor over 5 a-SiN (NGS) and 5 a-SiO2 (GS) gated surfaces using tier0-literature-priors. Differential blocking 0.945; S = 0.923 +/- 0.000 at 10.0 nm vs target 0.90 -> supported.",
+    "verdict": "rejected",
+    "confidence": 0.75,
+    "narrative": "Tested 'aniline' inhibitor / 'BDEAS' precursor over 1 a-SiN (NGS) and 1 a-SiO2 (GS) gated surfaces using mace-mp@cpu. Differential blocking -0.524; S = 0.000 +/- 0.000 at 10.0 nm vs target 0.90 -> rejected.",
     "artifact_paths": {
       "asald_results": "artifacts/demo/asald_results.json",
       "surface_fidelity": "artifacts/demo/surface_fidelity.json",
-      "log": "artifacts/demo/simulation_logs/surface_reactivity_iter0.json"
+      "log": "artifacts/demo/simulation_logs/surface_reactivity_iter1.json"
     },
-    "generated_at": "2026-07-01T11:28:55.792525+00:00"
+    "generated_at": "2026-07-01T17:51:46.309027+00:00"
   },
   "history": [
     {
       "run_id": "demo",
-      "hypothesis_statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+      "hypothesis_statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
       "plan": {
         "domain": "surface_reactivity",
         "method": "AS-ALD differential-reactivity protocol (ADR-009): inhibitor adsorption screen on a-SiN (NGS) vs a-SiO2 (GS) over a gated surface ensemble, blocking coverage -> nucleation delay -> S(N).",
-        "rationale": "'acetic acid' (carboxylic acid) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
+        "rationale": "'aniline' (aromatic amine) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
         "reasoning_trace": [
-          "Retrieved 7 inhibitor candidates grounded in the KG (criteria: selection_criteria.md).",
-          "Ranked by differential adsorption + volatility + removability; selected 'acetic acid' (rank 1).",
-          "Paired with precursor 'BDEAS' for target film SiOx."
+          "Prior sources merged (mode=auto): 5 KG-mined, 8 manual, 8 built-in defaults.",
+          "Retrieved 10 inhibitor candidates; ranked by differential adsorption + volatility + removability.",
+          "Selected 'aniline' (rank 1); dE_ngs from 'kg-mined' [extrapolated from another NGS material].",
+          "Paired with precursor 'BDEAS' for target film SiOx.",
+          "dE_ngs supported by citations: crossref:10.1002/kin.21597, seed_asald:tezsevin-2023.",
+          "AI planner chose Tier-1 (real MLIP confirmation): Aniline is the committed hypothesis for achieving high selectivity on a-SiN versus a-SiO2. Since this is the primary candidate, I am bypassing Tier 0 screening to perform a Tier 1 foundation-MLIP calculation to directly validate the adsorption energy on the actual 3D slab structures and confirm its potential for area-selective ALD."
         ],
         "parameters": {},
         "data_spec": {
-          "inhibitor": "acetic acid",
+          "inhibitor": "aniline",
           "precursor": "BDEAS",
           "growth_surface": "a-SiO2",
           "non_growth_surface": "a-SiN",
           "target_film": "SiOx",
           "target_thickness_nm": 10.0,
           "target_selectivity": 0.9,
-          "dE_ngs_eV": -1.0,
-          "dE_gs_eV": -0.2,
+          "inhibitor_smiles": null,
+          "dE_ngs_eV": -3.59,
+          "dE_gs_eV": -0.57,
           "dE_prior_std": 0.08,
-          "literature_dE_ngs_eV": -1.0,
+          "literature_dE_ngs_eV": -3.59,
           "temperature_K": 423.0,
           "dose_ratio": 1.0,
-          "ensemble_n": 5,
-          "compute_tier": 0,
+          "ensemble_n": 1,
+          "compute_tier": 1,
           "provenance_refs": [
-            "mock:030c07b09e5d",
-            "mock:05c19ce21ee0",
-            "mock:0971be21e402",
-            "mock:255973a5c3fe",
-            "mock:2e7bcae76b27"
-          ]
+            "crossref:10.2139/ssrn.6097349",
+            "seed_asald:parsons-clark-2020"
+          ],
+          "prior_source": "kg-mined",
+          "prior_extrapolated": true,
+          "prior_source_ids": [
+            "crossref:10.1002/kin.21597",
+            "seed_asald:tezsevin-2023"
+          ],
+          "site_reactivity": {},
+          "literature_Ea_ngs_eV": null
         },
         "success_criteria": [
           {
@@ -187,23 +206,23 @@
       "metrics": [
         {
           "name": "S_at_target",
-          "value": 0.9231,
+          "value": 0.0747,
           "unit": "",
           "threshold": 0.9,
-          "passed": true,
+          "passed": false,
           "note": "selectivity at 10.0 nm (mean over ensemble, +/-0.000)"
         },
         {
           "name": "differential_blocking",
-          "value": 0.9449,
+          "value": 0.1259,
           "unit": "",
           "threshold": 0.5,
-          "passed": true,
+          "passed": false,
           "note": "theta_block(NGS) - theta_block(GS): the selectivity driver"
         },
         {
           "name": "dE_ngs_mean_eV",
-          "value": -1.013,
+          "value": -1.2423,
           "unit": "",
           "threshold": -0.7,
           "passed": true,
@@ -211,7 +230,7 @@
         },
         {
           "name": "dE_gs_mean_eV",
-          "value": -0.1835,
+          "value": -8.5061,
           "unit": "",
           "threshold": null,
           "passed": null,
@@ -219,32 +238,169 @@
         },
         {
           "name": "calibration_abs_error_eV",
-          "value": 0.013,
+          "value": 2.3477,
           "unit": "",
           "threshold": null,
           "passed": null,
-          "note": "MLIP-vs-literature dE delta; flag=ok"
+          "note": "MLIP-vs-literature dE delta; flag=review"
         }
       ],
-      "verdict": "supported",
-      "confidence": 0.559,
-      "narrative": "Tested 'acetic acid' inhibitor / 'BDEAS' precursor over 5 a-SiN (NGS) and 5 a-SiO2 (GS) gated surfaces using tier0-literature-priors. Differential blocking 0.945; S = 0.923 +/- 0.000 at 10.0 nm vs target 0.90 -> supported.",
+      "verdict": "rejected",
+      "confidence": 0.721,
+      "narrative": "Tested 'aniline' inhibitor / 'BDEAS' precursor over 1 a-SiN (NGS) and 1 a-SiO2 (GS) gated surfaces using mace-mp@cpu. Differential blocking 0.126; S = 0.075 +/- 0.000 at 10.0 nm vs target 0.90 -> rejected.",
       "artifact_paths": {
         "asald_results": "artifacts/demo/asald_results.json",
         "surface_fidelity": "artifacts/demo/surface_fidelity.json",
         "log": "artifacts/demo/simulation_logs/surface_reactivity_iter0.json"
       },
-      "generated_at": "2026-07-01T11:28:55.792525+00:00"
+      "generated_at": "2026-07-01T17:42:19.611818+00:00"
+    },
+    {
+      "run_id": "demo",
+      "hypothesis_statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
+      "plan": {
+        "domain": "surface_reactivity",
+        "method": "AS-ALD differential-reactivity protocol (ADR-009): inhibitor adsorption screen on a-SiN (NGS) vs a-SiO2 (GS) over a gated surface ensemble, blocking coverage -> nucleation delay -> S(N).",
+        "rationale": "'aniline' (aromatic amine) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
+        "reasoning_trace": [
+          "Prior sources merged (mode=auto): 5 KG-mined, 8 manual, 8 built-in defaults.",
+          "Retrieved 10 inhibitor candidates; ranked by differential adsorption + volatility + removability.",
+          "Selected 'aniline' (rank 1); dE_ngs from 'kg-mined' [extrapolated from another NGS material].",
+          "Paired with precursor 'BDEAS' for target film SiOx.",
+          "dE_ngs supported by citations: crossref:10.1002/kin.21597, seed_asald:tezsevin-2023.",
+          "AI planner chose Tier-1 (real MLIP confirmation): Given the previous failure and high calibration error, I am performing a high-fidelity Tier 1 validation of the committed aniline hypothesis on the a-SiN/a-SiO2 system. This will use the foundation-MLIP to accurately capture the adsorption energy on the actual 3D slab structures, bypassing the unreliable literature-prior estimates and testing the hypothesis under rigorous conditions.",
+          "Refinement: The experiment failed to meet selectivity and differential blocking thresholds, and the high calibration absolute error (2.348 eV) indicates that the underlying force field or quantum mechanical method is unreliable for this chemical system, rendering the current results untrustworthy."
+        ],
+        "parameters": {},
+        "data_spec": {
+          "inhibitor": "aniline",
+          "precursor": "BDEAS",
+          "growth_surface": "a-SiO2",
+          "non_growth_surface": "a-SiN",
+          "target_film": "SiOx",
+          "target_thickness_nm": 10.0,
+          "target_selectivity": 0.9,
+          "inhibitor_smiles": null,
+          "dE_ngs_eV": -3.59,
+          "dE_gs_eV": -0.57,
+          "dE_prior_std": 0.08,
+          "literature_dE_ngs_eV": -3.59,
+          "temperature_K": 423.0,
+          "dose_ratio": 1.0,
+          "ensemble_n": 1,
+          "compute_tier": 1,
+          "provenance_refs": [
+            "crossref:10.2139/ssrn.6097349",
+            "seed_asald:parsons-clark-2020"
+          ],
+          "prior_source": "kg-mined",
+          "prior_extrapolated": true,
+          "prior_source_ids": [
+            "crossref:10.1002/kin.21597",
+            "seed_asald:tezsevin-2023"
+          ],
+          "site_reactivity": {},
+          "literature_Ea_ngs_eV": null
+        },
+        "success_criteria": [
+          {
+            "metric": "S_at_target",
+            "operator": ">=",
+            "threshold": 0.9,
+            "description": "selectivity meets the 90% target"
+          },
+          {
+            "metric": "differential_blocking",
+            "operator": ">=",
+            "threshold": 0.5,
+            "description": "NGS is blocked substantially more than GS"
+          },
+          {
+            "metric": "dE_ngs_mean_eV",
+            "operator": "<",
+            "threshold": -0.7,
+            "description": "chemisorption on the non-growth surface"
+          }
+        ],
+        "assumptions": [
+          "Adsorption-energy priors are literature/xTB values; Tier-1 MLIP recomputes them within a single calculator/head/dtype.",
+          "Only chemisorbed, purge-surviving inhibitor blocks the precursor.",
+          "Selectivity is reported as mean +/- std over the surface ensemble."
+        ],
+        "seed": 43,
+        "iteration": 1
+      },
+      "metrics": [
+        {
+          "name": "S_at_target",
+          "value": 0.0,
+          "unit": "",
+          "threshold": 0.9,
+          "passed": false,
+          "note": "selectivity at 10.0 nm (mean over ensemble, +/-0.000)"
+        },
+        {
+          "name": "differential_blocking",
+          "value": -0.5236,
+          "unit": "",
+          "threshold": 0.5,
+          "passed": false,
+          "note": "theta_block(NGS) - theta_block(GS): the selectivity driver"
+        },
+        {
+          "name": "dE_ngs_mean_eV",
+          "value": -0.2729,
+          "unit": "",
+          "threshold": -0.7,
+          "passed": false,
+          "note": "inhibitor adsorption on NGS (chemisorption expected < -0.7)"
+        },
+        {
+          "name": "dE_gs_mean_eV",
+          "value": -3.2621,
+          "unit": "",
+          "threshold": null,
+          "passed": null,
+          "note": "inhibitor adsorption on GS (physisorption expected > -0.3)"
+        },
+        {
+          "name": "calibration_abs_error_eV",
+          "value": 3.3171,
+          "unit": "",
+          "threshold": null,
+          "passed": null,
+          "note": "MLIP-vs-literature dE delta; flag=review"
+        }
+      ],
+      "verdict": "rejected",
+      "confidence": 0.75,
+      "narrative": "Tested 'aniline' inhibitor / 'BDEAS' precursor over 1 a-SiN (NGS) and 1 a-SiO2 (GS) gated surfaces using mace-mp@cpu. Differential blocking -0.524; S = 0.000 +/- 0.000 at 10.0 nm vs target 0.90 -> rejected.",
+      "artifact_paths": {
+        "asald_results": "artifacts/demo/asald_results.json",
+        "surface_fidelity": "artifacts/demo/surface_fidelity.json",
+        "log": "artifacts/demo/simulation_logs/surface_reactivity_iter1.json"
+      },
+      "generated_at": "2026-07-01T17:51:46.309027+00:00"
     }
   ],
   "reflections": [
     {
+      "decision": "refine",
+      "critique": "The experiment failed to meet selectivity and differential blocking thresholds, and the high calibration absolute error (2.348 eV) indicates that the underlying force field or quantum mechanical method is unreliable for this chemical system, rendering the current results untrustworthy.",
+      "suggested_adjustments": [
+        "Re-calibrate the potential energy surface or switch to a higher-level DFT functional (e.g., hybrid functionals with dispersion corrections) to reduce the calibration error.",
+        "Perform a conformational search of the pyridine inhibitor on the a-SiN surface to ensure the global minimum adsorption energy is captured.",
+        "Expand the surface ensemble size for the a-SiO2 substrate to better account for silanol density variations.",
+        "Evaluate alternative pyridine derivatives with stronger steric hindrance or different electronic substituents to improve the differential blocking ratio."
+      ]
+    },
+    {
       "decision": "accept",
-      "critique": "Verdict 'supported' at confidence 0.56 is decisive; accepting.",
+      "critique": "Iteration budget reached; accepting latest result.",
       "suggested_adjustments": []
     }
   ],
-  "iterations": 1,
+  "iterations": 2,
   "agentic_pattern": "Supervisor + Swarm + ReAct + Reflection",
   "methodology_citations": [
     "Parsons & Clark, Area-selective deposition, Chem. Mater. 2020, 32, 4920",
@@ -254,5 +410,5 @@
     "Fine-tuning foundation MLIPs (barrier underestimation), arXiv:2502.15582",
     "Seal et al., agentic Supervisor/Swarm/ReAct/Reflection, arXiv:2510.27130"
   ],
-  "generated_at": "2026-07-01T11:28:55.795626+00:00"
+  "generated_at": "2026-07-01T17:51:46.310970+00:00"
 }

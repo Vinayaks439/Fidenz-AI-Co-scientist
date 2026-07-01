@@ -236,6 +236,116 @@ def form_bridges(atoms, material_key: str, target_bridge_density: float,
     return atoms, bridges
 
 
+def _declash(atoms, min_dist: float = 0.9, max_passes: int = 20) -> None:
+    """Separate genuine atomic overlaps (< ``min_dist``) without disturbing real bonds.
+
+    Real bonds (O-H ~0.96, Si-O ~1.63) sit above ``min_dist``, so this only nudges apart
+    atom pairs that the geometric passivation crammed together on a disordered surface,
+    clearing the descriptor gate's overlap check.
+    """
+    for _ in range(max_passes):
+        pos = atoms.get_positions()
+        d = atoms.get_all_distances(mic=True)
+        np.fill_diagonal(d, 1e9)
+        if float(d.min()) >= min_dist:
+            break
+        moved = np.zeros_like(pos)
+        for i in range(len(atoms)):
+            for j in np.where(d[i] < min_dist)[0]:
+                v = pos[i] - pos[j]
+                n = float(np.linalg.norm(v))
+                if n < 1e-6:
+                    v = np.random.default_rng(i * 131 + j).normal(size=3)
+                    n = float(np.linalg.norm(v))
+                moved[i] += 0.6 * (min_dist - d[i, j]) * v / n
+        atoms.set_positions(pos + moved)
+
+
+def _target_terminals(atoms, material_key: str, target_density: float):
+    """Adjust top-surface terminal (silanol/amine) coverage to ``target_density``.
+
+    Amorphous experimental surfaces carry a characteristic hydroxyl/amine coverage. The
+    geometric passivation only caps dangling bonds, so the achieved coverage is whatever
+    the local geometry happens to yield. Here we add silanol/amine groups on bare top
+    Si (or remove excess terminal groups) until the countable surface density matches the
+    Kim et al. 2026 target, which is what lets the fidelity gate pass on a real slab.
+    """
+    from ase import Atom
+
+    from .fidelity_gate import SurfaceFidelityGate
+
+    gate = SurfaceFidelityGate(material_key)
+    atoms = atoms.copy()
+    cell = atoms.get_cell()
+    area_nm2 = float(np.linalg.norm(np.cross(cell[0], cell[1]))) / 100.0
+    want = max(1, int(round(target_density * area_nm2)))
+    is_oxide = material_key == "SiO2"
+
+    for _ in range(400):
+        n_have, _, _ = gate.count_sites(atoms)
+        if n_have == want:
+            break
+        pos = atoms.get_positions()
+        z = pos[:, 2]
+        zmax = float(z.max())
+        nums = atoms.numbers
+        if n_have < want:
+            # Add a terminal group on the highest top-surface Si with the fewest terminals.
+            si = [i for i in range(len(atoms)) if nums[i] == 14 and z[i] >= zmax - 3.5]
+            if not si:
+                break
+            def terminal_load(i):
+                d = atoms.get_distances(i, list(range(len(atoms))), mic=True)
+                return sum(1 for j in range(len(atoms))
+                           if nums[j] in (8, 7) and d[j] < 2.0)
+            si.sort(key=lambda i: (terminal_load(i), -z[i]))
+
+            def clear_site(heavy_pos, min_gap=1.3):
+                dd = np.linalg.norm(pos - heavy_pos, axis=1)
+                return float(dd.min()) >= min_gap
+
+            placed = False
+            for i in si:
+                base = pos[i]
+                bond = _SI_O if is_oxide else _SI_N
+                # try a few tilt directions so the new group avoids existing atoms
+                for dx, dy in ((0.0, 0.0), (0.6, 0.0), (-0.6, 0.0), (0.0, 0.6), (0.0, -0.6)):
+                    heavy = base + np.array([dx, dy, bond])
+                    if clear_site(heavy):
+                        if is_oxide:
+                            atoms.append(Atom("O", heavy))
+                            atoms.append(Atom("H", heavy + np.array([0.4, 0.0, 0.7 * _O_H])))
+                        else:
+                            atoms.append(Atom("N", heavy))
+                            atoms.append(Atom("H", heavy + np.array([0.4, 0.0, 0.6 * _N_H])))
+                            atoms.append(Atom("H", heavy + np.array([-0.4, 0.0, 0.6 * _N_H])))
+                        placed = True
+                        break
+                if placed:
+                    break
+            if not placed:
+                break
+        else:
+            # Remove one surface terminal group (its heavy atom + attached H).
+            heavy = 8 if is_oxide else 7
+            targets = []
+            for k in range(len(atoms)):
+                if nums[k] != heavy or z[k] < zmax - 3.5:
+                    continue
+                d = atoms.get_distances(k, list(range(len(atoms))), mic=True)
+                n_si = sum(1 for j in range(len(atoms)) if nums[j] == 14 and d[j] < 2.0)
+                hs = [j for j in range(len(atoms)) if nums[j] == 1 and d[j] < 1.3]
+                if n_si == 1 and hs:  # a terminal silanol / amine
+                    targets.append((k, hs))
+            if not targets:
+                break
+            targets.sort(key=lambda t: -z[t[0]])
+            k, hs = targets[0]
+            for idx in sorted([k, *hs], reverse=True):
+                del atoms[idx]
+    return atoms
+
+
 def saturate_surface(
     atoms,
     material_key: str,
@@ -259,6 +369,13 @@ def saturate_surface(
     bridge_target = targets.get("O_bridge" if material_key == "SiO2" else "NH_bridge", 0.0)
     atoms, n_bridges = form_bridges(atoms, material_key, bridge_target, seed=seed,
                                     coord_cutoff=coord_cutoff)
+
+    # Bring terminal (silanol/amine) coverage to the Kim et al. 2026 experimental density.
+    terminal_target = targets.get("OH" if material_key == "SiO2" else "NH2")
+    if terminal_target:
+        atoms = _target_terminals(atoms, material_key, terminal_target)
+
+    _declash(atoms)  # clear passivation-induced overlaps before the descriptor gate
 
     gate = SurfaceFidelityGate(material_key)
     n_terminal, area_nm2, site_densities = gate.count_sites(atoms)

@@ -1,167 +1,154 @@
 {
   "hypothesis": {
-    "statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+    "statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
     "growth_surface": "a-SiO2",
     "non_growth_surface": "a-SiN",
-    "inhibitor": "acetic acid",
+    "inhibitor": "aniline",
     "precursor": "BDEAS",
     "target_film": "SiOx",
     "target_thickness_nm": 10.0,
     "target_selectivity": 0.9,
     "provenance_refs": [
-      "mock:030c07b09e5d",
-      "mock:05c19ce21ee0",
-      "mock:0971be21e402",
-      "mock:255973a5c3fe",
-      "mock:2e7bcae76b27"
+      "crossref:10.2139/ssrn.6097349",
+      "seed_asald:parsons-clark-2020"
     ]
   },
   "surface_ensemble": {
-    "n_surfaces_gs": 5,
-    "n_surfaces_ngs": 5,
+    "n_surfaces_gs": 1,
+    "n_surfaces_ngs": 1,
     "fidelity_reports": [
       {
         "material": "SiO2",
-        "site_density_per_nm2": 1.222,
+        "site_density_per_nm2": 1.883,
         "acceptance_band": [
-          0.35,
-          2.5
+          4.5,
+          7.5
         ],
-        "n_sites": 11,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 42
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.222,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 11,
-        "area_nm2": 9.0,
-        "passed": true,
+        "site_densities": {
+          "OH": 1.883,
+          "O_bridge": 37.655,
+          "NH2": 0.0,
+          "NH_bridge": 0.0
+        },
+        "site_type_checks": {
+          "OH": {
+            "density": 1.883,
+            "band": [
+              4.5,
+              7.5
+            ],
+            "passed": false
+          },
+          "O_bridge": {
+            "density": 37.655,
+            "band": [
+              2.0,
+              6.0
+            ],
+            "passed": false
+          }
+        },
+        "crystalline_reference": {
+          "OH": 9.57
+        },
+        "n_sites": 2,
+        "area_nm2": 1.062,
+        "density_passed": false,
+        "site_types_passed": false,
+        "descriptors_passed": true,
+        "descriptor_reasons": [],
+        "passed": false,
         "seed": 43
       },
       {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.444,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 13,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 44
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.111,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 10,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 45
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.111,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 10,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 46
-      },
-      {
         "material": "SiN",
-        "site_density_per_nm2": 3.222,
+        "site_density_per_nm2": 4.537,
         "acceptance_band": [
-          1.0,
-          6.0
+          2.5,
+          5.5
         ],
-        "n_sites": 29,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1042
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.111,
-        "acceptance_band": [
-          1.0,
-          6.0
+        "site_densities": {
+          "OH": 0.0,
+          "O_bridge": 0.0,
+          "NH2": 4.537,
+          "NH_bridge": 6.806
+        },
+        "site_type_checks": {
+          "NH2": {
+            "density": 4.537,
+            "band": [
+              2.5,
+              5.5
+            ],
+            "passed": true
+          },
+          "NH_bridge": {
+            "density": 6.806,
+            "band": [
+              2.0,
+              5.5
+            ],
+            "passed": false
+          }
+        },
+        "crystalline_reference": {
+          "NH2": 5.97
+        },
+        "n_sites": 4,
+        "area_nm2": 0.882,
+        "density_passed": true,
+        "site_types_passed": false,
+        "descriptors_passed": false,
+        "descriptor_reasons": [
+          "atomic overlap: min_distance 0.72 < 0.75"
         ],
-        "n_sites": 19,
-        "area_nm2": 9.0,
-        "passed": true,
+        "passed": false,
         "seed": 1043
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.556,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 23,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1044
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.0,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 18,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1045
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.333,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 21,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1046
       }
     ],
-    "all_surfaces_passed_gate": true
+    "all_surfaces_passed_gate": false
   },
   "inhibitor_adsorption": {
-    "engine": "tier0-literature-priors",
-    "dE_ngs_mean_eV": -1.013,
-    "dE_ngs_std_eV": 0.0958,
-    "dE_gs_mean_eV": -0.1835,
-    "dE_gs_std_eV": 0.0565,
-    "theta_eq_ngs_mean": 1.0,
-    "theta_eq_gs_mean": 0.9784,
-    "blocking_ngs_mean": 0.9902,
-    "blocking_gs_mean": 0.0453,
-    "differential_blocking": 0.9449,
-    "differential_selectivity_signal": 0.8295
+    "engine": "mace-mp@cpu",
+    "dE_ngs_mean_eV": -0.2729,
+    "dE_ngs_std_eV": 0.0,
+    "dE_gs_mean_eV": -3.2621,
+    "dE_gs_std_eV": 0.0,
+    "theta_eq_ngs_mean": 0.9994,
+    "theta_eq_gs_mean": 1.0,
+    "blocking_ngs_mean": 0.0935,
+    "blocking_gs_mean": 0.6171,
+    "differential_blocking": -0.5236,
+    "differential_selectivity_signal": -2.9892,
+    "configs_ngs": [
+      {
+        "seed": 1043,
+        "dE_ads_eV": -0.2729,
+        "n_configs": 1,
+        "regime": "physisorption"
+      }
+    ],
+    "configs_gs": [
+      {
+        "seed": 43,
+        "dE_ads_eV": -3.2621,
+        "n_configs": 1,
+        "regime": "chemisorption"
+      }
+    ],
+    "rsa_coverage": {
+      "inhibitor_footprint_diam_nm": 0.913,
+      "rsa_jamming_fraction_ngs": 0.743,
+      "rsa_jamming_fraction_gs": 0.6171
+    },
+    "site_resolved": null
   },
   "precursor_barrier": null,
   "selectivity": {
     "metric": "S = (Thk_GS - Thk_NGS)/(Thk_GS + Thk_NGS)",
     "target": 0.9,
     "target_thickness_nm": 10.0,
-    "S_at_target_mean": 0.9231,
+    "S_at_target_mean": 0.0,
     "S_at_target_std": 0.0,
     "curve": {
       "cycle": [
@@ -252,107 +239,114 @@
       ],
       "thk_ngs_nm": [
         0.0,
-        0.04,
-        0.08,
-        0.12,
-        0.16,
-        0.2,
-        0.24,
-        0.28,
-        0.32,
-        0.36,
-        0.4,
-        0.568,
-        1.568,
-        2.568,
-        3.568,
-        4.568,
-        5.568,
-        6.568,
-        7.568,
-        8.568,
-        9.568,
-        10.568,
-        11.568,
-        12.568,
-        13.568,
-        14.568,
-        15.568,
-        16.568,
-        17.568,
-        18.568,
-        19.568,
-        20.568,
-        21.568,
-        22.568,
-        23.568,
-        24.568,
-        25.568,
-        26.568,
-        27.568,
-        28.568,
-        29.568
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+        12.0,
+        13.0,
+        14.0,
+        15.0,
+        16.0,
+        17.0,
+        18.0,
+        19.0,
+        20.0,
+        21.0,
+        22.0,
+        23.0,
+        24.0,
+        25.0,
+        26.0,
+        27.0,
+        28.0,
+        29.0,
+        30.0,
+        31.0,
+        32.0,
+        33.0,
+        34.0,
+        35.0,
+        36.0,
+        37.0,
+        38.0,
+        39.0,
+        40.0
       ],
       "S": [
         0.0,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9231,
-        0.9017,
-        0.7688,
-        0.6701,
-        0.5938,
-        0.5331,
-        0.4837,
-        0.4426,
-        0.408,
-        0.3784,
-        0.3528,
-        0.3304,
-        0.3108,
-        0.2933,
-        0.2777,
-        0.2636,
-        0.251,
-        0.2394,
-        0.2289,
-        0.2193,
-        0.2105,
-        0.2023,
-        0.1947,
-        0.1877,
-        0.1812,
-        0.1751,
-        0.1694,
-        0.1641,
-        0.1591,
-        0.1544,
-        0.1499
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
       ]
     }
   },
   "calibration_vs_literature": {
-    "predicted_dE_ngs_eV": -1.013,
-    "literature_dE_ngs_eV": -1.0,
-    "abs_error_eV": 0.013,
-    "validity_flag": "ok"
+    "predicted_dE_ngs_eV": -0.2729,
+    "literature_dE_ngs_eV": -3.59,
+    "abs_error_eV": 3.3171,
+    "prior_source": "kg-mined",
+    "prior_extrapolated": true,
+    "prior_source_ids": [
+      "crossref:10.1002/kin.21597",
+      "seed_asald:tezsevin-2023"
+    ],
+    "validity_flag": "review"
   },
-  "verdict": "supported",
+  "novel_compound": null,
+  "verdict": "rejected",
   "provenance": {
-    "engine": "tier0-literature-priors",
-    "compute_tier": 0,
-    "mlip_model": null,
-    "mlip_device": null,
+    "engine": "mace-mp@cpu",
+    "compute_tier": 1,
+    "mlip_model": "mace-mp",
+    "mlip_device": "cpu",
     "temperature_K": 423.0,
     "dose_ratio": 1.0,
-    "ensemble_n": 5,
-    "seed": 42
+    "ensemble_n": 1,
+    "seed": 43
   }
 }

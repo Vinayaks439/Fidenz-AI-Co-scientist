@@ -1,151 +1,199 @@
 {
   "growth_surface": {
     "material": "SiO2",
-    "n_surfaces": 5,
-    "target_density_per_nm2": 1.15,
+    "n_surfaces": 1,
+    "target_density_per_nm2": 6.19,
     "acceptance_band": [
-      0.35,
-      2.5
+      4.5,
+      7.5
     ],
-    "site_density_mean": 1.222,
-    "site_density_std": 0.122,
-    "n_passed": 5,
-    "all_passed": true,
+    "site_density_mean": 1.883,
+    "site_density_std": 0.0,
+    "n_passed": 0,
+    "all_passed": false,
+    "slab_provenance": {
+      "source": "procedural-crystalline",
+      "phase": "alpha-quartz",
+      "miller_index": [
+        1,
+        0,
+        0
+      ],
+      "supercell": [
+        2,
+        2
+      ],
+      "n_atoms": 72,
+      "area_nm2": 1.062,
+      "cap_material": "SiO2",
+      "cap_area_nm2": 1.062,
+      "cap_n_sites": 2,
+      "cap_site_density_per_nm2": 1.883,
+      "cap_site_densities": {
+        "OH": 1.883,
+        "O_bridge": 37.655,
+        "NH2": 0.0,
+        "NH_bridge": 0.0
+      },
+      "cap_n_bridges_formed": 3,
+      "cap_target_densities": {
+        "OH": 6.40769641306694,
+        "O_bridge": 3.86
+      },
+      "cap_passivation": "table1_kim2026"
+    },
+    "descriptors_example": {
+      "mean_coordination": 4.0,
+      "min_coordination": 1,
+      "max_coordination": 7,
+      "roughness_A": 1.166,
+      "min_distance_A": 0.96,
+      "rdf_first_peak_A": 2.625,
+      "n_atoms": 74
+    },
     "reports": [
       {
         "material": "SiO2",
-        "site_density_per_nm2": 1.222,
+        "site_density_per_nm2": 1.883,
         "acceptance_band": [
-          0.35,
-          2.5
+          4.5,
+          7.5
         ],
-        "n_sites": 11,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 42
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.222,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 11,
-        "area_nm2": 9.0,
-        "passed": true,
+        "site_densities": {
+          "OH": 1.883,
+          "O_bridge": 37.655,
+          "NH2": 0.0,
+          "NH_bridge": 0.0
+        },
+        "site_type_checks": {
+          "OH": {
+            "density": 1.883,
+            "band": [
+              4.5,
+              7.5
+            ],
+            "passed": false
+          },
+          "O_bridge": {
+            "density": 37.655,
+            "band": [
+              2.0,
+              6.0
+            ],
+            "passed": false
+          }
+        },
+        "crystalline_reference": {
+          "OH": 9.57
+        },
+        "n_sites": 2,
+        "area_nm2": 1.062,
+        "density_passed": false,
+        "site_types_passed": false,
+        "descriptors_passed": true,
+        "descriptor_reasons": [],
+        "passed": false,
         "seed": 43
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.444,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 13,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 44
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.111,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 10,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 45
-      },
-      {
-        "material": "SiO2",
-        "site_density_per_nm2": 1.111,
-        "acceptance_band": [
-          0.35,
-          2.5
-        ],
-        "n_sites": 10,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 46
       }
     ]
   },
   "non_growth_surface": {
     "material": "SiN",
-    "n_surfaces": 5,
-    "target_density_per_nm2": 2.5,
+    "n_surfaces": 1,
+    "target_density_per_nm2": 3.91,
     "acceptance_band": [
-      1.0,
-      6.0
+      2.5,
+      5.5
     ],
-    "site_density_mean": 2.444,
-    "site_density_std": 0.433,
-    "n_passed": 5,
-    "all_passed": true,
+    "site_density_mean": 4.537,
+    "site_density_std": 0.0,
+    "n_passed": 0,
+    "all_passed": false,
+    "slab_provenance": {
+      "source": "procedural-crystalline",
+      "phase": "beta-Si3N4",
+      "miller_index": [
+        1,
+        0,
+        0
+      ],
+      "supercell": [
+        2,
+        2
+      ],
+      "n_atoms": 112,
+      "area_nm2": 0.882,
+      "cap_material": "SiN",
+      "cap_area_nm2": 0.882,
+      "cap_n_sites": 4,
+      "cap_site_density_per_nm2": 4.537,
+      "cap_site_densities": {
+        "OH": 0.0,
+        "O_bridge": 0.0,
+        "NH2": 4.537,
+        "NH_bridge": 6.806
+      },
+      "cap_n_bridges_formed": 0,
+      "cap_target_densities": {
+        "NH2": 3.3421217367580534,
+        "NH_bridge": 3.53
+      },
+      "cap_passivation": "table1_kim2026"
+    },
+    "descriptors_example": {
+      "mean_coordination": 4.227,
+      "min_coordination": 2,
+      "max_coordination": 9,
+      "roughness_A": 2.021,
+      "min_distance_A": 0.72,
+      "rdf_first_peak_A": 2.825,
+      "n_atoms": 132
+    },
     "reports": [
       {
         "material": "SiN",
-        "site_density_per_nm2": 3.222,
+        "site_density_per_nm2": 4.537,
         "acceptance_band": [
-          1.0,
-          6.0
+          2.5,
+          5.5
         ],
-        "n_sites": 29,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1042
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.111,
-        "acceptance_band": [
-          1.0,
-          6.0
+        "site_densities": {
+          "OH": 0.0,
+          "O_bridge": 0.0,
+          "NH2": 4.537,
+          "NH_bridge": 6.806
+        },
+        "site_type_checks": {
+          "NH2": {
+            "density": 4.537,
+            "band": [
+              2.5,
+              5.5
+            ],
+            "passed": true
+          },
+          "NH_bridge": {
+            "density": 6.806,
+            "band": [
+              2.0,
+              5.5
+            ],
+            "passed": false
+          }
+        },
+        "crystalline_reference": {
+          "NH2": 5.97
+        },
+        "n_sites": 4,
+        "area_nm2": 0.882,
+        "density_passed": true,
+        "site_types_passed": false,
+        "descriptors_passed": false,
+        "descriptor_reasons": [
+          "atomic overlap: min_distance 0.72 < 0.75"
         ],
-        "n_sites": 19,
-        "area_nm2": 9.0,
-        "passed": true,
+        "passed": false,
         "seed": 1043
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.556,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 23,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1044
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.0,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 18,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1045
-      },
-      {
-        "material": "SiN",
-        "site_density_per_nm2": 2.333,
-        "acceptance_band": [
-          1.0,
-          6.0
-        ],
-        "n_sites": 21,
-        "area_nm2": 9.0,
-        "passed": true,
-        "seed": 1046
       }
     ]
   }

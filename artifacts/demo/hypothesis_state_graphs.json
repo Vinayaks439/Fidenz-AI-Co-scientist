@@ -2,458 +2,114 @@
   "hypotheses": [
     {
       "id": "H01",
-      "statement": "A precursor-based small-molecule inhibitor selectively passivates the non-growth surface while surface grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of precursor and surface in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
+      "statement": "A pyridine small-molecule inhibitor selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
+      "rationale": "Pyridine acts as a Lewis base that preferentially coordinates to the nitrogen-rich sites of a-SiN, blocking precursor nucleation, while a-SiO2 remains relatively inert to pyridine adsorption, allowing for selective SiOx growth.",
+      "novelty_assessment": "This leverages specific pyridine-catalyzed inhibition mechanisms on nitride surfaces which have been recently explored for oxide/nitride selectivity.",
       "reasoning_trace": [
-        "Selected central concept precursor.",
-        "Paired with surface.",
-        "Instantiated hypothesis template."
+        "Identify a-SiN as the non-growth surface.",
+        "Select pyridine as a known inhibitor for nitride surfaces.",
+        "Utilize BDEAS as a standard silicon precursor for SiO2.",
+        "Target 90% selectivity at 10 nm thickness."
       ],
       "state_graph": {
         "supporting_evidence": [
           {
-            "statement": "Literature links precursor to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+            "statement": "Pyridine-catalyzed inhibition enhances oxide/nitride selectivity in AS-ALD.",
             "stance": "supporting",
             "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
+              "crossref:10.2139/ssrn.6097349"
             ],
-            "strength": 0.6
+            "strength": 0.9
           }
         ],
         "contradicting_evidence": [
           {
-            "statement": "Some sources do not isolate precursor's specific effect.",
+            "statement": "Pyridine may physisorb on SiO2, potentially reducing growth rates on the target surface.",
             "stance": "contradicting",
             "source_ids": [
-              "mock:255973a5c3fe"
+              "seed_asald:parsons-clark-2020"
             ],
             "strength": 0.4
           }
         ],
         "assumptions": [
-          "precursor is measurable in the relevant system."
+          "Pyridine binding energy to a-SiN is significantly higher than to a-SiO2.",
+          "BDEAS precursor does not displace pyridine at the target growth temperature."
         ],
         "related_concept_ids": [
-          "precursor",
-          "surface"
+          "inhibitor",
+          "a-sin",
+          "a-sio2",
+          "atomic-layer",
+          "selectivity"
         ],
-        "confidence": 0.491,
+        "confidence": 0.85,
         "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
+          "crossref:10.2139/ssrn.6097349",
+          "seed_asald:parsons-clark-2020"
         ]
       },
       "scores": {
         "evidence_quality": 1.0,
-        "novelty": 0.78,
+        "novelty": 0.968,
         "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
+        "confidence": 0.85,
+        "composite": 0.855
       }
     },
     {
       "id": "H02",
-      "statement": "Chemisorption of surface on the non-growth surface blocks growth precursor adsorption, delaying nucleation enough to reach the selectivity target for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of surface and growth in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
+      "statement": "A methanesulfonic acid (MSA) inhibitor selectively passivates a-SiN sites, enabling Si(OEt)4-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm.",
+      "rationale": "MSA is known to effectively inhibit nucleation on oxide surfaces; by applying it to a-SiN, we hypothesize that the acidic protons interact with the Si-N bonds to form a stable passivating layer that prevents Si(OEt)4 adsorption.",
+      "novelty_assessment": "Extends the use of MSA from Al2O3 processes to SiO2/SiN systems.",
       "reasoning_trace": [
-        "Selected central concept surface.",
-        "Paired with growth.",
-        "Instantiated hypothesis template."
+        "MSA is a proven inhibitor for Al2O3.",
+        "Acidic inhibitors can passivate surface sites via hydrogen bonding or chemisorption.",
+        "Si(OEt)4 is a common precursor for SiO2."
       ],
       "state_graph": {
         "supporting_evidence": [
           {
-            "statement": "Literature links surface to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
+            "statement": "Methanesulfonic acid is a successful inhibitor for area-selective ALD of Al2O3.",
             "stance": "supporting",
             "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
+              "seed_asald:msa-al2o3-2024"
             ],
-            "strength": 0.6
+            "strength": 0.8
           }
         ],
         "contradicting_evidence": [
           {
-            "statement": "Some sources do not isolate surface's specific effect.",
+            "statement": "MSA may etch the a-SiN surface depending on the temperature and moisture content.",
             "stance": "contradicting",
             "source_ids": [
-              "mock:255973a5c3fe"
+              "seed_asald:parsons-clark-2020"
             ],
-            "strength": 0.4
+            "strength": 0.5
           }
         ],
         "assumptions": [
-          "surface is measurable in the relevant system."
+          "MSA does not significantly etch the a-SiN surface.",
+          "The Si(OEt)4 precursor is sensitive to the MSA blocking layer."
         ],
         "related_concept_ids": [
-          "surface",
-          "growth"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H03",
-      "statement": "growth and area-selective form a compatible inhibitor/precursor pair whose differential adsorption drives area-selective growth in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of growth and area-selective in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept growth.",
-        "Paired with area-selective.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links growth to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate growth's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "growth is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "growth",
-          "area-selective"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H04",
-      "statement": "The selectivity in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm is governed by the differential blocking coverage of area-selective between the growth and non-growth surfaces rather than by selectivity alone.",
-      "rationale": "Derived from co-occurrence of area-selective and selectivity in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept area-selective.",
-        "Paired with selectivity.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links area-selective to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate area-selective's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "area-selective is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "area-selective",
-          "selectivity"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H05",
-      "statement": "selectivity is a viable non-growth-surface passivant enabling deposition-based selective deposition in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of selectivity and deposition in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept selectivity.",
-        "Paired with deposition.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links selectivity to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate selectivity's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "selectivity is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "selectivity",
+          "inhibitor",
+          "a-sin",
+          "a-sio2",
           "deposition"
         ],
-        "confidence": 0.491,
+        "confidence": 0.7,
         "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
+          "seed_asald:msa-al2o3-2024",
+          "seed_asald:parsons-clark-2020"
         ]
       },
       "scores": {
         "evidence_quality": 1.0,
-        "novelty": 0.78,
+        "novelty": 0.957,
         "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H06",
-      "statement": "A deposition-based small-molecule inhibitor selectively passivates the non-growth surface while while grows the target film on the growth surface, achieving >=90% selectivity at 10 nm for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of deposition and while in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept deposition.",
-        "Paired with while.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links deposition to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate deposition's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "deposition is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "deposition",
-          "while"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H07",
-      "statement": "Chemisorption of while on the non-growth surface blocks film precursor adsorption, delaying nucleation enough to reach the selectivity target for passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of while and film in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept while.",
-        "Paired with film.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links while to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate while's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "while is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "while",
-          "film"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
-      }
-    },
-    {
-      "id": "H08",
-      "statement": "film and area-selective deposition form a compatible inhibitor/precursor pair whose differential adsorption drives area-selective growth in passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-      "rationale": "Derived from co-occurrence of film and area-selective deposition in the knowledge graph.",
-      "novelty_assessment": "Heuristic novelty estimate (offline mode).",
-      "reasoning_trace": [
-        "Selected central concept film.",
-        "Paired with area-selective deposition.",
-        "Instantiated hypothesis template."
-      ],
-      "state_graph": {
-        "supporting_evidence": [
-          {
-            "statement": "Literature links film to passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm.",
-            "stance": "supporting",
-            "source_ids": [
-              "mock:030c07b09e5d",
-              "mock:05c19ce21ee0",
-              "mock:0971be21e402"
-            ],
-            "strength": 0.6
-          }
-        ],
-        "contradicting_evidence": [
-          {
-            "statement": "Some sources do not isolate film's specific effect.",
-            "stance": "contradicting",
-            "source_ids": [
-              "mock:255973a5c3fe"
-            ],
-            "strength": 0.4
-          }
-        ],
-        "assumptions": [
-          "film is measurable in the relevant system."
-        ],
-        "related_concept_ids": [
-          "film",
-          "area-selective-deposition"
-        ],
-        "confidence": 0.491,
-        "references": [
-          "mock:030c07b09e5d",
-          "mock:05c19ce21ee0",
-          "mock:0971be21e402",
-          "mock:255973a5c3fe",
-          "mock:2e7bcae76b27"
-        ]
-      },
-      "scores": {
-        "evidence_quality": 1.0,
-        "novelty": 0.78,
-        "consistency": 0.5,
-        "confidence": 0.491,
-        "composite": 0.718
+        "confidence": 0.7,
+        "composite": 0.814
       }
     }
   ]

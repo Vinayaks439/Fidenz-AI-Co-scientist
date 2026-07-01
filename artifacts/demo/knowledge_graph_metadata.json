@@ -1,16 +1,26 @@
 {
-  "num_concepts": 12,
-  "num_relations": 11,
-  "num_citations": 38,
+  "num_concepts": 56,
+  "num_relations": 69,
+  "num_citations": 362,
   "domains": [
+    "ALD Precursor Growth",
+    "Amorphous Surface Characterization",
     "Amorphous surface models",
     "Inhibitors and passivation",
+    "Passivation Chemistry",
     "Precursors and film growth",
+    "Selectivity Mechanisms",
     "Selectivity mechanisms"
   ],
-  "density": 0.0833,
+  "density": 0.0224,
   "concept_types": {
-    "concept": 12
+    "concept": 24,
+    "inhibitor": 10,
+    "surface": 5,
+    "surface_site": 4,
+    "mechanism": 10,
+    "film": 1,
+    "selectivity_result": 2
   },
-  "generated_at": "2026-07-01T11:28:11.726957+00:00"
+  "generated_at": "2026-07-01T17:05:36.355005+00:00"
 }

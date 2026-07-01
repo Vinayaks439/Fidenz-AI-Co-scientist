@@ -21,7 +21,7 @@ def compile_pdf(tex_path: Path) -> Path | None:
     pdf_path = tex_path.with_suffix(".pdf")
 
     toolchains = [
-        ["tectonic", str(tex_path)],
+        ["tectonic", tex_path.name],
         ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name],
         ["pdflatex", "-interaction=nonstopmode", tex_path.name],
     ]

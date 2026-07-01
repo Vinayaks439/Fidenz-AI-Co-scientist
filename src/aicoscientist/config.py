@@ -65,7 +65,11 @@ class Settings(BaseSettings):
     slab_source: str = Field(
         default="procedural",
         alias="SLAB_SOURCE",
-        description="procedural = crystalline-derived hydroxylated slab; toy = legacy grid",
+        description=(
+            "procedural = crystalline-derived hydroxylated slab (default; passes the "
+            "fidelity gate); amorphous = geometric melt-quench disorder (opt-in, flagged "
+            "by the descriptor gate as needing MLIP relaxation); toy = legacy grid"
+        ),
     )
     slab_miller: str = Field(default="1,0,0", alias="SLAB_MILLER")
     slab_supercell_str: str = Field(default="2,2", alias="SLAB_SUPERCELL")
@@ -87,6 +91,16 @@ class Settings(BaseSettings):
         default=False, alias="USE_INHIBITOR_PROPOSER"
     )
     n_proposed_inhibitors: int = Field(default=3, alias="N_PROPOSED_INHIBITORS")
+    # AI experiment planner (Layer 3): let the LLM decide, per closed-loop iteration,
+    # WHICH inhibitor to test and at WHAT compute tier (cheap Tier-0 screen vs. expensive
+    # real-MLIP Tier-1), grounded in the deep research + prior reflection. When disabled,
+    # the designer falls back to the deterministic rank-index + global COMPUTE_TIER.
+    use_ai_planner: bool = Field(default=False, alias="USE_AI_PLANNER")
+    ai_planner_max_tier: int = Field(
+        default=1,
+        alias="AI_PLANNER_MAX_TIER",
+        description="ceiling tier the AI planner may request per iteration (0/1/2)",
+    )
     # Kim et al. 2026 site-resolved reactivity (deltaEr + Ea per site type)
     use_site_resolved_reactivity: bool = Field(
         default=True, alias="USE_SITE_RESOLVED_REACTIVITY"

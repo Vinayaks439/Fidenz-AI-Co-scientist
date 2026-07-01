@@ -2,23 +2,33 @@
   "idea": "passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm",
   "run_id": "demo",
   "domains": [
-    "Amorphous surface models",
-    "Inhibitors and passivation",
-    "Precursors and film growth",
-    "Selectivity mechanisms"
+    "Amorphous Surface Characterization",
+    "Passivation Chemistry",
+    "ALD Precursor Growth",
+    "Selectivity Mechanisms"
   ],
   "sources_queried": [
-    "mock",
+    "arxiv",
+    "openalex",
+    "crossref",
+    "pubmed",
+    "semantic_scholar",
     "seed_asald"
   ],
   "reasoning_trace": [
     "Decomposed idea into 4 research domains: Amorphous surface models, Inhibitors and passivation, Precursors and film growth, Selectivity mechanisms",
-    "Swarm 'Amorphous surface models': 27 citations, 12 concepts, 11 relations.",
-    "Swarm 'Inhibitors and passivation': 27 citations, 12 concepts, 11 relations.",
-    "Swarm 'Precursors and film growth': 26 citations, 12 concepts, 11 relations.",
-    "Swarm 'Selectivity mechanisms': 27 citations, 12 concepts, 11 relations.",
-    "Merged knowledge graph: 12 concepts, 11 relations from 41 citations.",
-    "Generated and ranked 8 competing hypotheses."
+    "Swarm 'Amorphous surface models': 44 citations, 25 concepts, 24 relations.",
+    "Swarm 'Inhibitors and passivation': 37 citations, 25 concepts, 24 relations.",
+    "Swarm 'Precursors and film growth': 44 citations, 25 concepts, 24 relations.",
+    "Swarm 'Selectivity mechanisms': 52 citations, 26 concepts, 24 relations.",
+    "Persisted 8 artifacts to artifacts/demo.",
+    "Decomposed idea into 4 research domains: Amorphous Surface Characterization, Passivation Chemistry, ALD Precursor Growth, Selectivity Mechanisms",
+    "Swarm 'Amorphous Surface Characterization': 82 citations, 20 concepts, 18 relations.",
+    "Swarm 'Passivation Chemistry': 83 citations, 19 concepts, 17 relations.",
+    "Swarm 'ALD Precursor Growth': 69 citations, 23 concepts, 18 relations.",
+    "Swarm 'Selectivity Mechanisms': 96 citations, 27 concepts, 34 relations.",
+    "Merged knowledge graph: 56 concepts, 69 relations from 374 citations.",
+    "Generated and ranked 2 competing hypotheses."
   ],
-  "generated_at": "2026-07-01T11:28:11.726661+00:00"
+  "generated_at": "2026-07-01T17:05:36.354213+00:00"
 }

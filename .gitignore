@@ -7,7 +7,7 @@ src/*.egg-info/
 .eggs/
 build/
 dist/
-
+graphify-out/
 # Virtual environments
 .venv/
 venv/

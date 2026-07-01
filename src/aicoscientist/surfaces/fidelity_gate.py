@@ -57,8 +57,13 @@ class SurfaceFidelityGate:
         self.material = self.key
         self.lo, self.hi = SITE_BANDS[self.key]
 
-    def count_sites_by_type(self, atoms) -> dict[str, int]:
+    def count_sites_by_type(self, atoms, surface_depth: float = 2.5) -> dict[str, int]:
         """Return per-site-type counts using an ``ase.neighborlist`` bond graph.
+
+        Only sites within ``surface_depth`` Angstrom of the top of the slab are counted:
+        the Kim et al. 2026 bands are *surface* densities, so bulk bridging O/N (which are
+        chemically identical to surface bridges) must be excluded or every real slab fails
+        the bridge-density gate. ``surface_depth`` ~ one terminal atomic layer.
 
         Site types (Kim et al. 2026):
           OH         -- silanol: O-H whose O binds exactly one Si
@@ -75,6 +80,9 @@ class SurfaceFidelityGate:
         Si = atomic_numbers["Si"]
         nums = atoms.numbers
 
+        z = atoms.get_positions()[:, 2]
+        z_cut = float(z.max()) - surface_depth  # count only the exposed top surface
+
         cutoffs = natural_cutoffs(atoms, mult=1.2)
         nl = NeighborList(cutoffs, self_interaction=False, bothways=True)
         nl.update(atoms)
@@ -84,15 +92,17 @@ class SurfaceFidelityGate:
             return [nums[j] for j in idx]
 
         counts = {"OH": 0, "O_bridge": 0, "NH2": 0, "NH_bridge": 0}
-        for k, z in enumerate(nums):
+        for k, zk in enumerate(nums):
+            if z[k] < z_cut:
+                continue
             types = neighbor_types(k)
-            if z == O:
+            if zk == O:
                 n_si = sum(1 for t in types if t == Si)
                 if H in types and n_si == 1:
                     counts["OH"] += 1
                 elif H not in types and n_si == 2:
                     counts["O_bridge"] += 1
-            elif z == N:
+            elif zk == N:
                 n_si = sum(1 for t in types if t == Si)
                 if H in types:
                     if n_si == 2:

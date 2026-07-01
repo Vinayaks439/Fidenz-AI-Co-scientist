@@ -1,36 +1,46 @@
 {
   "domain": "surface_reactivity",
   "method": "AS-ALD differential-reactivity protocol (ADR-009): inhibitor adsorption screen on a-SiN (NGS) vs a-SiO2 (GS) over a gated surface ensemble, blocking coverage -> nucleation delay -> S(N).",
-  "rationale": "'acetic acid' (carboxylic acid) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
+  "rationale": "'aniline' (aromatic amine) is predicted to chemisorb on the NGS and physisorb on the GS, giving a large differential blocking coverage.",
   "reasoning_trace": [
-    "Retrieved 7 inhibitor candidates grounded in the KG (criteria: selection_criteria.md).",
-    "Ranked by differential adsorption + volatility + removability; selected 'acetic acid' (rank 1).",
-    "Paired with precursor 'BDEAS' for target film SiOx."
+    "Prior sources merged (mode=auto): 5 KG-mined, 8 manual, 8 built-in defaults.",
+    "Retrieved 10 inhibitor candidates; ranked by differential adsorption + volatility + removability.",
+    "Selected 'aniline' (rank 1); dE_ngs from 'kg-mined' [extrapolated from another NGS material].",
+    "Paired with precursor 'BDEAS' for target film SiOx.",
+    "dE_ngs supported by citations: crossref:10.1002/kin.21597, seed_asald:tezsevin-2023.",
+    "AI planner chose Tier-1 (real MLIP confirmation): Given the previous failure and high calibration error, I am performing a high-fidelity Tier 1 validation of the committed aniline hypothesis on the a-SiN/a-SiO2 system. This will use the foundation-MLIP to accurately capture the adsorption energy on the actual 3D slab structures, bypassing the unreliable literature-prior estimates and testing the hypothesis under rigorous conditions.",
+    "Refinement: The experiment failed to meet selectivity and differential blocking thresholds, and the high calibration absolute error (2.348 eV) indicates that the underlying force field or quantum mechanical method is unreliable for this chemical system, rendering the current results untrustworthy."
   ],
   "parameters": {},
   "data_spec": {
-    "inhibitor": "acetic acid",
+    "inhibitor": "aniline",
     "precursor": "BDEAS",
     "growth_surface": "a-SiO2",
     "non_growth_surface": "a-SiN",
     "target_film": "SiOx",
     "target_thickness_nm": 10.0,
     "target_selectivity": 0.9,
-    "dE_ngs_eV": -1.0,
-    "dE_gs_eV": -0.2,
+    "inhibitor_smiles": null,
+    "dE_ngs_eV": -3.59,
+    "dE_gs_eV": -0.57,
     "dE_prior_std": 0.08,
-    "literature_dE_ngs_eV": -1.0,
+    "literature_dE_ngs_eV": -3.59,
     "temperature_K": 423.0,
     "dose_ratio": 1.0,
-    "ensemble_n": 5,
-    "compute_tier": 0,
+    "ensemble_n": 1,
+    "compute_tier": 1,
     "provenance_refs": [
-      "mock:030c07b09e5d",
-      "mock:05c19ce21ee0",
-      "mock:0971be21e402",
-      "mock:255973a5c3fe",
-      "mock:2e7bcae76b27"
-    ]
+      "crossref:10.2139/ssrn.6097349",
+      "seed_asald:parsons-clark-2020"
+    ],
+    "prior_source": "kg-mined",
+    "prior_extrapolated": true,
+    "prior_source_ids": [
+      "crossref:10.1002/kin.21597",
+      "seed_asald:tezsevin-2023"
+    ],
+    "site_reactivity": {},
+    "literature_Ea_ngs_eV": null
   },
   "success_criteria": [
     {
@@ -57,6 +67,6 @@
     "Only chemisorbed, purge-surviving inhibitor blocks the precursor.",
     "Selectivity is reported as mean +/- std over the surface ensemble."
   ],
-  "seed": 42,
-  "iteration": 0
+  "seed": 43,
+  "iteration": 1
 }
