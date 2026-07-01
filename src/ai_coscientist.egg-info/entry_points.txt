@@ -1,3 +1,0 @@
-[console_scripts]
-aicoscientist = aicoscientist.cli:main
-aicoscientist-validate = aicoscientist.cli_validate:main
