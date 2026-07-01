@@ -12,23 +12,40 @@ from __future__ import annotations
 import numpy as np
 
 # Physical acceptance bands for the descriptor gate (loose; catch pathological slabs).
-#   mean_coordination: near-tetrahedral bulk + under-coordinated surface -> ~2.5-4.5.
+#   mean_coordination: mean Si-network coordination (bonded O/N/H neighbours of Si).
+#     Tetrahedral SiO4/SiN4 bulk -> 4; passivated cleaved surface pulls it slightly
+#     below; melting/overlap pathology pushes it far outside.
 #   min_interatomic_distance: below this = atomic overlap (unphysical).
 DESCRIPTOR_BANDS: dict[str, dict] = {
-    "SiO2": {"mean_coordination": (2.3, 4.6), "min_distance_A": 0.75},
-    "SiN": {"mean_coordination": (2.3, 4.8), "min_distance_A": 0.75},
+    "SiO2": {"mean_coordination": (3.0, 4.6), "min_distance_A": 0.75},
+    "SiN": {"mean_coordination": (3.0, 4.8), "min_distance_A": 0.75},
 }
 
 
-def coordination_numbers(atoms, rcut: float = 2.0) -> dict:
-    """Mean nearest-neighbor coordination within ``rcut`` (Angstrom)."""
-    from ase.neighborlist import NeighborList
+def coordination_numbers(atoms) -> dict:
+    """Mean network coordination of the Si sublattice (bonded neighbours of Si).
+
+    Counting every atom with a flat distance cutoff inflates the metric with
+    non-bonded H...H / H...O contacts between neighbouring capping groups, so any
+    densely passivated slab looks "over-coordinated" even when its Si-O/Si-N
+    network is perfectly tetrahedral. The physically meaningful check is the Si
+    sublattice: ~4 bonded neighbours per Si in a healthy network, ~3+ at a
+    passivated surface, wildly off for melted/overlapping pathologies.
+    """
+    from ase.neighborlist import NeighborList, natural_cutoffs
 
     n = len(atoms)
-    cutoffs = [rcut / 2.0] * n
+    cutoffs = natural_cutoffs(atoms, mult=1.15)
     nl = NeighborList(cutoffs, self_interaction=False, bothways=True)
     nl.update(atoms)
-    coords = [len(nl.get_neighbors(i)[0]) for i in range(n)]
+    si = [i for i in range(n) if atoms.numbers[i] == 14]
+    # Only count chemically sensible Si bonds (O/N/H); ignore Si-Si close contacts.
+    coords = [
+        sum(1 for j in nl.get_neighbors(i)[0] if atoms.numbers[j] in (1, 7, 8))
+        for i in si
+    ]
+    if not coords:  # no Si (e.g. toy fragment) -- fall back to all-atom count
+        coords = [len(nl.get_neighbors(i)[0]) for i in range(n)]
     return {
         "mean_coordination": round(float(np.mean(coords)) if coords else 0.0, 3),
         "min_coordination": int(min(coords)) if coords else 0,

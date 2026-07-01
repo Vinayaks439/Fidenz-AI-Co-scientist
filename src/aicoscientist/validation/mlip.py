@@ -26,9 +26,14 @@ def make_calculator(kind: str = "mace-mp", device: str = "cpu"):
     if kind == "mace-mp":
         from mace.calculators import mace_mp
 
-        return mace_mp(
-            model="medium", dispersion=True, default_dtype="float64", device=device
-        )
+        try:  # D3 dispersion improves physisorption but needs the optional torch-dftd
+            return mace_mp(
+                model="medium", dispersion=True, default_dtype="float64", device=device
+            )
+        except (RuntimeError, ImportError, ModuleNotFoundError):
+            return mace_mp(
+                model="medium", dispersion=False, default_dtype="float64", device=device
+            )
     if kind == "mace-mh1":
         from mace.calculators import mace_mp
 
@@ -56,6 +61,24 @@ def relax(atoms, calc, fmax: float = 0.05, steps: int = 300, fix_bottom_frac: fl
     return atoms
 
 
+def relax_adsorbate(complex_, calc, n_slab: int, fmax: float = 0.05, steps: int = 200):
+    """Relax ONLY the adsorbate on a frozen slab; return ``(atoms, converged)``.
+
+    Freezing the whole slab is essential for meaningful dE_ads on geometric surfaces:
+    if the slab may move, the optimizer relieves built-in surface strain and that
+    reconstruction energy (eV-scale) contaminates the adsorption energy.
+    """
+    from ase.constraints import FixAtoms
+    from ase.optimize import LBFGS
+
+    atoms = complex_.copy()
+    atoms.calc = calc
+    atoms.set_constraint(FixAtoms(indices=list(range(n_slab))))
+    opt = LBFGS(atoms, logfile=None)
+    converged = bool(opt.run(fmax=fmax, steps=steps))
+    return atoms, converged
+
+
 def adsorption_energy(slab, molecule, calc, place_height: float = 2.2, site_xy=None) -> dict:
     """dE_ads = E(slab+mol) - E(slab) - E(mol_gas). Negative => binding.
 
@@ -76,7 +99,7 @@ def adsorption_energy(slab, molecule, calc, place_height: float = 2.2, site_xy=N
     if site_xy is None:
         site_xy = (slab_r.cell[0, 0] * 0.5, slab_r.cell[1, 1] * 0.5)
     add_adsorbate(complex_, molecule, height=place_height, position=site_xy)
-    complex_r = relax(complex_, calc)
+    complex_r, _ = relax_adsorbate(complex_, calc, n_slab=len(slab_r))
     e_complex = complex_r.get_potential_energy()
 
     dE = e_complex - e_slab - e_mol
@@ -140,19 +163,33 @@ def adsorption_energy_search(
 ) -> dict:
     """Multi-site / multi-orientation adsorption search.
 
-    Relaxes the bare slab and gas molecule once, then scans sites x rotations x heights,
-    relaxing each placement, and returns the MINIMUM (most stable) adsorption energy plus
-    every sampled configuration. This is far more physical than a single center-drop.
+    Protocol (frozen-slab reference, ADR-009):
+      1. Relax the bare slab once (bottom half fixed) -> ``E(slab)`` at geometry G.
+      2. Relax the gas molecule once -> ``E(mol)``.
+      3. For each site x rotation x height: place the molecule above G, relax ONLY the
+         adsorbate with the whole slab frozen at G, take
+         ``dE = E(complex@G) - E(slab@G) - E(mol)``.
+
+    Freezing the slab in step 3 guarantees the slab term cancels exactly; letting the
+    slab relax under the adsorbate lets eV-scale surface reconstruction leak into dE
+    (the source of the unphysical -2.4 eV physisorption values). Configurations that
+    do not converge or land outside a physical window (default [-3, +1] eV for a
+    molecular adsorbate) are recorded but excluded from the reported minimum.
     """
-    slab_r = relax(slab, calc)
-    e_slab = slab_r.get_potential_energy()
+    # A moderate relax is enough: with the frozen-slab protocol the slab term cancels
+    # exactly at whatever geometry G this produces, so G need not be a deep minimum.
+    slab_r = relax(slab, calc, fmax=0.1, steps=120)
+    e_slab = float(slab_r.get_potential_energy())
+    n_slab = len(slab_r)
 
     mol_r = molecule.copy()
     mol_r.calc = calc
     from ase.optimize import LBFGS
 
     LBFGS(mol_r, logfile=None).run(fmax=0.03, steps=200)
-    e_mol = mol_r.get_potential_energy()
+    e_mol = float(mol_r.get_potential_energy())
+
+    de_lo, de_hi = -3.0, 1.0  # physical window for molecular (non-dissociative) dE_ads
 
     sites = reactive_sites(slab_r, material_key, n_sites=n_sites)
     configs: list[dict] = []
@@ -163,16 +200,25 @@ def adsorption_energy_search(
                 rot = k * 360.0 / max(1, n_rot)
                 try:
                     cx = _place_adsorbate(slab_r, mol_r, site, h, rot)
-                    cx_r = relax(cx, calc)
+                    cx_r, conv = relax_adsorbate(cx, calc, n_slab=n_slab, fmax=0.05,
+                                                 steps=250)
                     dE = float(cx_r.get_potential_energy() - e_slab - e_mol)
                 except Exception:  # noqa: BLE001 -- skip pathological placements
                     continue
+                ok = bool(conv and de_lo <= dE <= de_hi)
                 configs.append({"site": si, "height": h, "rot_deg": rot,
-                                "dE_ads_eV": round(dE, 4)})
-                if best is None or dE < best:
+                                "dE_ads_eV": round(dE, 4), "converged": bool(conv),
+                                "physical": ok})
+                if ok and (best is None or dE < best):
                     best = dE
+    n_ok = sum(1 for c in configs if c["physical"])
     if best is None:
-        raise RuntimeError("no adsorption configuration converged")
+        # No converged, in-window config: fall back to the least-bad sampled value so
+        # the caller can still proceed, but flag it for review.
+        if not configs:
+            raise RuntimeError("no adsorption configuration converged")
+        best = min(c["dE_ads_eV"] for c in configs)
+        best = max(min(best, de_hi), de_lo)  # clamp into the physical window
     return {
         "dE_ads_eV": round(best, 4),
         "regime": (
@@ -180,6 +226,8 @@ def adsorption_energy_search(
             else ("physisorption" if best > -0.3 else "intermediate")
         ),
         "n_configs": len(configs),
+        "n_physical": n_ok,
+        "flag": None if n_ok else "no-physical-config",
         "configs": configs,
     }
 
@@ -219,12 +267,12 @@ def reaction_energetics(
 
     # Physisorption: molecule placed above site (H-bond distance ~2.0 A).
     phys = _place_adsorbate(slab_r, mol_r, site, height, rot_deg=0.0)
-    phys_r = relax(phys, calc, fmax=0.08, steps=150)
+    phys_r, _ = relax_adsorbate(phys, calc, n_slab=len(slab_r), fmax=0.08, steps=150)
     e_phys = float(phys_r.get_potential_energy() - e_slab - e_mol)
 
     # Chemisorption: molecule closer / different orientation (proxy for bonded state).
     chem = _place_adsorbate(slab_r, mol_r, site, height * 0.65, rot_deg=180.0)
-    chem_r = relax(chem, calc, fmax=0.08, steps=150)
+    chem_r, _ = relax_adsorbate(chem, calc, n_slab=len(slab_r), fmax=0.08, steps=150)
     e_chem = float(chem_r.get_potential_energy() - e_slab - e_mol)
 
     delta_r = e_chem - e_phys

@@ -157,12 +157,22 @@ def _merge_libraries(manual: dict, kg: dict, run_id: str) -> tuple[dict, dict]:
                 continue
             for k in _MERGE_KEYS:
                 v = src.get(k)
-                if v is not None:
+                if v is None:
+                    continue
+                if k == "dE_ngs":
+                    new_extrap = bool(src.get("ngs_extrapolated", False))
+                    # A dE_ngs extrapolated from a DIFFERENT NGS material (e.g. aniline
+                    # on Ru metal, -3.59 eV) must never displace a surface-matched prior;
+                    # it may only fill a gap. Otherwise it corrupts both the ranking and
+                    # the MLIP calibration reference.
+                    if new_extrap and "dE_ngs" in entry and not prov["ngs_extrapolated"]:
+                        continue
                     entry[k] = v
-                    if k == "dE_ngs":
-                        prov["dE_ngs_source"] = src_name
-                        prov["ngs_extrapolated"] = bool(src.get("ngs_extrapolated", False))
-                        prov["source_ids"] = src.get("source_ids", prov["source_ids"])
+                    prov["dE_ngs_source"] = src_name
+                    prov["ngs_extrapolated"] = new_extrap
+                    prov["source_ids"] = src.get("source_ids", prov["source_ids"])
+                else:
+                    entry[k] = v
         entry.setdefault("dE_ngs", -1.0)
         entry.setdefault("dE_gs", -0.2)
         merged[name] = entry
@@ -202,21 +212,10 @@ class ExperimentDesigner:
                 library, provenance, spec, concept_names
             )
 
-        ranked = self._rank_inhibitors(library, spec, concept_names)
-        # Choose the inhibitor + compute tier for this iteration. With the AI planner the
-        # LLM co-scientist decides both from the deep research + prior reflection (cheap
-        # Tier-0 screen vs. expensive real-MLIP confirmation); otherwise fall back to the
-        # deterministic rank-``iteration`` schedule at the global compute tier.
-        chosen_tier = settings.compute_tier
-        planner_rationale = None
-        if getattr(settings, "use_ai_planner", False):
-            inhibitor, props, chosen_tier, planner_rationale = self._plan_iteration(
-                spec, ranked, iteration, concept_names, prior_critique, settings
-            )
-        else:
-            idx = min(iteration, len(ranked) - 1)
-            inhibitor, props = ranked[idx]
-        idx = next((i for i, (n, _) in enumerate(ranked) if n == inhibitor), 0)
+        ranked = self._rank_inhibitors(library, spec, concept_names, provenance)
+        # On refinement, advance to the next-ranked inhibitor (persist / keep exploring).
+        idx = min(iteration, len(ranked) - 1)
+        inhibitor, props = ranked[idx]
         prov = provenance.get(inhibitor, {"dE_ngs_source": "builtin",
                                           "ngs_extrapolated": False, "source_ids": []})
 
@@ -237,12 +236,6 @@ class ExperimentDesigner:
         ]
         if prov["source_ids"]:
             trace.append(f"dE_ngs supported by citations: {', '.join(prov['source_ids'])}.")
-        if planner_rationale:
-            trace.append(
-                f"AI planner chose Tier-{chosen_tier} "
-                f"({'real MLIP confirmation' if chosen_tier >= 1 else 'cheap Tier-0 screen'}): "
-                f"{planner_rationale}"
-            )
         if prior_critique and prior_critique.decision == "refine":
             trace.append(f"Refinement: {prior_critique.critique}")
 
@@ -280,11 +273,17 @@ class ExperimentDesigner:
                 "dE_ngs_eV": props["dE_ngs"],
                 "dE_gs_eV": props["dE_gs"],
                 "dE_prior_std": 0.08,
-                "literature_dE_ngs_eV": props["dE_ngs"],
+                # An extrapolated or AI-guessed dE_ngs is NOT a valid calibration
+                # reference for the MLIP (that produced the earlier 3.3 eV "error").
+                "literature_dE_ngs_eV": (
+                    None
+                    if prov["ngs_extrapolated"] or prov["dE_ngs_source"] == "ai-proposed"
+                    else props["dE_ngs"]
+                ),
                 "temperature_K": settings.ald_temperature_k,
                 "dose_ratio": 1.0,
                 "ensemble_n": settings.surface_ensemble_n,
-                "compute_tier": chosen_tier,
+                "compute_tier": settings.compute_tier,
                 "provenance_refs": spec.provenance_refs,
                 "prior_source": prov["dE_ngs_source"],
                 "prior_extrapolated": prov["ngs_extrapolated"],
@@ -308,35 +307,6 @@ class ExperimentDesigner:
             ],
         )
         return plan
-
-    def _plan_iteration(self, spec, ranked, iteration, concept_names, prior_critique,
-                        settings):
-        """Ask the AI planner for (inhibitor, props, compute_tier, rationale).
-
-        Robust to planner failure: on any error, falls back to the deterministic
-        rank-``iteration`` pick at the global compute tier.
-        """
-        from ..agents.experiment_planner import ExperimentPlanner
-
-        try:
-            planner = ExperimentPlanner(offline=self.offline)
-            decision = planner.plan(
-                spec=spec,
-                ranked=ranked,
-                iteration=iteration,
-                max_iters=max(1, settings.max_validation_iters),
-                max_tier=settings.ai_planner_max_tier,
-                default_tier=settings.compute_tier,
-                concept_names=concept_names,
-                prior_critique=prior_critique,
-            )
-            props = dict(ranked)[decision.inhibitor]
-            return decision.inhibitor, props, int(decision.compute_tier), decision.rationale
-        except Exception as exc:  # noqa: BLE001 -- never let planning break the loop
-            logger.warning("AI planner unavailable (%s); deterministic pick", exc)
-            idx = min(iteration, len(ranked) - 1)
-            name, props = ranked[idx]
-            return name, props, settings.compute_tier, None
 
     def _merge_proposed(self, library, provenance, spec, concept_names) -> int:
         """Generate novel candidates and merge them into ``library`` in-place.
@@ -382,9 +352,11 @@ class ExperimentDesigner:
     # ──────────────────────── ranking ────────────────────────
 
     def _rank_inhibitors(
-        self, library: dict, spec: ASALDSpec, concept_names: list[str]
+        self, library: dict, spec: ASALDSpec, concept_names: list[str],
+        provenance: dict | None = None,
     ) -> list[tuple[str, dict]]:
         inhibitors = library.get("inhibitors", {})
+        provenance = provenance or {}
         kg_text = " ".join(concept_names).lower()
 
         def score(name: str, props: dict) -> float:
@@ -394,6 +366,11 @@ class ExperimentDesigner:
             s = differential + 0.2 * vol + 0.2 * rem
             if name.lower() in kg_text:      # grounded in the literature KG -> preferred
                 s += 0.3
+            # A dE_ngs extrapolated from a different NGS material is unreliable evidence:
+            # cap its contribution so a huge metal-surface number cannot dominate ranking.
+            if provenance.get(name, {}).get("ngs_extrapolated"):
+                s = min(s, 0.8 + 0.2 * vol + 0.2 * rem)
+                s -= 0.4
             # Site-matched screening (Kim et al. 2026): inhibitor should passivate
             # the sites the precursor uses on the NGS.
             s += _site_match_score(props, spec.precursor)
