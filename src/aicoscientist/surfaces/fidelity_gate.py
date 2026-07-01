@@ -60,16 +60,23 @@ class SurfaceFidelityGate:
     def count_sites_by_type(self, atoms, surface_depth: float = 2.5) -> dict[str, int]:
         """Return per-site-type counts using an ``ase.neighborlist`` bond graph.
 
-        Only sites within ``surface_depth`` Angstrom of the top of the slab are counted:
-        the Kim et al. 2026 bands are *surface* densities, so bulk bridging O/N (which are
-        chemically identical to surface bridges) must be excluded or every real slab fails
-        the bridge-density gate. ``surface_depth`` ~ one terminal atomic layer.
+        The Kim et al. 2026 bands are *surface* densities, so counting is restricted to
+        the exposed top surface with two windows:
+
+        * **Terminal sites** (OH / NH2) are counted over the *top half* of the slab. They
+          only exist where passivation put them (the top termination -- the bulk carries
+          no H), and a rough amorphous termination spreads them over several Angstrom, so
+          a shallow window would systematically under-count real silanols/amines.
+        * **Bridge sites** (siloxane -O- / imide -NH-) are chemically identical to bulk
+          network atoms, so they are only counted within ``surface_depth`` Angstrom of
+          the topmost heavy (non-H) atom -- the one exposed layer a precursor can reach.
+          Without this, bulk bridging O/N makes every real slab fail the bridge gate.
 
         Site types (Kim et al. 2026):
           OH         -- silanol: O-H whose O binds exactly one Si
           O_bridge   -- siloxane: O bonded to 2 Si, no H
-          NH2        -- amine: N-H whose N binds >= 1 Si
-          NH_bridge  -- imide: N bonded to 2 Si with 1 H
+          NH2        -- amine: N-H whose N binds exactly one Si
+          NH_bridge  -- imide: N bonded to 2 Si with >= 1 H
         """
         from ase.data import atomic_numbers
         from ase.neighborlist import NeighborList, natural_cutoffs
@@ -81,7 +88,10 @@ class SurfaceFidelityGate:
         nums = atoms.numbers
 
         z = atoms.get_positions()[:, 2]
-        z_cut = float(z.max()) - surface_depth  # count only the exposed top surface
+        heavy_z = z[nums != H]
+        z_top_heavy = float(heavy_z.max()) if len(heavy_z) else float(z.max())
+        z_bridge_cut = z_top_heavy - surface_depth                 # exposed bridge layer
+        z_terminal_cut = 0.5 * (float(z.min()) + float(z.max()))   # capped top half
 
         cutoffs = natural_cutoffs(atoms, mult=1.2)
         nl = NeighborList(cutoffs, self_interaction=False, bothways=True)
@@ -93,21 +103,21 @@ class SurfaceFidelityGate:
 
         counts = {"OH": 0, "O_bridge": 0, "NH2": 0, "NH_bridge": 0}
         for k, zk in enumerate(nums):
-            if z[k] < z_cut:
+            if z[k] < z_terminal_cut:
                 continue
             types = neighbor_types(k)
             if zk == O:
                 n_si = sum(1 for t in types if t == Si)
                 if H in types and n_si == 1:
                     counts["OH"] += 1
-                elif H not in types and n_si == 2:
+                elif H not in types and n_si == 2 and z[k] >= z_bridge_cut:
                     counts["O_bridge"] += 1
             elif zk == N:
                 n_si = sum(1 for t in types if t == Si)
                 if H in types:
-                    if n_si == 2:
+                    if n_si == 2 and z[k] >= z_bridge_cut:
                         counts["NH_bridge"] += 1
-                    elif n_si >= 1:
+                    elif n_si == 1:
                         counts["NH2"] += 1
         return counts
 
