@@ -4,6 +4,14 @@ Wraps the three CLI stages (aicoscientist -> aicoscientist-validate ->
 aicoscientist-paper) as one guided run: enter an idea, watch the logs stream,
 download the resulting artifacts (knowledge graph, validation results,
 manuscript).
+
+Connection-loss resilience: the pipeline is executed in a DETACHED background
+thread that appends to ``artifacts/<run_id>/ui_run.log``; the Gradio callback only
+*tails* that file. A browser refresh, dropped WebSocket/SSE, or proxy hiccup
+(the "427"/connection-errored class of failures) cancels the tail, never the run.
+Use the "Reattach to run" box to resume streaming any run id after a refresh.
+The tail also emits a heartbeat every poll so the HF proxy never sees an idle
+stream, and a run may execute/stream for up to 24 h (MAX_RUN_SECONDS).
 """
 
 from __future__ import annotations
@@ -14,15 +22,61 @@ import os
 import re
 import subprocess
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
 
 import gradio as gr
 
-ARTIFACTS_DIR = Path(os.environ.get("ARTIFACTS_DIR", "artifacts"))
+
+def _resolve_artifacts_dir() -> tuple[Path, bool]:
+    """Prefer HF persistent storage when present.
+
+    Hugging Face mounts persistent storage (Settings -> Storage) at /data; anything
+    elsewhere is wiped on every Space restart/sleep. Priority:
+      1. explicit ARTIFACTS_DIR env (operator override),
+      2. /data/artifacts when /data exists and is writable (persistent),
+      3. ./artifacts (ephemeral fallback).
+    Returns (path, is_persistent).
+    """
+    env_dir = os.environ.get("ARTIFACTS_DIR")
+    if env_dir:
+        p = Path(env_dir)
+        return p, str(p).startswith("/data")
+    data = Path("/data")
+    if data.is_dir() and os.access(data, os.W_OK):
+        return data / "artifacts", True
+    return Path("artifacts"), False
+
+
+ARTIFACTS_DIR, ARTIFACTS_PERSISTENT = _resolve_artifacts_dir()
+ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+# Make the CLI stages (which read ARTIFACTS_DIR themselves) agree with the UI.
+os.environ["ARTIFACTS_DIR"] = str(ARTIFACTS_DIR)
+
+# When persistent storage exists, also keep the model caches there: MACE weights,
+# torch hub, and HF downloads then survive restarts instead of re-downloading on
+# every container boot. Must happen before any calculator is created (the pipeline
+# runs in subprocesses that inherit this environment).
+if ARTIFACTS_PERSISTENT and str(ARTIFACTS_DIR).startswith("/data"):
+    _cache_root = Path("/data/.cache")
+    try:
+        _cache_root.mkdir(parents=True, exist_ok=True)
+        os.environ["XDG_CACHE_HOME"] = str(_cache_root)          # MACE (~/.cache/mace)
+        os.environ["TORCH_HOME"] = str(_cache_root / "torch")     # torch hub
+        os.environ["HF_HOME"] = str(_cache_root / "huggingface")  # HF downloads
+    except Exception:  # noqa: BLE001 -- storage quirks must never block startup
+        pass
 
 DEFAULT_IDEA = "passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm"
+
+# Hard ceiling on one pipeline run (execution AND ui streaming): 24 hours.
+MAX_RUN_SECONDS = 24 * 60 * 60
+# Tail poll / heartbeat interval (an SSE frame is sent at least this often, which
+# keeps the HF reverse proxy from idling out the stream during quiet MD stretches).
+POLL_SECONDS = 2.0
 
 STAGES = [
     ("Layer 1-2: literature research + hypothesis selection", "aicoscientist"),
@@ -31,22 +85,23 @@ STAGES = [
 ]
 
 # Tier-1 MLIP sampling presets. Bigger slabs (SLAB_SUPERCELL) put more atoms through each
-# MACE force eval, and more sites/rotations/heights/ensemble members keep the GPU busy
-# longer -- the two levers that actually load a big GPU (MACE runs one structure at a time
-# via ASE, so a small slab never saturates an A100). Runtime scales with all of these.
+# MACE force eval, and more sites/rotations/heights keep the GPU busy longer -- the levers
+# that actually load a big GPU (MACE runs one structure at a time via ASE, so a small slab
+# never saturates an A100). Runtime scales with all of these. The surface-ensemble size is
+# a separate, explicit UI field (default 1) so a long run is opt-in, not a preset surprise.
 SAMPLING_PRESETS = {
     "Standard": {
-        "SLAB_SUPERCELL": "2,2", "SURFACE_ENSEMBLE_N": "5",
+        "SLAB_SUPERCELL": "2,2",
         "N_ADSORPTION_SITES": "4", "ADSORPTION_ROTATIONS": "4",
         "ADSORPTION_HEIGHTS": "1.8,2.4",
     },
     "High (GPU)": {
-        "SLAB_SUPERCELL": "3,3", "SURFACE_ENSEMBLE_N": "6",
+        "SLAB_SUPERCELL": "3,3",
         "N_ADSORPTION_SITES": "8", "ADSORPTION_ROTATIONS": "6",
         "ADSORPTION_HEIGHTS": "1.8,2.2,2.6",
     },
     "Max (GPU)": {
-        "SLAB_SUPERCELL": "4,4", "SURFACE_ENSEMBLE_N": "8",
+        "SLAB_SUPERCELL": "4,4",
         "N_ADSORPTION_SITES": "12", "ADSORPTION_ROTATIONS": "8",
         "ADSORPTION_HEIGHTS": "1.6,2.0,2.4,2.8,3.2",
     },
@@ -60,16 +115,16 @@ SAMPLING_PRESETS = {
 RUNTIME_PROFILES = {
     "Custom (use fields below)": None,
     "Fast (< 30 min)": {
-        "sampling": "Standard", "ensemble": 2, "melt_steps": 800,
+        "sampling": "Standard", "ensemble": 1, "melt_steps": 800,
         "quench_steps": 1500, "autotune": False, "max_iters": 1,
     },
     "Balanced (< 1 hr)": {
-        "sampling": "Standard", "ensemble": 3, "melt_steps": 1500,
-        "quench_steps": 3000, "autotune": False, "max_iters": 2,
+        "sampling": "Standard", "ensemble": 2, "melt_steps": 1500,
+        "quench_steps": 3000, "autotune": False, "max_iters": 1,
     },
     "High-fidelity (> 1 hr)": {
-        "sampling": "High (GPU)", "ensemble": 5, "melt_steps": 3000,
-        "quench_steps": 8000, "autotune": True, "max_iters": 2,
+        "sampling": "High (GPU)", "ensemble": 3, "melt_steps": 3000,
+        "quench_steps": 8000, "autotune": True, "max_iters": 1,
     },
 }
 
@@ -82,6 +137,12 @@ SLAB_SOURCES = {
     "Geometric amorphous (disorder knob)": "amorphous",
     "MLIP melt-quench MD (real, slow)": "md-amorphous",
 }
+
+# In-process registry of pipeline threads (survives browser disconnects; does NOT
+# survive a container restart -- the on-disk log/status files cover reattach for
+# anything the container still has).
+RUNS: dict[str, dict] = {}
+_LATEST_RUN_ID: str | None = None
 
 
 def _has_cuda() -> bool:
@@ -116,42 +177,120 @@ def _gpu_status() -> str:
         )
 
 
-def _stream_command(cmd: list[str], env: dict):
-    proc = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-        env=env,
-    )
-    assert proc.stdout is not None
-    # Split on BOTH newline and carriage return so tqdm progress bars (which redraw with
-    # "\r") stream live into the log instead of arriving as one blob when the bar finishes.
-    seg_re = re.compile(r"[^\r\n]*[\r\n]")
+# ──────────────────────── detached run execution ────────────────────────
 
-    def _emit(seg: str):
-        # Tee to container stdout so `curl .../logs/run` follows it from a terminal too.
-        sys.stdout.write(seg)
-        sys.stdout.flush()
-        return seg
 
-    buffer = ""
-    while True:
-        chunk = proc.stdout.read(256)
-        if chunk == "":
-            break
-        buffer += chunk
-        pos = 0
-        for m in seg_re.finditer(buffer):
-            yield _emit(m.group(0))
-            pos = m.end()
-        buffer = buffer[pos:]
-    if buffer:
-        yield _emit(buffer)
-    proc.wait()
-    if proc.returncode != 0:
-        yield _emit(f"\n[stage exited with code {proc.returncode}]\n")
+def _log_path(run_id: str) -> Path:
+    return ARTIFACTS_DIR / run_id / "ui_run.log"
+
+
+def _status_path(run_id: str) -> Path:
+    return ARTIFACTS_DIR / run_id / "ui_run.status"
+
+
+def _append_log(run_id: str, text: str) -> None:
+    """Append to the run's log file and tee to container stdout.
+
+    newline='' disables newline translation so tqdm's "\\r" redraws survive the
+    write/read round-trip and _render_log can collapse them for display."""
+    with open(_log_path(run_id), "a", encoding="utf-8", errors="replace",
+              newline="") as fh:
+        fh.write(text)
+    sys.stdout.write(text)
+    sys.stdout.flush()
+
+
+def _read_log(run_id: str) -> str:
+    try:
+        with open(_log_path(run_id), "r", encoding="utf-8", errors="replace",
+                  newline="") as fh:
+            return fh.read()
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _set_status(run_id: str, status: str) -> None:
+    _status_path(run_id).write_text(status, encoding="utf-8")
+
+
+def _get_status(run_id: str) -> str:
+    try:
+        return _status_path(run_id).read_text(encoding="utf-8").strip()
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
+
+def _execute_pipeline(run_id: str, commands: list[list[str]], env: dict) -> None:
+    """Run all stages sequentially in a background thread, appending to the log file.
+
+    This function owns the run: it keeps executing even if every browser tab is
+    closed. Only a container restart (Space sleep/reboot) or the 24 h ceiling
+    stops it.
+    """
+    start = time.time()
+    status = "done"
+    try:
+        for (title, _), cmd in zip(STAGES, commands):
+            _append_log(run_id, f"\n=== {title} ===\n")
+            # Binary read + manual decode: text=True would translate the lone "\r" of
+            # tqdm progress redraws into "\n" (universal newlines), defeating the
+            # carriage-return collapsing that _render_log does for the UI.
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=env,
+            )
+            assert proc.stdout is not None
+            while True:
+                chunk = proc.stdout.read(256)
+                if chunk == b"":
+                    break
+                _append_log(run_id, chunk.decode("utf-8", errors="replace"))
+                if time.time() - start > MAX_RUN_SECONDS:
+                    proc.kill()
+                    _append_log(run_id, "\n[run exceeded the 24 h ceiling; stage killed]\n")
+                    status = "timeout (24h)"
+                    break
+            proc.wait()
+            if status != "done":
+                break
+            if proc.returncode != 0:
+                _append_log(run_id, f"\n[stage exited with code {proc.returncode}]\n")
+    except Exception as exc:  # noqa: BLE001
+        status = "failed"
+        _append_log(run_id, f"\n[pipeline thread error: {exc}]\n")
+    elapsed = time.time() - start
+    _append_log(run_id, f"\n[pipeline {status} after {elapsed / 60:.1f} min]\n")
+    _set_status(run_id, status)
+
+
+def _render_log(raw: str) -> str:
+    """Emulate terminal carriage-return behavior for tqdm-style progress redraws:
+    within each line, only the content after the last "\\r" is shown."""
+    out_lines = []
+    for line in raw.split("\n"):
+        out_lines.append(line.rsplit("\r", 1)[-1] if "\r" in line else line)
+    return "\n".join(out_lines)
+
+
+def _latest_running_run() -> str:
+    """Most recent run id that is still marked running (for reattach after refresh)."""
+    if _LATEST_RUN_ID and _get_status(_LATEST_RUN_ID) in ("running", "unknown"):
+        return _LATEST_RUN_ID
+    try:
+        candidates = sorted(
+            (p.parent for p in ARTIFACTS_DIR.glob("*/ui_run.status")
+             if p.read_text(encoding="utf-8").strip() == "running"),
+            key=lambda d: d.stat().st_mtime,
+            reverse=True,
+        )
+        return candidates[0].name if candidates else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+# ──────────────────────── 3D structure viewer ────────────────────────
 
 
 def _viz_files(run_dir: Path) -> list[str]:
@@ -239,6 +378,63 @@ def _structure_viewer_html(files: list[str]) -> str:
     )
 
 
+# ──────────────────────── UI callbacks ────────────────────────
+
+
+def _tail_run(run_id: str):
+    """Stream a run's log/status/structures to the UI. Cancelling this (refresh,
+    dropped connection) does NOT affect the run -- reattach any time."""
+    empty_viewer = _structure_viewer_html([])
+    run_dir = ARTIFACTS_DIR / run_id
+    last_sig: tuple | None = None
+    viewer = empty_viewer
+    start = time.time()
+
+    while True:
+        text = _render_log(_read_log(run_id))
+
+        sig = tuple(_viz_files(run_dir))
+        if sig != last_sig:
+            last_sig = sig
+            viewer = _structure_viewer_html(list(sig))
+
+        status = _get_status(run_id)
+        if status not in ("running", "unknown"):
+            files = (sorted(str(p) for p in run_dir.rglob("*") if p.is_file())
+                     if run_dir.exists() else [])
+            text += (f"\n\nRun {run_id} finished with status: {status}. "
+                     f"{len(files)} artifact file(s) in {run_dir}\n")
+            yield text, (files or None), viewer
+            return
+
+        # Heartbeat: yield every poll even when nothing changed, so the SSE stream
+        # carries traffic and the HF proxy never idle-kills the connection.
+        yield text, None, viewer
+        if time.time() - start > MAX_RUN_SECONDS:
+            yield (text + "\n[ui stream detached after 24 h; the run may still be "
+                   "executing — reattach with the run id]\n"), None, viewer
+            return
+        time.sleep(POLL_SECONDS)
+
+
+def attach_run(run_id: str):
+    """Reattach the UI to an existing (possibly still running) run after a refresh."""
+    empty_viewer = _structure_viewer_html([])
+    run_id = (run_id or "").strip()
+    if not run_id:
+        run_id = _latest_running_run()
+    if not run_id:
+        yield ("No run id given and no running run found on this container.",
+               None, empty_viewer)
+        return
+    if not _log_path(run_id).exists():
+        yield (f"No log found for run id '{run_id}' on this container "
+               "(the Space may have restarted — artifacts are ephemeral without "
+               "persistent storage).", None, empty_viewer)
+        return
+    yield from _tail_run(run_id)
+
+
 def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
                  tier1_gpu: bool, sampling: str = "High (GPU)",
                  slab_source_label: str = "Crystalline-derived (fast, default)",
@@ -247,7 +443,9 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
                  mq_ensemble: float = 0, mq_autotune: bool = False,
                  runtime_profile: str = "Custom (use fields below)",
                  screen_pool: float = 40, screen_shortlist: float = 10,
-                 screen_top_k: float = 3):
+                 screen_top_k: float = 3, screen_ensemble: float = 2,
+                 max_iters: float = 1, ensemble_n: float = 1):
+    global _LATEST_RUN_ID
     empty_viewer = _structure_viewer_html([])
     idea = (idea or "").strip()
     if not idea:
@@ -255,12 +453,17 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
         return
 
     env = os.environ.copy()
+    # Cost levers the user just asked for, explicit and UI-controlled (both default 1):
+    # one reflection iteration, one slab per surface condition. Profiles may override.
+    env["MAX_VALIDATION_ITERS"] = str(max(1, int(max_iters)))
+    env["SURFACE_ENSEMBLE_N"] = str(max(1, int(ensemble_n)))
     # Screening funnel: pool of N candidates -> Tier-0 rank -> MLIP batch on shared
     # slabs -> top-k full fidelity -> recommendation agent -> paper.
     env["SCREENING_MODE"] = "funnel"
     env["SCREEN_POOL_SIZE"] = str(int(screen_pool))
     env["SCREEN_SHORTLIST_M"] = str(int(screen_shortlist))
     env["SCREEN_TOP_K"] = str(int(screen_top_k))
+    env["SCREEN_ENSEMBLE_N"] = str(max(1, int(screen_ensemble)))
     if not offline:
         gemini_key = (gemini_key or "").strip()
         if not gemini_key:
@@ -281,8 +484,8 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
             sampling = prof["sampling"]
             mq_melt_steps = prof["melt_steps"]
             mq_quench_steps = prof["quench_steps"]
-            mq_ensemble = prof["ensemble"]
             mq_autotune = prof["autotune"]
+            env["SURFACE_ENSEMBLE_N"] = str(prof["ensemble"])
             env["MAX_VALIDATION_ITERS"] = str(prof["max_iters"])
             gpu_note = f"profile '{runtime_profile}' | "
 
@@ -299,7 +502,7 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
             gpu_note += "MLIP device: auto (no CUDA GPU found -> CPU, slow)"
         gpu_note += f" | surface: {env['SLAB_SOURCE']}"
         preset = SAMPLING_PRESETS.get(sampling, SAMPLING_PRESETS["High (GPU)"])
-        env.update(preset)  # user's own env still wins if set on the Space
+        env.update(preset)
         gpu_note += f" | sampling '{sampling}': " + ", ".join(
             f"{k}={v}" for k, v in preset.items()
         )
@@ -323,20 +526,31 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
 
     run_id = _new_run_id()
     run_dir = ARTIFACTS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
     offline_flag = ["--offline"] if offline else []
     tier_label = "1 (MLIP)" if tier1_gpu else "0 (CPU priors)"
-    log = (
+    header = (
         f"run id: {run_id}\n"
         f"mode: {'offline (mock)' if offline else 'live (Gemini)'}\n"
+        f"artifacts: {run_dir} "
+        f"({'persistent /data storage' if ARTIFACTS_PERSISTENT else 'EPHEMERAL — enable persistent storage in Settings → Storage to keep results across restarts'})\n"
         f"compute tier: {tier_label}\n"
+        f"reflection iterations: {env['MAX_VALIDATION_ITERS']} | "
+        f"surface ensemble N: {env['SURFACE_ENSEMBLE_N']}\n"
         f"screening funnel: pool={int(screen_pool)} -> MLIP top-{int(screen_shortlist)} "
-        f"-> full top-{int(screen_top_k)} -> recommendation\n"
+        f"-> full top-{int(screen_top_k)} -> recommendation | "
+        f"fidelity slabs/surface: screen={env['SCREEN_ENSEMBLE_N']}, "
+        f"full re-run n={env['SURFACE_ENSEMBLE_N']}\n"
     )
     if gpu_note:
-        log += gpu_note + "\n"
+        header += gpu_note + "\n"
     if tier1_gpu:
-        log += _gpu_status() + "\n"
-    yield log, None, empty_viewer
+        header += _gpu_status() + "\n"
+    header += (
+        "\nThis run executes in the background on the Space: a browser refresh or "
+        "lost connection does NOT stop it. To resume watching, paste the run id "
+        f"'{run_id}' into 'Reattach to run' below.\n"
+    )
 
     commands = [
         ["aicoscientist", "--idea", idea, "--run-id", run_id, "--verbose",
@@ -345,32 +559,17 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
         ["aicoscientist-paper", "--run-id", run_id, "--verbose", *offline_flag],
     ]
 
-    # Refresh the 3D viewer whenever new structure files appear (near-live).
-    last_sig, viewer = None, empty_viewer
-    print(f"\n[run {run_id}] {log.strip()}", flush=True)
-    for (title, _), cmd in zip(STAGES, commands):
-        header = f"\n=== {title} ===\n"
-        log += header
-        print(header, end="", flush=True)
-        yield log, None, viewer
-        for chunk in _stream_command(cmd, env):
-            if chunk.endswith("\r"):
-                # tqdm progress redraw: overwrite the current line (like a terminal) so the
-                # bar updates in place instead of piling up hundreds of lines.
-                body = chunk[:-1]
-                head = log.rsplit("\n", 1)[0] if "\n" in log else ""
-                log = (head + "\n" + body) if "\n" in log else body
-            else:
-                log += chunk
-            sig = tuple(_viz_files(run_dir))
-            if sig != last_sig:
-                last_sig = sig
-                viewer = _structure_viewer_html(list(sig))
-            yield log, None, viewer
+    _set_status(run_id, "running")
+    _append_log(run_id, header)
+    thread = threading.Thread(
+        target=_execute_pipeline, args=(run_id, commands, env),
+        name=f"pipeline-{run_id}", daemon=True,
+    )
+    RUNS[run_id] = {"thread": thread, "started": time.time()}
+    _LATEST_RUN_ID = run_id
+    thread.start()
 
-    files = sorted(str(p) for p in run_dir.rglob("*") if p.is_file()) if run_dir.exists() else []
-    log += f"\n\nDone. {len(files)} artifact file(s) written to {run_dir}\n"
-    yield log, (files or None), _structure_viewer_html(_viz_files(run_dir))
+    yield from _tail_run(run_id)
 
 
 with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
@@ -382,7 +581,13 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
         "**Offline/mock mode** is deterministic and needs no API key. Uncheck it and add a "
         "Gemini API key (from [Google AI Studio](https://aistudio.google.com/apikey)) to run "
         "with a real LLM (`gemini-3.1-flash-lite`) for Layer 1 research, hypothesis scoring, "
-        "and manuscript prose."
+        "and manuscript prose.\n\n"
+        "🛡️ **Long runs are refresh-proof**: the pipeline executes in the background on "
+        "the Space and keeps going if your browser refreshes or the connection drops — "
+        "reattach with the run id below. ⚠️ For multi-hour GPU runs, set the Space's "
+        "**Settings → Sleep time** to *Never* (or long enough), otherwise Hugging Face "
+        "puts the whole container to sleep after the idle window and the run dies with it. "
+        "Enable **persistent storage** to keep artifacts across restarts."
     )
     idea = gr.Textbox(label="Research idea", value=DEFAULT_IDEA, lines=2)
     with gr.Row():
@@ -392,6 +597,28 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             info="e.g. select:1, merge:1,2, new",
         )
     gemini_key = gr.Textbox(label="Gemini API key (Google AI Studio)", type="password")
+
+    with gr.Row():
+        max_iters = gr.Slider(
+            minimum=1, maximum=5, value=1, step=1,
+            label="Reflection iterations",
+            info=(
+                "Closed-loop refine budget (MAX_VALIDATION_ITERS). 1 = single pass, "
+                "no refinement re-runs — the fast default."
+            ),
+        )
+        ensemble_n = gr.Slider(
+            minimum=1, maximum=8, value=1, step=1,
+            label="Full-fidelity re-run ensemble (the 'n=' in top-k re-run)",
+            info=(
+                "Slabs per surface for the top-k full-fidelity re-run — the "
+                "'top-K full-fidelity re-run (n=…)' line in the log. Each finalist "
+                "repeats the whole adsorption search on every slab, so runtime scales "
+                "linearly. 1 = fastest; raise for error-barred statistics. Values up to "
+                "the screening ensemble reuse its already-gated slabs (no new fidelity "
+                "tests)."
+            ),
+        )
 
     with gr.Row():
         screen_pool = gr.Slider(
@@ -419,6 +646,16 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
                 "before the recommendation agent picks the winner."
             ),
         )
+        screen_ensemble = gr.Slider(
+            minimum=1, maximum=8, value=2, step=1,
+            label="Fidelity re-runs per screen (slabs/surface)",
+            info=(
+                "How many fidelity-gated slabs are built per surface for the candidate "
+                "screen (SCREEN_ENSEMBLE_N). Every shortlisted inhibitor is adsorbed on "
+                "these same shared slabs; the top-k re-run uses max(this, Surface "
+                "ensemble N). 2 = the fidelity test runs twice per surface."
+            ),
+        )
 
     tier1_gpu = gr.Checkbox(
         label="Tier-1: foundation-MLIP (MACE) reactivity — uses GPU when available",
@@ -437,7 +674,7 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             "One-click compute budget for the melt-quench surface model. Overrides "
             "sampling, ensemble, melt/quench steps, autotune, and reflection iterations. "
             "'Fast' <30 min · 'Balanced' <1 hr · 'High-fidelity' >1 hr (AI autotune on). "
-            "'Custom' uses the fields below. Crystalline slabs finish faster than these."
+            "'Custom' uses the fields above/below. Crystalline slabs finish faster."
         ),
     )
     with gr.Row():
@@ -446,7 +683,7 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             value="High (GPU)",
             label="In-silico GPU sampling (Tier-1 only)",
             info=(
-                "Bigger slabs + more sites/rotations/heights/ensemble = more GPU work and "
+                "Bigger slabs + more sites/rotations/heights = more GPU work and "
                 "better statistics, but longer runs. 'Max' loads an A100 hardest; "
                 "'Standard' is the fast default. Ignored at Tier-0."
             ),
@@ -481,7 +718,7 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             mq_timestep = gr.Number(value=0.5, label="Timestep (fs)")
             mq_ensemble = gr.Number(
                 value=0, precision=0,
-                label="Amorphization ensemble N (0 = use sampling preset)",
+                label="Amorphization ensemble N (0 = use 'Surface ensemble N' above)",
             )
         mq_autotune = gr.Checkbox(
             value=False,
@@ -496,6 +733,18 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
     gpu_status = gr.Markdown(_gpu_status())
 
     run_btn = gr.Button("Run pipeline", variant="primary")
+
+    with gr.Row():
+        attach_id = gr.Textbox(
+            label="Reattach to run",
+            placeholder="run id (blank = latest running run on this container)",
+            info=(
+                "Refreshed the page or lost connection? The run kept going. Paste its "
+                "run id here (or leave blank) and click Reattach to resume streaming."
+            ),
+        )
+        attach_btn = gr.Button("Reattach")
+
     log_box = gr.Textbox(label="Log", lines=25, autoscroll=True)
 
     gr.Markdown(
@@ -512,10 +761,20 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
         run_pipeline,
         inputs=[idea, offline, gemini_key, auto_decision, tier1_gpu, sampling, slab_source,
                 mq_melt_t, mq_melt_steps, mq_quench_steps, mq_timestep, mq_ensemble,
-                mq_autotune, runtime_profile, screen_pool, screen_shortlist, screen_top_k],
+                mq_autotune, runtime_profile, screen_pool, screen_shortlist, screen_top_k,
+                screen_ensemble, max_iters, ensemble_n],
+        outputs=[log_box, files_out, viewer_html],
+    )
+    attach_btn.click(
+        attach_run,
+        inputs=[attach_id],
         outputs=[log_box, files_out, viewer_html],
     )
     demo.load(_gpu_status, inputs=None, outputs=gpu_status)
+    demo.load(_latest_running_run, inputs=None, outputs=attach_id)
 
 if __name__ == "__main__":
-    demo.queue().launch(server_name="0.0.0.0", server_port=int(os.environ.get("PORT", 7860)))
+    demo.queue(default_concurrency_limit=4).launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 7860)),
+    )

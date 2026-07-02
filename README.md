@@ -14,6 +14,20 @@ pinned: false
 > foundation-MLIP (MACE) reactivity engine; for that to be fast, upgrade the Space in
 > **Settings → Hardware** to a GPU (billed per hour) — on CPU hardware Tier-1 still runs
 > but slowly. The image ships CUDA-enabled torch, so GPU is used automatically when present.
+>
+> **Long runs are refresh-proof.** The pipeline executes in a detached background thread
+> on the Space; a browser refresh, dropped WebSocket, or proxy hiccup only interrupts the
+> log *stream*, never the run — paste the run id into **Reattach to run** to resume
+> watching (runs may execute for up to 24 h). Set **Settings → Sleep time** to *Never*
+> (or longer than your run) — HF puts the whole container to sleep after the idle
+> window, killing any run with it; code cannot prevent that.
+>
+> **Persistent storage (recommended):** add it under **Settings → Storage** (smallest
+> tier is plenty). The app auto-detects the `/data` mount and switches to it — run
+> artifacts land in `/data/artifacts` and the MACE/torch model caches in `/data/.cache`,
+> so results survive restarts and model weights download only once. Without storage the
+> app falls back to the container filesystem and every restart wipes it (each run's log
+> header tells you which mode you're in).
 
 
 # AS-ALD Co-Scientist — Layers 1–4

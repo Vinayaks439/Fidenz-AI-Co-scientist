@@ -211,15 +211,19 @@ def run_screening_campaign(
     k = _clamp(settings.screen_top_k, 1, max(1, len(screened)))
     top_names = [r["inhibitor"] for r in screened[:k]]
 
-    n_full = max(n_batch, settings.surface_ensemble_n)
+    # SURFACE_ENSEMBLE_N directly sets the full-fidelity re-run ensemble (the "n=" in
+    # the log line below) so the UI slider has sole authority over this cost. When it
+    # is <= the batch ensemble, reuse (a slice of) the already-built, already-gated
+    # batch slabs -- no new fidelity tests; only a larger n triggers a rebuild.
+    n_full = max(1, settings.surface_ensemble_n)
     if top_names:
-        if n_full != n_batch:
+        if n_full > n_batch:
             gs_full = build_ensemble(spec.growth_surface, n=n_full, seed0=seed0,
                                      compute_tier=tier)
             ngs_full = build_ensemble(spec.non_growth_surface, n=n_full,
                                       seed0=seed0 + 1000, compute_tier=tier)
         else:
-            gs_full, ngs_full = gs_batch, ngs_batch
+            gs_full, ngs_full = gs_batch[:n_full], ngs_batch[:n_full]
         logger.info("top-%d full-fidelity re-run (n=%d, tier=%d): %s",
                     len(top_names), n_full, tier, ", ".join(top_names))
         by_name = dict(shortlist)
