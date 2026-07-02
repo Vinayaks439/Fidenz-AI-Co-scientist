@@ -147,6 +147,36 @@ MLIP_DEVICE=cuda COMPUTE_TIER=2 USE_INHIBITOR_PROPOSER=true \
   aicoscientist-validate --run-id demo   # add --offline for the keyless combinatorial proposer
 ```
 
+### Screening funnel (Phase 3, default)
+
+Layer 3 runs as a batch **screening campaign** rather than a single-candidate test
+(`SCREENING_MODE=funnel`, the default; `single` restores the legacy one-candidate loop):
+
+1. **Pool** (`SCREEN_POOL_SIZE`, 10–50, default 20): built-in library + KG-mined priors +
+   manual `selection_criteria.md` + AI-proposed novel molecules to fill the pool.
+2. **Tier-0 prior rank** over all N — honest (no committed-candidate pin, no fabricated
+   default priors; unevidenced candidates are flagged `no-prior` and ranked below).
+3. **MLIP batch screen** of the shortlist (`SCREEN_SHORTLIST_M`, default 8) on **shared,
+   seed-identical gated slab ensembles** (`SCREEN_ENSEMBLE_N`, default 2) — every candidate
+   is scored on the same surfaces, and slabs are built once per campaign, not per molecule.
+   The committed hypothesis molecule is always screened, even if prior-ranked low.
+4. **Top-k full-fidelity re-run** (`SCREEN_TOP_K`, default 3) at `SURFACE_ENSEMBLE_N`
+   (xTB cross-check included at Tier ≥ 2).
+5. **Recommendation agent**: an LLM writes the final judgement (winner, runners-up, risks,
+   committed-hypothesis outcome) but can never override the computed ranking; a
+   deterministic fallback runs offline. Reflection may re-run the winner with a larger
+   ensemble, bounded by `MAX_VALIDATION_ITERS` — it never switches molecules.
+
+Artifacts: `screening_results.json` (full campaign table), `recommendation.json`,
+`screening/asald_<candidate>.json` (per-candidate rich results); `asald_results.json`
+holds the winner. The Layer-4 manuscript gains a campaign table (`tab:screening`) and a
+ranked-selectivity funnel figure (`fig:screening`) alongside the winner deep-dive.
+
+```bash
+SCREEN_POOL_SIZE=30 SCREEN_SHORTLIST_M=10 SCREEN_TOP_K=3 \
+MLIP_DEVICE=cuda COMPUTE_TIER=1 aicoscientist-validate --run-id demo
+```
+
 ## Setup
 
 ```bash

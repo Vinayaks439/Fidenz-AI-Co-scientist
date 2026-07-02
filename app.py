@@ -245,7 +245,8 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
                  mq_melt_t: float = 3500.0, mq_melt_steps: float = 3000,
                  mq_quench_steps: float = 8000, mq_timestep: float = 0.5,
                  mq_ensemble: float = 0, mq_autotune: bool = False,
-                 runtime_profile: str = "Custom (use fields below)"):
+                 runtime_profile: str = "Custom (use fields below)",
+                 screen_pool: float = 20, screen_top_k: float = 3):
     empty_viewer = _structure_viewer_html([])
     idea = (idea or "").strip()
     if not idea:
@@ -253,6 +254,11 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
         return
 
     env = os.environ.copy()
+    # Screening funnel: pool of N candidates -> Tier-0 rank -> MLIP batch on shared
+    # slabs -> top-k full fidelity -> recommendation agent -> paper.
+    env["SCREENING_MODE"] = "funnel"
+    env["SCREEN_POOL_SIZE"] = str(int(screen_pool))
+    env["SCREEN_TOP_K"] = str(int(screen_top_k))
     if not offline:
         gemini_key = (gemini_key or "").strip()
         if not gemini_key:
@@ -321,6 +327,8 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
         f"run id: {run_id}\n"
         f"mode: {'offline (mock)' if offline else 'live (Gemini)'}\n"
         f"compute tier: {tier_label}\n"
+        f"screening funnel: pool={int(screen_pool)} -> top-{int(screen_top_k)} "
+        f"-> recommendation\n"
     )
     if gpu_note:
         log += gpu_note + "\n"
@@ -382,6 +390,25 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             info="e.g. select:1, merge:1,2, new",
         )
     gemini_key = gr.Textbox(label="Gemini API key (Google AI Studio)", type="password")
+
+    with gr.Row():
+        screen_pool = gr.Slider(
+            minimum=10, maximum=50, value=20, step=1,
+            label="Screening pool size (N inhibitors)",
+            info=(
+                "How many candidate inhibitors enter the screening funnel: library + "
+                "KG-mined + AI-proposed novel molecules. All are prior-ranked; the "
+                "shortlist is screened with the reactivity engine on identical slabs."
+            ),
+        )
+        screen_top_k = gr.Slider(
+            minimum=1, maximum=10, value=3, step=1,
+            label="Top-k full-fidelity re-runs",
+            info=(
+                "The best k candidates from the batch screen are re-run at full "
+                "ensemble fidelity before the recommendation agent picks the winner."
+            ),
+        )
 
     tier1_gpu = gr.Checkbox(
         label="Tier-1: foundation-MLIP (MACE) reactivity — uses GPU when available",
@@ -475,7 +502,7 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
         run_pipeline,
         inputs=[idea, offline, gemini_key, auto_decision, tier1_gpu, sampling, slab_source,
                 mq_melt_t, mq_melt_steps, mq_quench_steps, mq_timestep, mq_ensemble,
-                mq_autotune, runtime_profile],
+                mq_autotune, runtime_profile, screen_pool, screen_top_k],
         outputs=[log_box, files_out, viewer_html],
     )
     demo.load(_gpu_status, inputs=None, outputs=gpu_status)

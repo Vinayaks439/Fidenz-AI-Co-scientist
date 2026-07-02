@@ -112,7 +112,8 @@ def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 25) 
 
 
 def _build_payload(run_id: str, rich: dict, fidelity: dict, plan: dict,
-                   summary_md: str, cited: list[dict]) -> dict:
+                   summary_md: str, cited: list[dict],
+                   screening: dict | None = None) -> dict:
     ads = rich.get("inhibitor_adsorption", {})
     return {
         "run_id": run_id,
@@ -130,6 +131,9 @@ def _build_payload(run_id: str, rich: dict, fidelity: dict, plan: dict,
         "plan_reasoning_trace": plan.get("reasoning_trace", []),
         "validation_summary_md": summary_md,
         "architecture_digest": sections.ARCH_DIGEST,
+        # Screening-funnel campaign (winner deep-dive numbers are the rich dict above;
+        # this carries the full comparative table + recommendation for the writers).
+        "screening": screening,
         "citation_keys": [
             {"key": sections._safe_key(c.get("id", "ref")),
              "title": c.get("title", ""), "year": c.get("year")}
@@ -152,7 +156,8 @@ def _fig_block(name: str, label: str, caption: str, width: float = 1.0,
 
 
 def _render_figures(run_dir: Path, paper_dir: Path, rich: dict,
-                    fidelity: dict) -> tuple[dict[str, str], list[Path]]:
+                    fidelity: dict,
+                    screening: dict | None = None) -> tuple[dict[str, str], list[Path]]:
     """Render the figure suite; return ({section_key: latex_floats}, written_paths)."""
     hyp = rich.get("hypothesis", {})
     prov = rich.get("provenance", {})
@@ -230,6 +235,24 @@ def _render_figures(run_dir: Path, paper_dir: Path, rich: dict,
             "and its eventual rise is the residual defect nucleation that makes "
             "selectivity finite."))
 
+    if screening:
+        p = figures.screening_funnel_figure(screening, paper_dir / "screening.png")
+        if p:
+            written.append(p)
+            n_pool = (screening.get("config") or {}).get("pool_size", "N")
+            blocks["results"].append(_fig_block(
+                p.name, "fig:screening",
+                f"Screening-funnel outcome over the {n_pool}-candidate inhibitor "
+                "pool: computed area selectivity $S$ at the target thickness "
+                "(ensemble mean $\\pm\\sigma$) for every candidate that reached the "
+                "MLIP batch screen (light blue) or the full-fidelity top-$k$ re-run "
+                "(dark blue), all scored on identical seed-shared gated slab "
+                "ensembles. The recommended winner (orange) is the candidate the "
+                "recommendation agent selected; the dashed line marks the committed "
+                "selectivity target. Candidates eliminated at the Tier-0 prior rank "
+                "carry no computed $S$ and appear only in "
+                "Table~\\ref{tab:screening}."))
+
     p = figures.selectivity_figure(rich, paper_dir / "selectivity.png")
     if p:
         written.append(p)
@@ -264,11 +287,14 @@ _SECTION_ORDER = [
 
 
 def _assemble_body(drafts: dict[str, str], fig_blocks: dict[str, str],
-                   rich: dict, fidelity: dict, run_id: str) -> str:
+                   rich: dict, fidelity: dict, run_id: str,
+                   screening: dict | None = None) -> str:
     tables_for = {
         "methods_surfaces": sections.fidelity_table(fidelity),
-        "results": "\n\n".join(t for t in (sections.adsorption_table(rich),
-                                           sections.calibration_table(rich)) if t),
+        "results": "\n\n".join(t for t in (
+            sections.screening_table(screening) if screening else "",
+            sections.adsorption_table(rich),
+            sections.calibration_table(rich)) if t),
         "reproducibility": sections.provenance_table(rich, run_id),
     }
     parts = []
@@ -297,6 +323,7 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     fidelity = _load_json(run_dir / "surface_fidelity.json")
     plan = _load_json(run_dir / "validation_plan.json")
     citations = _load_json(run_dir / "citation_repository.json").get("citations", [])
+    screening = _load_json(run_dir / "screening_results.json") or None
     summary_md = ""
     if (run_dir / "validation_summary.md").exists():
         summary_md = (run_dir / "validation_summary.md").read_text(encoding="utf-8")
@@ -305,16 +332,24 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     paper_dir.mkdir(parents=True, exist_ok=True)
 
     # Figure agents (real numbers/geometries only).
-    fig_blocks, fig_paths = _render_figures(run_dir, paper_dir, rich, fidelity)
+    fig_blocks, fig_paths = _render_figures(run_dir, paper_dir, rich, fidelity,
+                                            screening=screening)
 
     # Section-writer swarm (LangGraph fan-out; deterministic fallback offline).
     cited = _select_citations(citations, rich.get("hypothesis", {}))
-    payload = _build_payload(run_id, rich, fidelity, plan, summary_md, cited)
+    payload = _build_payload(run_id, rich, fidelity, plan, summary_md, cited,
+                             screening=screening)
     drafts = swarm.run_swarm(payload, offline=offline)
 
-    body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id)
+    body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id,
+                          screening=screening)
 
     hyp = rich.get("hypothesis", {})
+    campaign_txt = ""
+    if screening and screening.get("winner"):
+        n_pool = (screening.get("config") or {}).get("pool_size")
+        if n_pool:
+            campaign_txt = f" Selected from a {n_pool}-Candidate Screening Funnel"
     title = (
         "An Agentic In-Silico Co-Scientist for Area-Selective ALD: "
         f"Fidelity-Gated Amorphous {sections.latex_escape(hyp.get('growth_surface', ''))}"
@@ -322,6 +357,7 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
         f"Site-Matched {sections.latex_escape(hyp.get('inhibitor', ''))} Passivation "
         f"for {sections.latex_escape(hyp.get('precursor', ''))}-Based "
         f"{sections.latex_escape(hyp.get('target_film', ''))} Growth"
+        + campaign_txt
     )
 
     filled = _TEMPLATE.read_text(encoding="utf-8")

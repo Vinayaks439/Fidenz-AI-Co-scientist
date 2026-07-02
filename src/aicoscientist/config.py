@@ -50,6 +50,31 @@ class Settings(BaseSettings):
     # Layer 3 — bounded reflection / closed-loop refinement budget
     max_validation_iters: int = Field(default=2, alias="MAX_VALIDATION_ITERS")
 
+    # Layer 3 — screening-funnel campaign (batch candidate screening).
+    # funnel: assemble a pool of N candidates, Tier-0 prior-rank all, MLIP-screen the
+    # shortlist on SHARED gated slabs (apples-to-apples), full-fidelity re-run of the
+    # top-k, then a recommendation agent picks the winner. single: legacy behavior
+    # (one candidate per reflect iteration).
+    screening_mode: str = Field(
+        default="funnel", alias="SCREENING_MODE", description="funnel | single"
+    )
+    screen_pool_size: int = Field(
+        default=20, alias="SCREEN_POOL_SIZE",
+        description="candidate pool size for the screening funnel (10-50)",
+    )
+    screen_shortlist_m: int = Field(
+        default=8, alias="SCREEN_SHORTLIST_M",
+        description="candidates advancing from the Tier-0 prior rank to the MLIP batch",
+    )
+    screen_top_k: int = Field(
+        default=3, alias="SCREEN_TOP_K",
+        description="candidates re-run at full fidelity before the final recommendation",
+    )
+    screen_ensemble_n: int = Field(
+        default=2, alias="SCREEN_ENSEMBLE_N",
+        description="slabs per surface during the batch screen (full ensemble for top-k)",
+    )
+
     # Layer 3 — AS-ALD surface-reactivity engine (ADR-004/009)
     compute_tier: int = Field(
         default=0,

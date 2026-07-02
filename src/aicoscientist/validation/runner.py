@@ -61,14 +61,23 @@ def load_knowledge_graph(run_id: str) -> KnowledgeGraph:
 
 def run_validation(run_id: str, offline: bool = False) -> Layer3Output:
     """Execute Layer 3 for a completed run and return its output."""
-    from ..layer3_graph import build_layer3_graph  # lazy import avoids a cycle
+    # lazy imports avoid a cycle
+    from ..layer3_graph import build_layer3_graph, build_layer3_screening_graph
 
     settings = get_settings()
     official = load_official_hypothesis(run_id)
     kg = load_knowledge_graph(run_id)
     store = ArtifactStore(run_id)
 
-    graph = build_layer3_graph(kg, store)
+    if settings.screening_mode.strip().lower() == "funnel":
+        logger.info(
+            "Layer 3 screening funnel: pool=%d, shortlist=%d, top_k=%d, tier=%d",
+            settings.screen_pool_size, settings.screen_shortlist_m,
+            settings.screen_top_k, settings.compute_tier,
+        )
+        graph = build_layer3_screening_graph(kg, store)
+    else:
+        graph = build_layer3_graph(kg, store)
     initial = {
         "run_id": run_id,
         "offline": offline,

@@ -35,13 +35,20 @@ _HEAD_GROUPS: dict[str, dict] = {
     "primary amine": {"smiles": "N", "dE_ngs": (-1.00, -0.70), "dE_gs": -0.45},
     "thiol": {"smiles": "S", "dE_ngs": (-1.15, -0.85), "dE_gs": -0.35},
 }
-# Volatile backbones (SMILES prefix, descriptor).
+# Volatile backbones (SMILES prefix, descriptor). Ten backbones x five head groups
+# gives the offline generator up to 50 distinct candidates, enough to fill the
+# largest screening pool (SCREEN_POOL_SIZE max) without an LLM key.
 _BACKBONES: list[tuple[str, str, str]] = [
     ("CC", "ethyl", "high"),
     ("CCC", "propyl", "high"),
     ("CC(C)", "isopropyl", "high"),
     ("CC(C)(C)", "tert-butyl", "high"),
     ("CCCC", "butyl", "medium"),
+    ("CC(C)C", "isobutyl", "medium"),
+    ("CCC(C)", "sec-butyl", "medium"),
+    ("CCCCC", "pentyl", "medium"),
+    ("CCCCCC", "hexyl", "low"),
+    ("C1CCCCC1", "cyclohexyl", "low"),
 ]
 
 
@@ -96,9 +103,28 @@ class InhibitorProposer:
             "You are an AS-ALD (area-selective ALD) surface-chemistry expert. Propose NOVEL "
             "small-molecule inhibitor candidates that should CHEMISORB strongly on the "
             "non-growth surface and only PHYSISORB weakly on the growth surface, be volatile "
-            "enough to dose from vapor, and be removable after growth. Return valid SMILES. "
-            "Do not repeat any molecule in the existing list. Ground each proposal in the "
-            "given mechanistic concepts and cite provided source ids where relevant."
+            "enough to dose from vapor, and be removable after growth.\n\n"
+            "HARD RULES (proposals violating them are discarded):\n"
+            "1. Valid, parseable SMILES for every candidate; no duplicates of each other "
+            "or of the existing list (check synonyms and abbreviations, not just exact "
+            "names).\n"
+            "2. DIVERSITY is mandatory: spread proposals across DIFFERENT head-group "
+            "chemistries (e.g. carboxylic/phosphonic/sulfonic acids, amines, thiols, "
+            "silanes) and different backbone sizes. Never return a list dominated by "
+            "one functional-group family.\n"
+            "3. expected_dE_range_eV must be a plausible chemisorption range for that "
+            "head group on the stated NGS, justified in the rationale by an analogous "
+            "measured/computed system; dE_gs_eV must be a physisorption-regime value "
+            "(> -0.6 eV). Do not fabricate precise numbers - give honest ranges. These "
+            "are search priors only: the MLIP recomputes the real energetics.\n"
+            "4. volatility/removability must be justified by molecular weight and "
+            "anchoring strength in the rationale (e.g. a C18 tail is NOT 'high' "
+            "volatility; a phosphonate anchor is NOT 'high' removability).\n"
+            "5. Every proposal must be dosable from vapor at typical ALD temperatures "
+            "(roughly < 350 g/mol unless justified) and plausibly commercially "
+            "obtainable or trivially synthesizable.\n"
+            "Ground each proposal in the given mechanistic concepts and cite provided "
+            "source ids where relevant."
         )
         user = (
             f"Growth surface (GS): {spec.growth_surface}. Non-growth surface (NGS): "
@@ -120,9 +146,12 @@ class InhibitorProposer:
         group_order = ["carboxylic acid", "phosphonic acid", "sulfonic acid", "thiol",
                        "primary amine"]
         out: list[ProposedInhibitor] = []
-        for group in group_order:
-            head = _HEAD_GROUPS[group]
-            for prefix, bb_name, vol in _BACKBONES:
+        # Backbone-major iteration cycles through the head-group chemistries first, so
+        # even a small n yields a chemically DIVERSE set (one candidate per family)
+        # instead of n near-identical carboxylic acids.
+        for prefix, bb_name, vol in _BACKBONES:
+            for group in group_order:
+                head = _HEAD_GROUPS[group]
                 smiles = prefix + head["smiles"]
                 name = f"{bb_name} {group}"
                 if name.lower() in existing:

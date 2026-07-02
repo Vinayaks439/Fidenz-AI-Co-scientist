@@ -143,6 +143,49 @@ def energetics_figure(rich: dict, out_path: Path) -> Path | None:
     return out_path
 
 
+def screening_funnel_figure(screening: dict, out_path: Path) -> Path | None:
+    """Ranked bar chart of computed selectivity per screened candidate (the funnel).
+
+    Candidates that reached the MLIP batch or full-fidelity stage are shown with
+    their ensemble S +/- sigma; the recommended winner is highlighted. Tier-0-only
+    candidates carry no computed S and are summarized in the caption instead.
+    """
+    try:
+        plt = _plt()
+    except Exception:  # noqa: BLE001
+        return None
+    rows = [r for r in screening.get("rows", []) if r.get("S_mean") is not None]
+    if not rows:
+        return None
+    rows.sort(key=lambda r: r["S_mean"])
+    winner = screening.get("winner")
+    names = [r["inhibitor"] for r in rows]
+    s = [r["S_mean"] for r in rows]
+    err = [r.get("S_std") or 0.0 for r in rows]
+    colors = ["#ff7f0e" if n == winner
+              else ("#1f77b4" if r.get("stage") == "full" else "#9ecae1")
+              for n, r in zip(names, rows)]
+
+    fig, ax = plt.subplots(figsize=(3.5, max(2.2, 0.32 * len(rows) + 0.9)))
+    ax.barh(names, s, xerr=err, color=colors, height=0.62, capsize=3, alpha=0.9)
+    target = (screening.get("config") or {}).get("target_selectivity", 0.9)
+    ax.axvline(float(target), ls="--", color="#d62728", lw=1)
+    ax.set_xlabel(r"$S$ at target thickness (ensemble mean $\pm\sigma$)")
+    ax.set_xlim(0, 1.05)
+    from matplotlib.patches import Patch
+
+    ax.legend(handles=[
+        Patch(color="#ff7f0e", label="recommended"),
+        Patch(color="#1f77b4", label="full-fidelity re-run"),
+        Patch(color="#9ecae1", label="MLIP batch screen"),
+    ], loc="lower right", fontsize=6)
+    ax.tick_params(axis="y", labelsize=6.5)
+    fig.tight_layout()
+    fig.savefig(out_path)
+    plt.close(fig)
+    return out_path
+
+
 def site_density_figure(fidelity: dict, out_path: Path) -> Path | None:
     """Per-site-type surface densities vs the Kim 2026 acceptance bands."""
     try:

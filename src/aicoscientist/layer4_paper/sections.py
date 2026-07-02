@@ -188,6 +188,59 @@ def calibration_table(rich: dict) -> str:
     )
 
 
+def screening_table(screening: dict) -> str:
+    """Campaign table: every candidate that received computed numbers, ranked by S."""
+    rows_in = [r for r in screening.get("rows", []) if r.get("S_mean") is not None]
+    if not rows_in:
+        return ""
+    rows_in.sort(key=lambda r: (r["S_mean"], r.get("differential_blocking") or 0.0),
+                 reverse=True)
+    winner = screening.get("winner")
+    n_pool = (screening.get("config") or {}).get("pool_size",
+                                                 len(screening.get("rows", [])))
+    n_tier0_only = len(screening.get("rows", [])) - len(rows_in)
+    body = []
+    for r in rows_in:
+        flags = []
+        if r.get("prior_extrapolated"):
+            flags.append("E")
+        if r.get("prior_missing"):
+            flags.append("M")
+        if r.get("prior_source") == "ai-proposed":
+            flags.append("A")
+        if r.get("calibration_flag") == "review":
+            flags.append("R")
+        name = latex_escape(str(r.get("inhibitor", "")))
+        if r.get("inhibitor") == winner:
+            name = f"\\textbf{{{name}}}"
+        s_std = r.get("S_std")
+        s_txt = (f"${r['S_mean']} \\pm {s_std}$" if s_std is not None
+                 else f"${r['S_mean']}$")
+        body.append(
+            f"{name} & {latex_escape(str(r.get('stage', '')))} & "
+            f"{r.get('dE_ngs_mean_eV', 'n/a')} & {r.get('dE_gs_mean_eV', 'n/a')} & "
+            f"{r.get('differential_blocking', 'n/a')} & {s_txt} & "
+            f"{latex_escape(str(r.get('verdict', '')))} & "
+            f"{','.join(flags) if flags else '--'} \\\\"
+        )
+    return (
+        "\\begin{table*}[!t]\\centering\n"
+        "\\caption{Screening-campaign results over the candidate pool "
+        f"(N={n_pool}; {n_tier0_only} candidate(s) eliminated at the Tier-0 prior "
+        "rank carry no computed values and are omitted). All computed candidates "
+        "were scored on identical, seed-shared gated slab ensembles. Energies in eV; "
+        "$S$ at the target thickness (ensemble mean $\\pm\\sigma$). The recommended "
+        "winner is bold. Flags: E = NGS prior extrapolated from another surface, "
+        "M = no literature prior, A = AI-proposed novel compound, "
+        "R = calibration flagged for review.}\n\\label{tab:screening}\n"
+        "\\begin{tabular}{llcccccc}\\toprule\n"
+        "Inhibitor & Stage & $\\Delta E_{NGS}$ & $\\Delta E_{GS}$ & "
+        "$\\Delta\\theta_{block}$ & $S$ & Verdict & Flags \\\\\\midrule\n"
+        + "\n".join(body)
+        + "\n\\bottomrule\\end{tabular}\\end{table*}"
+    )
+
+
 def provenance_table(rich: dict, run_id: str) -> str:
     prov = rich.get("provenance", {})
     return (
@@ -497,6 +550,36 @@ def _fb_methods_protocol(p: dict) -> str:
     )
 
 
+def _screening_paragraph(p: dict) -> str:
+    """Deterministic campaign summary appended to Results when the funnel ran."""
+    sc = p.get("screening") or {}
+    cfg = sc.get("config", {})
+    rows = sc.get("rows", [])
+    computed = [r for r in rows if r.get("S_mean") is not None]
+    if not computed:
+        return ""
+    rec = sc.get("recommendation", {})
+    winner = latex_escape(str(sc.get("winner", "n/a")))
+    runners = ", ".join(latex_escape(r) for r in rec.get("runners_up", [])[:3])
+    return (
+        "\n\nThese single-candidate results conclude a screening campaign, not a "
+        f"one-shot test: a pool of {cfg.get('pool_size', len(rows))} candidate "
+        f"inhibitors was prior-ranked at Tier 0, {cfg.get('shortlist_m', 'n/a')} were "
+        "screened with the reactivity engine on \\emph{identical}, seed-shared gated "
+        f"slab ensembles, and the top {cfg.get('top_k', 'n/a')} were re-run at full "
+        "fidelity before the recommendation agent selected "
+        f"\\textbf{{{winner}}}"
+        + (f" (runners-up: {runners})" if runners else "")
+        + ". The complete campaign table is Table~\\ref{tab:screening} and the "
+        "ranked selectivities are visualized in Fig.~\\ref{fig:screening}. "
+        + (
+            "Outcome for the committed hypothesis: "
+            + latex_escape(rec.get("committed_candidate_outcome", "")) + ". "
+            if rec.get("committed_candidate_outcome") else ""
+        )
+    )
+
+
 def _fb_results(p: dict) -> str:
     ads = p.get("adsorption", {})
     sel = p.get("selectivity", {})
@@ -535,6 +618,7 @@ def _fb_results(p: dict) -> str:
         f"against the {pct(p.get('hypothesis', {}).get('target_selectivity', 0.9))} "
         f"target; the recorded verdict is \\textbf{{{latex_escape(verdict)}}}."
         + flag_para
+        + _screening_paragraph(p)
     )
 
 
@@ -600,13 +684,25 @@ def _fb_limitations(p: dict) -> str:
 def _fb_conclusion(p: dict) -> str:
     h = _hyp(p)
     verdict = str(p.get("verdict", "inconclusive")).replace("_", " ")
+    sc = p.get("screening") or {}
+    campaign = ""
+    if sc.get("winner"):
+        cfg = sc.get("config", {})
+        campaign = (
+            f"a {cfg.get('pool_size', 'multi')}-candidate screening funnel "
+            "(prior rank $\\rightarrow$ shared-slab batch screen $\\rightarrow$ "
+            "full-fidelity top-"
+            f"{cfg.get('top_k', 'k')} $\\rightarrow$ recommendation), "
+        )
     return (
         "We demonstrated an end-to-end autonomous in-silico co-scientist for "
         "area-selective ALD: literature grounding into a typed knowledge graph, "
         "human-gated hypothesis commitment, fidelity-gated amorphous surface ensembles, "
-        "agentic site-matched inhibitor/precursor selection, tiered "
-        "literature-anchored reactivity validation, and autonomous manuscript "
-        f"assembly. For the committed intervention --- "
+        "agentic site-matched inhibitor/precursor selection, " + campaign
+        + "tiered literature-anchored reactivity validation, and autonomous manuscript "
+        f"assembly. For the "
+        + ("recommended" if sc.get("winner") else "committed")
+        + " intervention --- "
         f"\\emph{{{latex_escape(h.get('inhibitor', 'n/a'))}}} passivating "
         f"{latex_escape(h.get('non_growth_surface', 'n/a'))} against "
         f"{latex_escape(h.get('precursor', 'n/a'))}-based "

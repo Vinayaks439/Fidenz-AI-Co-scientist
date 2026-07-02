@@ -27,9 +27,78 @@ _VERDICT_STYLE = {
 }
 
 
+def _render_screening(output: Layer3Output) -> None:
+    """Campaign table + recommendation (screening-funnel mode only)."""
+    sc = output.screening or {}
+    rows = sc.get("rows", [])
+    if not rows:
+        return
+    cfg = sc.get("config", {})
+    tbl = Table(
+        title=(
+            f"Screening campaign — pool {cfg.get('pool_size', len(rows))}, "
+            f"shortlist {cfg.get('shortlist_m', '?')}, top-{cfg.get('top_k', '?')} "
+            f"(tier {cfg.get('compute_tier', '?')})"
+        ),
+        expand=True,
+    )
+    tbl.add_column("Inhibitor")
+    tbl.add_column("Stage")
+    tbl.add_column("dE_ngs", justify="right")
+    tbl.add_column("dE_gs", justify="right")
+    tbl.add_column("S", justify="right")
+    tbl.add_column("Verdict")
+    tbl.add_column("Flags")
+    winner = sc.get("winner")
+    for r in rows:
+        flags = []
+        if r.get("prior_extrapolated"):
+            flags.append("extrap")
+        if r.get("prior_missing"):
+            flags.append("no-prior")
+        if r.get("prior_source") == "ai-proposed":
+            flags.append("ai")
+        if r.get("calibration_flag") == "review":
+            flags.append("review")
+        name = r.get("inhibitor", "?")
+        s_txt = "-" if r.get("S_mean") is None else (
+            f"{r['S_mean']:.3f}"
+            + (f"±{r['S_std']:.3f}" if r.get("S_std") is not None else "")
+        )
+        style = "bold green" if name == winner else None
+        tbl.add_row(
+            name,
+            r.get("stage", ""),
+            "-" if r.get("dE_ngs_mean_eV") is None else f"{r['dE_ngs_mean_eV']:.2f}",
+            "-" if r.get("dE_gs_mean_eV") is None else f"{r['dE_gs_mean_eV']:.2f}",
+            s_txt,
+            r.get("verdict") or ("-" if r.get("status") == "ok" else "failed"),
+            ",".join(flags) or "-",
+            style=style,
+        )
+    console.print(tbl)
+
+    rec = sc.get("recommendation") or {}
+    if rec.get("winner"):
+        body = (
+            f"[bold green]{rec['winner']}[/bold green]  "
+            f"(confidence {rec.get('confidence', 0):.2f})\n\n"
+            f"{rec.get('winner_rationale', '')}"
+        )
+        if rec.get("runners_up"):
+            body += f"\n\nRunners-up: {', '.join(rec['runners_up'])}"
+        if rec.get("committed_candidate_outcome"):
+            body += f"\nCommitted hypothesis: {rec['committed_candidate_outcome']}"
+        if rec.get("risks"):
+            body += "\nRisks:\n" + "\n".join(f"  - {r}" for r in rec["risks"][:6])
+        console.print(Panel(body, title="Final recommendation", border_style="green"))
+
+
 def _render(output: Layer3Output) -> None:
     result = output.result
     plan = result.plan
+
+    _render_screening(output)
 
     plan_tbl = Table.grid(padding=(0, 1))
     plan_tbl.add_column(justify="right", style="dim")
@@ -98,7 +167,14 @@ def run(args: argparse.Namespace) -> int:
             f"compute tier: {settings.compute_tier} "
             f"({'MLIP ' + settings.mlip_model if settings.compute_tier >= 1 else 'Tier-0 literature priors'})\n"
             f"max loop iterations: {settings.max_validation_iters}\n"
-            f"artifacts: {run_dir}",
+            + (
+                f"screening funnel: pool={settings.screen_pool_size}, "
+                f"shortlist={settings.screen_shortlist_m}, "
+                f"top-k={settings.screen_top_k}\n"
+                if settings.screening_mode.strip().lower() == "funnel"
+                else "screening: single-candidate (legacy)\n"
+            )
+            + f"artifacts: {run_dir}",
             border_style="magenta",
         )
     )

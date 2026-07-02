@@ -31,7 +31,10 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "prediction), the system (four-layer agentic co-scientist), the experiment "
      "(surfaces built+gated, pair tested, engine/tier), the key numbers (dE_ads on NGS "
      "and GS in eV, differential blocking, S at the target thickness in nm), and the "
-     "verdict. If the calibration flag is 'review', say the energetics are flagged."),
+     "verdict. If the calibration flag is 'review', say the energetics are flagged. "
+     "If payload['screening'] is non-null, this was a screening CAMPAIGN: state the "
+     "pool size, how many candidates were computed, and that the reported molecule is "
+     "the recommended winner of the funnel."),
     ("keywords", "Keywords", 15,
      "6-9 comma-separated IEEE keywords. No LaTeX commands, one line."),
     ("introduction", "Introduction", 650,
@@ -58,10 +61,14 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
     ("methods_selection", "Methods: Agentic Inhibitor/Precursor Selection", 550,
      "Deliverable 2. Describe the three-step site-matched screening protocol, the "
      "ranking axes (differential adsorption, volatility, removability, site-match, "
-     "steric footprint), the prior merging (KG-mined / manual criteria file / "
-     "built-in), and the AI experiment planner (which candidate, which tier, per "
-     "iteration). Reproduce the designer's reasoning trace from the payload as an "
-     "itemized list. Reference Fig.~\\ref{fig:molecule}."),
+     "steric footprint), and the prior merging (KG-mined / manual criteria file / "
+     "built-in). If payload['screening'] is non-null, describe the screening FUNNEL "
+     "from payload['screening']['config']: pool assembly (library + AI-proposed "
+     "novel candidates), honest Tier-0 prior rank (no committed-candidate pin), "
+     "MLIP batch screen of the shortlist on identical seed-shared slab ensembles, "
+     "full-fidelity top-k re-run, and the recommendation agent that may narrate but "
+     "never override the computed ranking. Reproduce the designer's reasoning trace "
+     "from the payload as an itemized list. Reference Fig.~\\ref{fig:molecule}."),
     ("methods_protocol", "Methods: In-Silico Testing Protocol", 700,
      "The five-step ADR-009 protocol. Define dEr and Ea with display equations "
      "(\\begin{equation}), the purge argument, the tiered compute (Tier 0 priors / "
@@ -70,13 +77,20 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "blocking -> nucleation delay -> S(N) with the S equation, and the "
      "calibration/validity-flag discipline. Name the exact MLIP and device from "
      "provenance. Reference Table~\\ref{tab:calibration}."),
-    ("results", "Results", 600,
+    ("results", "Results", 700,
      "Report EVERY number from the payload with units: dE_ads NGS/GS (eV, with std), "
      "blocking coverages, differential blocking, S at target thickness (nm) with "
      "std vs the target, verdict. Walk the reader through "
      "Table~\\ref{tab:adsorption}, Fig.~\\ref{fig:energetics}, "
      "Fig.~\\ref{fig:growth}, Fig.~\\ref{fig:selectivity}, and "
-     "Table~\\ref{tab:calibration}. If the calibration flag is 'review' or energies "
+     "Table~\\ref{tab:calibration}. If payload['screening'] is non-null, FIRST "
+     "present the campaign comparatively (Table~\\ref{tab:screening}, "
+     "Fig.~\\ref{fig:screening}): how the winner ranked against the runners-up on "
+     "computed S and differential blocking, the committed-candidate outcome from "
+     "payload['screening']['recommendation'], and any per-candidate flags "
+     "(extrapolated/missing priors, ai-proposed, calibration review) -- then give the "
+     "winner's deep-dive. Never present the winner as if it were the only molecule "
+     "tested. If the calibration flag is 'review' or energies "
      "sit at the clamp bounds (-3.0/+1.0 eV), state plainly that the energetics are "
      "fallback values and the verdict is a pipeline demonstration, not a "
      "quantitative claim."),
@@ -120,8 +134,9 @@ _SYSTEM_TEMPLATE = (
     "Fig.~\\ref{{fig:energetics}}, Fig.~\\ref{{fig:growth}}, "
     "Fig.~\\ref{{fig:selectivity}}, Table~\\ref{{tab:fidelity}}, "
     "Table~\\ref{{tab:adsorption}}, Table~\\ref{{tab:calibration}}, "
-    "Table~\\ref{{tab:provenance}} -- and \\cite only keys listed in "
-    "payload['citation_keys'].\n"
+    "Table~\\ref{{tab:provenance}} -- plus Fig.~\\ref{{fig:screening}} and "
+    "Table~\\ref{{tab:screening}} ONLY when payload['screening'] is non-null -- "
+    "and \\cite only keys listed in payload['citation_keys'].\n"
     "5. Scientific honesty is non-negotiable: flagged calibrations, clamped "
     "energies, and small ensembles must be stated, not smoothed over."
 )
