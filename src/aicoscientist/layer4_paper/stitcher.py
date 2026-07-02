@@ -1,28 +1,33 @@
 """Layer 4 - Agentic LaTeX paper stitcher (ADR-007, capstone).
 
-Assembles a reproducible manuscript from the Layer-1->3 artifacts of a completed run:
+Assembles a full-length IEEE-style manuscript from the Layer-1->3 artifacts of a
+completed run:
 
-* Hypothesis + results  <- ``asald_results.json``
-* Surface methods table  <- ``surface_fidelity.json``
-* Real citations         <- ``citation_repository.json`` (actual DOIs)
+* Hypothesis, energetics, selectivity, provenance  <- ``asald_results.json``
+* Surface fidelity (per-site densities vs bands)    <- ``surface_fidelity.json``
+* Designer method/assumptions/reasoning trace       <- ``validation_plan.json``
+* LLM validation digest (Gemini et al.)             <- ``validation_summary.md``
+* Real-DOI bibliography                             <- ``citation_repository.json``
+* Slab geometries for atomic-model figures          <- ``datasets/*.extxyz``
 
-Per-section writer agents emit LaTeX fragments (numbers only from artifacts), a figure
-agent renders the selectivity plot, and the compiler agent builds the PDF (degrading to a
-``.tex`` source when no TeX toolchain is present). Nothing is invented.
+A LangGraph swarm of per-section writer agents (``swarm.py``) drafts the prose; the
+figure agents render the full plot + atomic-model suite; tables and captions are built
+deterministically from the artifacts so no number is ever LLM-generated. The compiler
+agent builds the PDF via tectonic/latexmk/pdflatex, degrading to ``.tex`` source when
+no toolchain is present. Nothing is invented.
 """
 
 from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
 from ..config import get_settings
-from . import sections
+from . import figures, sections, swarm
 from .compiler import compile_pdf
-from .figures import selectivity_figure
 
 logger = logging.getLogger(__name__)
 
@@ -40,13 +45,212 @@ class PaperResult:
     pdf_path: Path | None
     figure_path: Path | None
     verdict: str
+    figures: list[Path] = field(default_factory=list)
 
 
 def _load_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
 
 
-def stitch_paper(run_id: str) -> PaperResult:
+# ─────────────────────────── payload for the swarm ───────────────────────────
+
+
+def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 25) -> list[dict]:
+    """Curated anchors + hypothesis provenance first, then the rest, capped."""
+    refs = set(hypothesis.get("provenance_refs", []))
+    anchors = [c for c in citations
+               if c.get("id") in refs or str(c.get("id", "")).startswith("seed_asald")]
+    rest = [c for c in citations if c not in anchors]
+    seen, out = set(), []
+    for c in anchors + rest:
+        cid = c.get("id")
+        if cid in seen:
+            continue
+        seen.add(cid)
+        out.append(c)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _build_payload(run_id: str, rich: dict, fidelity: dict, plan: dict,
+                   summary_md: str, cited: list[dict]) -> dict:
+    ads = rich.get("inhibitor_adsorption", {})
+    return {
+        "run_id": run_id,
+        "hypothesis": rich.get("hypothesis", {}),
+        "verdict": rich.get("verdict"),
+        "adsorption": {k: v for k, v in ads.items()
+                       if k not in ("configs_ngs", "configs_gs")},
+        "selectivity": rich.get("selectivity", {}),
+        "calibration_vs_literature": rich.get("calibration_vs_literature"),
+        "precursor_barrier": rich.get("precursor_barrier"),
+        "provenance": rich.get("provenance", {}),
+        "surface_fidelity": fidelity,
+        "plan_method": plan.get("method"),
+        "plan_assumptions": plan.get("assumptions", []),
+        "plan_reasoning_trace": plan.get("reasoning_trace", []),
+        "validation_summary_md": summary_md,
+        "architecture_digest": sections.ARCH_DIGEST,
+        "citation_keys": [
+            {"key": sections._safe_key(c.get("id", "ref")),
+             "title": c.get("title", ""), "year": c.get("year")}
+            for c in cited
+        ],
+    }
+
+
+# ─────────────────────────── figure floats + captions ───────────────────────────
+
+
+def _fig_block(name: str, label: str, caption: str, width: float = 1.0,
+               star: bool = False) -> str:
+    env = "figure*" if star else "figure"
+    return (
+        f"\\begin{{{env}}}[!t]\\centering\n"
+        f"\\includegraphics[width={width:.2f}\\linewidth]{{{name}}}\n"
+        f"\\caption{{{caption}}}\n\\label{{{label}}}\n\\end{{{env}}}"
+    )
+
+
+def _render_figures(run_dir: Path, paper_dir: Path, rich: dict,
+                    fidelity: dict) -> tuple[dict[str, str], list[Path]]:
+    """Render the figure suite; return ({section_key: latex_floats}, written_paths)."""
+    hyp = rich.get("hypothesis", {})
+    prov = rich.get("provenance", {})
+    sel = rich.get("selectivity", {})
+    gs = hyp.get("growth_surface", "a-SiO2")
+    ngs = hyp.get("non_growth_surface", "a-SiN")
+    inh = hyp.get("inhibitor", "inhibitor")
+    esc = sections.latex_escape
+
+    written: list[Path] = []
+    blocks: dict[str, list[str]] = {"methods_surfaces": [], "methods_selection": [],
+                                    "results": []}
+
+    p = figures.slab_figure(run_dir, rich, paper_dir / "slabs.png")
+    if p:
+        written.append(p)
+        blocks["methods_surfaces"].append(_fig_block(
+            p.name, "fig:slabs",
+            f"Atomic models of the amorphous surface slabs used in this run: "
+            f"{esc(gs)} growth surface (top row) and {esc(ngs)} non-growth surface "
+            "(bottom row), each in top view (left, growth face toward the reader) and "
+            "side view (right, vacuum gap above the surface). Color code: Si beige, O "
+            "red, N blue, H white. These are the exact gated geometries (or their "
+            "deterministic seed-identical rebuilds) on which the Tier-1 adsorption "
+            "search placed the inhibitor; terminal $-$OH/$-$NH$_2$ caps and bridge "
+            "sites are visible on the exposed face.", star=True))
+
+    p = figures.site_density_figure(fidelity, paper_dir / "site_densities.png")
+    if p:
+        written.append(p)
+        blocks["methods_surfaces"].append(_fig_block(
+            p.name, "fig:sites",
+            "Measured per-site-type surface densities (bars, nm$^{-2}$) of the "
+            "generated slabs against the Kim 2026 acceptance bands (green shading) "
+            "used by the fidelity gate; dashed line marks the crystalline reference "
+            "density, illustrating the $\\sim$35\\% terminal-site deficit that makes "
+            "amorphous models mandatory. Left panel: growth surface; right panel: "
+            "non-growth surface.", star=True))
+
+    p = figures.molecule_figure(rich, paper_dir / "inhibitor.png")
+    if p:
+        written.append(p)
+        blocks["methods_selection"].append(_fig_block(
+            p.name, "fig:molecule",
+            f"Three-dimensional conformer of the tested inhibitor, {esc(inh)}, as "
+            "built by the validation engine (ETKDGv3 embedding with force-field "
+            "cleanup) and used as the adsorbate in the Tier-1 search; two orthogonal "
+            "views. The head group anchors to the surface site while the tail provides "
+            "the steric blocking footprint used by the RSA coverage cap."))
+
+    p = figures.energetics_figure(rich, paper_dir / "energetics.png")
+    if p:
+        written.append(p)
+        blocks["results"].append(_fig_block(
+            p.name, "fig:energetics",
+            f"Mean inhibitor adsorption energies of {esc(inh)} on the non-growth "
+            f"({esc(ngs)}, red) and growth ({esc(gs)}, green) surfaces with ensemble "
+            "error bars, computed by "
+            f"{esc(str(prov.get('engine', 'the reactivity engine')))}. Dashed and "
+            "dotted lines mark the chemisorption ($<-0.7$ eV) and physisorption "
+            "($>-0.3$ eV) regime thresholds; the star marks the literature anchor "
+            "value on the NGS used for calibration. The chemisorb-on-NGS / "
+            "physisorb-on-GS contrast is the mechanism of area selectivity."))
+
+    p = figures.growth_curves_figure(rich, paper_dir / "growth_curves.png")
+    if p:
+        written.append(p)
+        blocks["results"].append(_fig_block(
+            p.name, "fig:growth",
+            "Simulated film thickness versus ALD cycle on the growth surface (green) "
+            "and non-growth surface (red), from the blocking-coverage "
+            "nucleation-delay model. The horizontal line marks the "
+            f"{sel.get('target_thickness_nm', 'n/a')} nm evaluation thickness; the "
+            "lag of the red curve is the nucleation delay purchased by the inhibitor, "
+            "and its eventual rise is the residual defect nucleation that makes "
+            "selectivity finite."))
+
+    p = figures.selectivity_figure(rich, paper_dir / "selectivity.png")
+    if p:
+        written.append(p)
+        blocks["results"].append(_fig_block(
+            p.name, "fig:selectivity",
+            "Area selectivity $S$ versus growth-surface oxide thickness with the "
+            f"{sections.pct(sel.get('target', 0.9))} target at "
+            f"{sel.get('target_thickness_nm', 'n/a')} nm (dashed) and the "
+            "surface-ensemble $\\pm\\sigma$ band (shading). $S$ is evaluated at the "
+            "cycle where the growth-surface film reaches each thickness; the decay "
+            "past the nucleation-delay breakthrough is the expected qualitative "
+            "signature of area-selective growth."))
+
+    return {k: "\n\n".join(v) for k, v in blocks.items() if v}, written
+
+
+# ─────────────────────────── assembly ───────────────────────────
+
+_SECTION_ORDER = [
+    ("introduction", "Introduction", None),
+    ("architecture", "System Architecture", "sec:architecture"),
+    ("methods_surfaces", "Methods: Amorphous Surface Builder", "sec:surfaces"),
+    ("methods_selection", "Methods: Agentic Inhibitor/Precursor Selection",
+     "sec:selection"),
+    ("methods_protocol", "Methods: In-Silico Testing Protocol", "sec:protocol"),
+    ("results", "Results", "sec:results"),
+    ("discussion", "Discussion", None),
+    ("limitations", "Limitations", None),
+    ("conclusion", "Conclusion", None),
+    ("reproducibility", "Reproducibility and Provenance", "sec:reproducibility"),
+]
+
+
+def _assemble_body(drafts: dict[str, str], fig_blocks: dict[str, str],
+                   rich: dict, fidelity: dict, run_id: str) -> str:
+    tables_for = {
+        "methods_surfaces": sections.fidelity_table(fidelity),
+        "results": "\n\n".join(t for t in (sections.adsorption_table(rich),
+                                           sections.calibration_table(rich)) if t),
+        "reproducibility": sections.provenance_table(rich, run_id),
+    }
+    parts = []
+    for key, title, label in _SECTION_ORDER:
+        head = f"\\section{{{title}}}"
+        if label:
+            head += f"\\label{{{label}}}"
+        chunk = [head, drafts.get(key, "")]
+        if tables_for.get(key):
+            chunk.append(tables_for[key])
+        if fig_blocks.get(key):
+            chunk.append(fig_blocks[key])
+        parts.append("\n".join(c for c in chunk if c))
+    return "\n\n".join(parts)
+
+
+def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     settings = get_settings()
     run_dir = settings.artifacts_path / run_id
     rich_path = run_dir / "asald_results.json"
@@ -55,49 +259,52 @@ def stitch_paper(run_id: str) -> PaperResult:
             f"No asald_results.json for run '{run_id}'. Run Layer 3 validation first."
         )
     rich = _load_json(rich_path)
-
-    fidelity_path = run_dir / "surface_fidelity.json"
-    fidelity = _load_json(fidelity_path) if fidelity_path.exists() else {}
-
-    citations = []
-    cite_path = run_dir / "citation_repository.json"
-    if cite_path.exists():
-        citations = _load_json(cite_path).get("citations", [])
+    fidelity = _load_json(run_dir / "surface_fidelity.json")
+    plan = _load_json(run_dir / "validation_plan.json")
+    citations = _load_json(run_dir / "citation_repository.json").get("citations", [])
+    summary_md = ""
+    if (run_dir / "validation_summary.md").exists():
+        summary_md = (run_dir / "validation_summary.md").read_text(encoding="utf-8")
 
     paper_dir = run_dir / "manuscript"
     paper_dir.mkdir(parents=True, exist_ok=True)
 
-    # Figure agent (real numbers only).
-    figure_path = selectivity_figure(rich, paper_dir / "selectivity.png")
-    figure_block = ""
-    if figure_path is not None:
-        figure_block = (
-            "\\begin{figure}[h]\\centering\n"
-            f"\\includegraphics[width=0.8\\linewidth]{{{figure_path.name}}}\n"
-            "\\caption{Area-selectivity vs oxide thickness with the target line and the "
-            "surface-ensemble band.}\n\\end{figure}"
-        )
+    # Figure agents (real numbers/geometries only).
+    fig_blocks, fig_paths = _render_figures(run_dir, paper_dir, rich, fidelity)
 
-    # Section writer agents.
+    # Section-writer swarm (LangGraph fan-out; deterministic fallback offline).
+    cited = _select_citations(citations, rich.get("hypothesis", {}))
+    payload = _build_payload(run_id, rich, fidelity, plan, summary_md, cited)
+    drafts = swarm.run_swarm(payload, offline=offline)
+
+    body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id)
+
+    hyp = rich.get("hypothesis", {})
+    title = (
+        "An Agentic In-Silico Co-Scientist for Area-Selective ALD: "
+        f"Fidelity-Gated Amorphous {sections.latex_escape(hyp.get('growth_surface', ''))}"
+        f"/{sections.latex_escape(hyp.get('non_growth_surface', ''))} Surfaces and "
+        f"Site-Matched {sections.latex_escape(hyp.get('inhibitor', ''))} Passivation "
+        f"for {sections.latex_escape(hyp.get('precursor', ''))}-Based "
+        f"{sections.latex_escape(hyp.get('target_film', ''))} Growth"
+    )
+
     filled = _TEMPLATE.read_text(encoding="utf-8")
-    replacements = {
-        "__TITLE__": sections.title(rich),
+    for key, val in {
+        "__TITLE__": title,
         "__DATE__": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "__ABSTRACT__": sections.abstract(rich),
-        "__INTRODUCTION__": sections.introduction(rich),
-        "__METHODS__": sections.methods(rich, fidelity),
-        "__RESULTS__": sections.results(rich),
-        "__FIGURE__": figure_block,
-        "__DISCUSSION__": sections.discussion(rich),
-        "__CONCLUSION__": sections.conclusion(rich),
-        "__BIBLIOGRAPHY__": sections.bibliography(citations),
-    }
-    for key, val in replacements.items():
+        "__RUN_ID__": sections.latex_escape(run_id),
+        "__ABSTRACT__": drafts.get("abstract", ""),
+        "__KEYWORDS__": drafts.get("keywords", ""),
+        "__BODY__": body,
+        "__BIBLIOGRAPHY__": sections.bibliography(cited),
+    }.items():
         filled = filled.replace(key, val)
 
     tex_path = paper_dir / "manuscript.tex"
     tex_path.write_text(filled, encoding="utf-8")
-    logger.info("wrote manuscript source to %s", tex_path)
+    logger.info("wrote manuscript source to %s (%d chars, %d figures)",
+                tex_path, len(filled), len(fig_paths))
 
     pdf_path = compile_pdf(tex_path)
 
@@ -105,6 +312,7 @@ def stitch_paper(run_id: str) -> PaperResult:
         run_id=run_id,
         tex_path=tex_path,
         pdf_path=pdf_path,
-        figure_path=figure_path,
+        figure_path=fig_paths[0] if fig_paths else None,
         verdict=rich.get("verdict", "inconclusive"),
+        figures=fig_paths,
     )

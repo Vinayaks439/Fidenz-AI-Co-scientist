@@ -34,7 +34,16 @@ google-genai = ["langchain-google-genai>=2.0.0"]
 google-vertexai = ["langchain-google-vertexai>=2.0.0"]
 # Tier-1 foundation-MLIP surface reactivity (Colab CUDA or CPU). MACE energy
 # differences require float64, unsupported on Apple MPS -> run this tier on CPU/CUDA.
-mlip = ["ase>=3.23", "mace-torch>=0.3.6"]
+# torch is imported directly for CUDA detection (config.py) and is MACE's backend;
+# torch-dftd supplies the optional D3 dispersion path; chgnet is an alternative
+# universal MLIP calculator (make_calculator(kind="chgnet")).
+mlip = [
+    "ase>=3.23",
+    "mace-torch>=0.3.6",
+    "torch>=2.1",
+    "torch-dftd>=0.4.0",
+    "chgnet>=0.3.0",
+]
 # Realistic structures: rdkit builds real 3D molecules from SMILES; pymatgen
 # generates crystalline-derived slabs (alpha-quartz SiO2, beta-Si3N4).
 structures = ["rdkit>=2024.03.1", "pymatgen>=2024.0.0"]

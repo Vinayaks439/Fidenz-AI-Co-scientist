@@ -112,6 +112,15 @@ def run(args: argparse.Namespace) -> int:
 
     console.print(f"[dim]Hypothesis:[/dim] {output.hypothesis_statement}\n")
     _render(output)
+
+    # LLM (Gemini/OpenAI/...) summary of the surfaces + selection + energetics for
+    # Layer 4; deterministic fallback offline. Never blocks the validation verdict.
+    from .validation.summarizer import write_validation_summary
+
+    summary_path = write_validation_summary(args.run_id, offline=args.offline)
+    if summary_path is not None:
+        console.print(f"[dim]Validation summary (for Layer 4): {summary_path}[/dim]")
+
     console.print(
         f"[dim]Artifacts (validation_results.json, validation_plan.json, "
         f"datasets/, simulation_logs/, updated knowledge_graph.json): {run_dir}[/dim]"

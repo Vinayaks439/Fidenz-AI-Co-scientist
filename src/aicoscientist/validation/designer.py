@@ -216,6 +216,31 @@ class ExperimentDesigner:
         # On refinement, advance to the next-ranked inhibitor (persist / keep exploring).
         idx = min(iteration, len(ranked) - 1)
         inhibitor, props = ranked[idx]
+
+        # Compute tier for this iteration. Default: the global COMPUTE_TIER. When the AI
+        # planner is enabled (ADR-009), let it choose BOTH the inhibitor and the tier per
+        # iteration, bounded by AI_PLANNER_MAX_TIER. Without the planner these flags are
+        # inert and the deterministic rank-index schedule at the global tier is used.
+        tier = settings.compute_tier
+        planner_rationale = ""
+        if getattr(settings, "use_ai_planner", False) and ranked:
+            from ..agents.experiment_planner import ExperimentPlanner
+
+            iplan = ExperimentPlanner(offline=self.offline).plan(
+                spec,
+                ranked,
+                iteration=iteration,
+                max_iters=settings.max_validation_iters,
+                max_tier=settings.ai_planner_max_tier,
+                default_tier=settings.compute_tier,
+                concept_names=concept_names,
+                prior_critique=prior_critique,
+            )
+            by_lower = {name.lower(): (name, p) for name, p in ranked}
+            inhibitor, props = by_lower.get(iplan.inhibitor.lower(), (inhibitor, props))
+            tier = iplan.compute_tier
+            planner_rationale = iplan.rationale
+
         prov = provenance.get(inhibitor, {"dE_ngs_source": "builtin",
                                           "ngs_extrapolated": False, "source_ids": []})
 
@@ -234,6 +259,11 @@ class ExperimentDesigner:
             + ".",
             f"Paired with precursor '{precursor}' for target film {target_film}.",
         ]
+        if planner_rationale:
+            trace.append(
+                f"AI planner (max tier {settings.ai_planner_max_tier}): tier {tier} -- "
+                f"{planner_rationale}"
+            )
         if prov["source_ids"]:
             trace.append(f"dE_ngs supported by citations: {', '.join(prov['source_ids'])}.")
         if prior_critique and prior_critique.decision == "refine":
@@ -283,7 +313,7 @@ class ExperimentDesigner:
                 "temperature_K": settings.ald_temperature_k,
                 "dose_ratio": 1.0,
                 "ensemble_n": settings.surface_ensemble_n,
-                "compute_tier": settings.compute_tier,
+                "compute_tier": tier,
                 "provenance_refs": spec.provenance_refs,
                 "prior_source": prov["dE_ngs_source"],
                 "prior_extrapolated": prov["ngs_extrapolated"],

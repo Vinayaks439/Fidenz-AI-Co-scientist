@@ -35,14 +35,14 @@ def run(args: argparse.Namespace) -> int:
 
     try:
         with console.status("[bold]Stitching manuscript from artifacts...[/bold]"):
-            result = stitch_paper(args.run_id)
+            result = stitch_paper(args.run_id, offline=args.offline)
     except PaperDataError as exc:
         console.print(f"[red]{exc}[/red]")
         return 1
 
     console.print(f"[green]Manuscript source:[/green] {result.tex_path}")
-    if result.figure_path:
-        console.print(f"[green]Figure:[/green] {result.figure_path}")
+    for fig in result.figures:
+        console.print(f"[green]Figure:[/green] {fig}")
     if result.pdf_path:
         console.print(f"[green]Compiled PDF:[/green] {result.pdf_path}")
     else:
@@ -61,6 +61,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--run-id", required=True, help="Run id of a completed Layer 1-3 run."
+    )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Deterministic section writers (no LLM key needed); figures/tables "
+             "still render from the real artifacts.",
     )
     parser.add_argument("--verbose", action="store_true", help="Verbose logging.")
     args = parser.parse_args(argv)

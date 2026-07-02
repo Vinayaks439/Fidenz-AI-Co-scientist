@@ -25,5 +25,8 @@ dependencies:
       # Optional Tier-1 foundation-MLIP surface reactivity:
       - ase>=3.23
       - mace-torch>=0.3.6
+      - torch>=2.1
+      - torch-dftd>=0.4.0        # optional D3 dispersion path for MACE
+      - chgnet>=0.3.0            # alternative universal MLIP calculator
       # Optional Tier-2 semi-empirical calibration:
       # - tblite>=0.3.0
