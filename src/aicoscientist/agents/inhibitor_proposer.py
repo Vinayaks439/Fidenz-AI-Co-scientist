@@ -85,13 +85,15 @@ class InhibitorProposer:
         existing_names: set[str] | None = None,
         n: int = 3,
         citations: list[str] | None = None,
+        prior_results: list[dict] | None = None,
     ) -> list[ProposedInhibitor]:
         concept_names = concept_names or []
         existing = {s.lower() for s in (existing_names or set())}
         out: list[ProposedInhibitor] = []
         if not self.offline:
             try:
-                out = self._propose_llm(spec, concept_names, existing, n, citations or [])
+                out = self._propose_llm(spec, concept_names, existing, n,
+                                        citations or [], prior_results or [])
             except Exception as exc:  # noqa: BLE001
                 logger.warning("LLM proposer failed (%s); using offline generator", exc)
         if len(out) >= n:
@@ -110,7 +112,7 @@ class InhibitorProposer:
 
     # ──────────────────────── LLM path ────────────────────────
 
-    def _propose_llm(self, spec, concept_names, existing, n, citations):
+    def _propose_llm(self, spec, concept_names, existing, n, citations, prior_results=None):
         # A single flash call tends to return only a handful; loop, feeding back the
         # accumulated names each round so the model keeps proposing NEW, diverse
         # molecules until we have n (or hit the round budget). This is what lets the AI
@@ -124,6 +126,7 @@ class InhibitorProposer:
                 break
             batch = self._propose_llm_once(
                 spec, concept_names, seen, min(need + 4, 15), citations, round_i=r,
+                prior_results=prior_results,
             )
             fresh = 0
             for c in batch:
@@ -139,7 +142,8 @@ class InhibitorProposer:
                 break
         return out[:n]
 
-    def _propose_llm_once(self, spec, concept_names, existing, n, citations, round_i=0):
+    def _propose_llm_once(self, spec, concept_names, existing, n, citations, round_i=0,
+                          prior_results=None):
         from ..llm import structured_call
 
         system = (
@@ -169,13 +173,58 @@ class InhibitorProposer:
             "Ground each proposal in the given mechanistic concepts and cite provided "
             "source ids where relevant."
         )
+        feedback = ""
+        if prior_results:
+            # Closed-loop, SITE-RESOLVED feedback: the previous generation was MLIP-screened
+            # and failed. Show the agent the regime on EACH surface (chemisorb < -0.7 eV /
+            # physisorb > -0.3 eV) so it sees exactly which site chemistry is the problem --
+            # not just an averaged number -- and design a generation that fixes it.
+            def _regime(d):
+                if d is None:
+                    return "n/a"
+                try:
+                    d = float(d)
+                except (TypeError, ValueError):
+                    return "n/a"
+                return ("chemisorb" if d < -0.7 else
+                        "PHYSISORB(good)" if d > -0.3 else "intermediate")
+
+            lines = []
+            for r in prior_results[:8]:
+                dn, dg = r.get("dE_ngs"), r.get("dE_gs")
+                lines.append(
+                    f"  - {r.get('name')} [{r.get('functional_group')}]: S={r.get('S'):.3f} | "
+                    f"NGS(SiN) dE={dn} ({_regime(dn)}) | GS(SiO2) dE={dg} ({_regime(dg)}) | "
+                    f"diff-blocking={r.get('differential')}"
+                )
+            ngs = getattr(spec, "non_growth_surface", "a-SiN")
+            gs = getattr(spec, "growth_surface", "a-SiO2")
+            feedback = (
+                "\nPRIOR GENERATION (MLIP-screened, all below the 90% target) -- learn "
+                "from these, site by site:\n" + "\n".join(lines)
+                + f"\n\nSITE CHEMISTRY: the non-growth surface {ngs} exposes -NH2 and -NH "
+                f"(amine) sites; the growth surface {gs} exposes -OH (silanol) and -O- "
+                "sites. THE WINNING INHIBITOR MUST: (a) CHEMISORB the NGS amine sites "
+                "(dE < -0.7 eV) AND (b) only PHYSISORB the GS silanol sites (dE > -0.3 eV, "
+                "so it purges away and growth proceeds).\n"
+                "DIAGNOSIS of the failures above: they CHEMISORB BOTH surfaces -- the "
+                "growth-surface (silanol) binding is far too strong, so there is no "
+                "selectivity. The averaged gap is not the fix; the GS binding must be "
+                "pushed all the way into physisorption.\n"
+                "DESIGN DIRECTIVE: propose head groups that react with amine/-NH but are "
+                "INERT to silanol/-OH (e.g. anchors selective for N-H insertion, or bulky "
+                "groups that sterically cannot reach the flat -OH), and avoid strongly "
+                "-OH-reactive anchors (chlorosilanes, phosphonic/carboxylic acids) unless "
+                "substantially modified to spare silanol.\n"
+            )
         user = (
             f"Growth surface (GS): {spec.growth_surface}. Non-growth surface (NGS): "
             f"{spec.non_growth_surface}. Target film: {spec.target_film}. "
             f"Existing candidates (do not repeat): {sorted(existing)}. "
             f"Mechanistic KG concepts: {concept_names[:40]}. "
-            f"Available citation ids: {citations[:20]}. "
-            f"Propose {n} novel inhibitors."
+            f"Available citation ids: {citations[:20]}."
+            + feedback
+            + f"\nPropose {n} novel inhibitors."
         )
         result = structured_call(ProposedInhibitorSet, system, user)
         out = [c for c in result.candidates if c.smiles and c.name.lower() not in existing]

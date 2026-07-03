@@ -241,7 +241,8 @@ def _md_melt_quench(atoms, settings, seed: int, overrides=None):
         settings = get_settings()
     overrides = overrides or {}
 
-    calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device)
+    calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device,
+                           dispersion=getattr(settings, "mlip_dispersion", True))
 
     atoms = atoms.copy()
     z = atoms.get_positions()[:, 2]

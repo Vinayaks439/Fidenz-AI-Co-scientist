@@ -14,34 +14,44 @@ Ref: MACE (github.com/ACEsuit/mace); barrier caveat arXiv:2502.15582.
 
 from __future__ import annotations
 
-from functools import lru_cache
+import threading
+
+# Per-THREAD calculator cache. ASE calculators cache results on the instance (self.results
+# / self.atoms), so sharing one across threads corrupts concurrent computes -- each worker
+# thread must own its calculator. Within a thread we still cache (a foundation MLIP is
+# ~100 MB to load), so the sequential default (1 thread) behaves exactly as before.
+_calc_local = threading.local()
 
 
-@lru_cache(maxsize=4)
-def make_calculator(kind: str = "mace-mp", device: str = "cpu"):
-    """Return an ASE calculator.
-
-    Cached process-wide: a foundation-MLIP model is expensive to load (~100 MB weights)
-    and re-instantiating it per reflection iteration re-registers torch's precompile
-    mega-cache, which raises on the 2nd call. MACE/CHGNet calculators are reusable across
-    structures (attach via ``atoms.calc``), so one instance per (kind, device) is correct.
+def make_calculator(kind: str = "mace-mp", device: str = "cpu", dispersion: bool = True):
+    """Return an ASE calculator (thread-local cached per (kind, device, dispersion)).
 
     * ``mace-mp``  -- MACE-MP medium, ungated/pip-installable (good default).
-    * ``mace-mh1`` -- MACE-MH-1 (head='omat_pbe'); adds OC20 surface-adsorption and
-      reaction-TS coverage, better for barriers.
+    * ``mace-mh1`` -- MACE-MH-1 (head='omat_pbe'); better for barriers.
     * ``chgnet``   -- CHGNet universal potential.
+    ``dispersion`` toggles the torch-dftd D3 correction (off ~= 2x faster; MLIP recompute).
     """
+    cache = getattr(_calc_local, "cache", None)
+    if cache is None:
+        cache = _calc_local.cache = {}
+    key = (kind, device, bool(dispersion))
+    if key not in cache:
+        cache[key] = _build_calculator(kind, device, dispersion)
+    return cache[key]
+
+
+def _build_calculator(kind: str, device: str, dispersion: bool):
     if kind == "mace-mp":
         from mace.calculators import mace_mp
 
-        try:  # D3 dispersion improves physisorption but needs the optional torch-dftd
-            return mace_mp(
-                model="medium", dispersion=True, default_dtype="float64", device=device
-            )
-        except (RuntimeError, ImportError, ModuleNotFoundError):
-            return mace_mp(
-                model="medium", dispersion=False, default_dtype="float64", device=device
-            )
+        if dispersion:
+            try:  # D3 dispersion improves physisorption but needs the optional torch-dftd
+                return mace_mp(model="medium", dispersion=True,
+                               default_dtype="float64", device=device)
+            except (RuntimeError, ImportError, ModuleNotFoundError):
+                pass  # torch-dftd unavailable -> fall through to no-dispersion
+        return mace_mp(model="medium", dispersion=False,
+                       default_dtype="float64", device=device)
     if kind == "mace-mh1":
         from mace.calculators import mace_mp
 

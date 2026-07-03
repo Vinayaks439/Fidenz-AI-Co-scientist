@@ -431,11 +431,13 @@ class ExperimentDesigner:
         )
 
     def _merge_proposed(self, library, provenance, spec, concept_names,
-                        n: int | None = None) -> int:
+                        n: int | None = None, prior_results: list | None = None) -> int:
         """Generate novel candidates and merge them into ``library`` in-place.
 
         Returns the number of novel candidates added. Existing library names are never
-        overwritten; provenance records them as ai-proposed / extrapolated.
+        overwritten; provenance records them as ai-proposed / extrapolated. ``prior_results``
+        (a failed prior generation's screened rows) makes the proposer design a better next
+        generation instead of guessing.
         """
         try:
             from ..agents.inhibitor_proposer import InhibitorProposer, to_library_entries
@@ -453,6 +455,7 @@ class ExperimentDesigner:
             candidates = proposer.propose(
                 spec, concept_names=concept_names, existing_names=existing,
                 n=n, citations=list(spec.provenance_refs or []),
+                prior_results=prior_results,
             )
         except Exception as exc:  # noqa: BLE001
             logger.warning("inhibitor proposer failed (%s)", exc)

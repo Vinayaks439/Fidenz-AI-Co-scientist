@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -75,6 +76,26 @@ _CITATION_DOMAIN_TERMS = (
     "mace", "interatomic potential", "machine-learning potential",
     "machine learning potential", "foundation model", "melt-quench", "melt quench",
 )
+
+
+def _sanitize_cites(text: str, valid_keys: set) -> str:
+    """Remove \\cite keys not present in the bibliography (they render as '[?]').
+
+    A \\cite with only-invalid keys is dropped entirely; a mixed one keeps its valid
+    keys. Prevents undefined-citation '[?]' marks from the LLM inventing keys."""
+    if not text:
+        return text
+
+    def repl(m):
+        keys = [k.strip() for k in m.group(1).split(",") if k.strip()]
+        keep = [k for k in keys if k in valid_keys or _safe_key_local(k) in valid_keys]
+        return ("\\cite{" + ",".join(keep) + "}") if keep else ""
+
+    return re.sub(r"\\cite\{([^}]*)\}", repl, text)
+
+
+def _safe_key_local(cid: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", cid) or "ref"
 
 
 def _is_on_domain(c: dict) -> bool:
@@ -343,6 +364,11 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
 
     body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id,
                           screening=screening)
+    # Strip \cite keys that are not in the bibliography so IEEEtran doesn't print "[?]"
+    # (the LLM occasionally cites a key we never provided). Also sanitize the abstract.
+    valid_keys = {sections._safe_key(c.get("id", "")) for c in cited}
+    body = _sanitize_cites(body, valid_keys)
+    drafts["abstract"] = _sanitize_cites(drafts.get("abstract", ""), valid_keys)
 
     hyp = rich.get("hypothesis", {})
     gs = sections.latex_escape(hyp.get("growth_surface", ""))

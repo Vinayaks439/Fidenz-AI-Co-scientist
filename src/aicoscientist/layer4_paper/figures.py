@@ -279,43 +279,32 @@ def _load_or_rebuild_slabs(run_dir: Path, rich: dict):
 
 
 def slab_figure(run_dir: Path, rich: dict, out_path: Path) -> Path | None:
-    """Top + side atomic-model views of the GS and NGS slabs used in the run."""
+    """Top + side atomic-model views of the GS and NGS slabs used in the run, rendered
+    as depth-shaded 3D ball-and-stick (bonds + perspective) to match the viewer."""
     try:
         plt = _plt()
-        from ase.visualize.plot import plot_atoms
     except Exception as exc:  # noqa: BLE001
-        logger.warning("ase/matplotlib unavailable (%s); skipping slab figure", exc)
+        logger.warning("matplotlib unavailable (%s); skipping slab figure", exc)
         return None
 
     slabs = _load_or_rebuild_slabs(run_dir, rich)
     if not slabs:
         return None
 
-    colors_of = None
-    try:
-        colors_of = lambda a: [_ECOLOR.get(sym, "#B0B0B0") for sym in a.get_chemical_symbols()]  # noqa: E731
-    except Exception:  # noqa: BLE001
-        pass
-
     fig, axes = plt.subplots(len(slabs), 2, figsize=(5.2, 2.6 * len(slabs)),
                              squeeze=False)
     for row, (label, atoms) in enumerate(slabs):
-        for col, (rot, view) in enumerate((("0x,0y,0z", "top view"),
-                                           ("-90x,0y,0z", "side view"))):
+        for col, view_name in enumerate(("top view", "side view")):
             ax = axes[row][col]
-            kwargs = {"radii": 0.45, "rotation": rot}
-            if colors_of is not None:
-                kwargs["colors"] = colors_of(atoms)
             try:
-                plot_atoms(atoms, ax, **kwargs)
+                _ball_and_stick(atoms, ax, view=col)
             except Exception as exc:  # noqa: BLE001
-                logger.warning("plot_atoms failed for %s (%s)", label, exc)
+                logger.warning("slab render failed for %s (%s)", label, exc)
                 plt.close(fig)
                 return None
-            ax.set_title(f"{label} — {view}", fontsize=9)
-            ax.set_axis_off()
+            ax.set_title(f"{label} — {view_name}", fontsize=9)
     fig.tight_layout()
-    fig.savefig(out_path)
+    fig.savefig(out_path, dpi=200)
     plt.close(fig)
     return out_path
 
@@ -335,23 +324,33 @@ def _ball_and_stick(atoms, ax, view: int = 0) -> None:
     else:                               # orthogonal view: look down y
         u, v, depth = pos[:, 0], pos[:, 2], pos[:, 1]
 
+    # Depth in [0,1] (0 = far, 1 = near) drives 3D shading: nearer atoms/bonds are
+    # larger and more opaque, which reads as perspective instead of a flat scatter.
+    span = float(depth.max() - depth.min())
+    dz = (depth - depth.min()) / span if span > 1e-6 else np.full(len(depth), 0.5)
     n = len(atoms)
-    # Bonds: atom pairs within ~1.15 x (sum of covalent radii). Gray sticks, behind atoms.
+    scale = 60.0 if n <= 40 else 34.0   # smaller balls for dense slabs
+
+    # Bonds: atom pairs within ~1.15 x (sum of covalent radii), gray sticks behind atoms.
     for i in range(n):
         for j in range(i + 1, n):
             d = float(np.linalg.norm(pos[i] - pos[j]))
             if d < 1.15 * (covalent_radii[Z[i]] + covalent_radii[Z[j]]):
-                ax.plot([u[i], u[j]], [v[i], v[j]], color="#555555", lw=2.4,
-                        solid_capstyle="round", zorder=1)
+                m = 0.5 * (dz[i] + dz[j])
+                ax.plot([u[i], u[j]], [v[i], v[j]], color="#555555",
+                        lw=1.0 + 1.8 * m, alpha=0.30 + 0.60 * m,
+                        solid_capstyle="round", zorder=1 + m)
     # Atoms painted far-to-near so nearer atoms overlap correctly.
-    for zi, k in enumerate(np.argsort(depth)):
+    for rank, k in enumerate(np.argsort(depth)):
         r = float(covalent_radii[Z[k]])
-        ax.scatter(u[k], v[k], s=max(45.0, (r * 60.0) ** 2),
+        near = float(dz[k])
+        ax.scatter(u[k], v[k], s=max(30.0, (r * scale * (0.65 + 0.35 * near)) ** 2),
                    c=_ECOLOR.get(syms[k], "#B0B0B0"),
-                   edgecolors="#222222", linewidths=0.6, zorder=2 + zi)
+                   edgecolors="#222222", linewidths=0.5,
+                   alpha=0.60 + 0.40 * near, zorder=2 + rank)
     ax.set_aspect("equal")
     ax.set_axis_off()
-    pad = 1.1
+    pad = 1.0
     ax.set_xlim(u.min() - pad, u.max() + pad)
     ax.set_ylim(v.min() - pad, v.max() + pad)
 

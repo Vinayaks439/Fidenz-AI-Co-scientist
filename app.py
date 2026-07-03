@@ -158,6 +158,19 @@ def _new_run_id() -> str:
     return datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:6]
 
 
+def _storage_status() -> str:
+    """One-line summary of where run artifacts (incl. the manuscript PDF) are stored."""
+    if ARTIFACTS_PERSISTENT:
+        return (
+            f"✅ Persistent storage: artifacts + model cache saved to `{ARTIFACTS_DIR}` — "
+            "they survive Space restarts/sleep."
+        )
+    return (
+        f"⚠️ Ephemeral storage: artifacts go to `{ARTIFACTS_DIR}` and are WIPED on Space "
+        "restart/sleep. Connect persistent storage in Settings → Storage to keep them."
+    )
+
+
 def _gpu_status() -> str:
     """One-line summary of whether a CUDA GPU is visible to torch."""
     try:
@@ -444,7 +457,9 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
                  runtime_profile: str = "Custom (use fields below)",
                  screen_pool: float = 40, screen_shortlist: float = 10,
                  screen_top_k: float = 3, screen_ensemble: float = 2,
-                 max_iters: float = 1, ensemble_n: float = 1):
+                 max_iters: float = 1, ensemble_n: float = 1,
+                 disp_off: bool = False, screen_workers: float = 1,
+                 screen_generations: float = 1):
     global _LATEST_RUN_ID
     empty_viewer = _structure_viewer_html([])
     idea = (idea or "").strip()
@@ -463,6 +478,11 @@ def run_pipeline(idea: str, offline: bool, gemini_key: str, auto_decision: str,
     env["SCREEN_POOL_SIZE"] = str(int(screen_pool))
     env["SCREEN_SHORTLIST_M"] = str(int(screen_shortlist))
     env["SCREEN_TOP_K"] = str(int(screen_top_k))
+    env["SCREEN_GENERATIONS"] = str(max(1, int(screen_generations)))
+    # Speed toggles (default off / 1 = unchanged): D3 dispersion off ~2x; parallel workers.
+    if disp_off:
+        env["MLIP_DISPERSION"] = "false"
+    env["SCREEN_WORKERS"] = str(max(1, int(screen_workers)))
     env["SCREEN_ENSEMBLE_N"] = str(max(1, int(screen_ensemble)))
     if not offline:
         gemini_key = (gemini_key or "").strip()
@@ -656,6 +676,35 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
                 "ensemble N). 2 = the fidelity test runs twice per surface."
             ),
         )
+        screen_generations = gr.Slider(
+            minimum=1, maximum=6, value=1, step=1,
+            label="LLM feedback generations",
+            info=(
+                "Closed loop: 1 = single screen (off). >1 = after a failed batch, the AI "
+                "designs a NEW generation from the site-resolved failure feedback and "
+                "re-screens it. Each generation MLIP-screens ~shortlist more inhibitors "
+                "(≈ generations × shortlist total), stopping early if one reaches 90%."
+            ),
+        )
+    with gr.Row():
+        disp_off = gr.Checkbox(
+            value=False,
+            label="Faster: disable D3 dispersion (~2×)",
+            info=(
+                "Drops the torch-dftd D3 correction from the MLIP — roughly halves per-eval "
+                "time, ranking largely unchanged. Off (default) keeps dispersion for the "
+                "most accurate physisorption energies."
+            ),
+        )
+        screen_workers = gr.Slider(
+            minimum=1, maximum=4, value=1, step=1,
+            label="Parallel screening workers",
+            info=(
+                "Screen this many candidates concurrently on the shared slabs. MACE runs "
+                "one structure at a time on the GPU, so expect ~2–3× on a single A100, not "
+                "linear. 1 (default) = sequential. Each worker gets its own calculator."
+            ),
+        )
 
     tier1_gpu = gr.Checkbox(
         label="Tier-1: foundation-MLIP (MACE) reactivity — uses GPU when available",
@@ -731,6 +780,7 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
             ),
         )
     gpu_status = gr.Markdown(_gpu_status())
+    storage_status = gr.Markdown(_storage_status())
 
     run_btn = gr.Button("Run pipeline", variant="primary")
 
@@ -762,7 +812,8 @@ with gr.Blocks(title="AS-ALD Co-Scientist") as demo:
         inputs=[idea, offline, gemini_key, auto_decision, tier1_gpu, sampling, slab_source,
                 mq_melt_t, mq_melt_steps, mq_quench_steps, mq_timestep, mq_ensemble,
                 mq_autotune, runtime_profile, screen_pool, screen_shortlist, screen_top_k,
-                screen_ensemble, max_iters, ensemble_n],
+                screen_ensemble, max_iters, ensemble_n, disp_off, screen_workers,
+                screen_generations],
         outputs=[log_box, files_out, viewer_html],
     )
     attach_btn.click(

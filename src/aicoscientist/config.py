@@ -58,6 +58,14 @@ class Settings(BaseSettings):
     screening_mode: str = Field(
         default="funnel", alias="SCREENING_MODE", description="funnel | single"
     )
+    # D3 dispersion on the MLIP: physically better for physisorption but the torch-dftd
+    # D3 step roughly doubles per-eval time. Off = ~2x faster screening (ranking is
+    # largely unchanged). Default on.
+    mlip_dispersion: bool = Field(default=True, alias="MLIP_DISPERSION")
+    # Candidate-parallel screening: screen this many inhibitors concurrently on the shared
+    # slabs. MACE runs one structure at a time on the GPU, so on a single A100 expect ~2-3x
+    # (not linear); each worker gets its own calculator. Default 1 = sequential.
+    screen_workers: int = Field(default=1, alias="SCREEN_WORKERS")
     screen_pool_size: int = Field(
         default=40, alias="SCREEN_POOL_SIZE",
         description="candidate pool size for the screening funnel (10-50); the AI "
@@ -75,6 +83,16 @@ class Settings(BaseSettings):
     screen_ensemble_n: int = Field(
         default=2, alias="SCREEN_ENSEMBLE_N",
         description="slabs per surface during the batch screen (full ensemble for top-k)",
+    )
+    screen_reserve_novel_frac: float = Field(
+        default=0.5, alias="SCREEN_RESERVE_NOVEL_FRAC",
+        description="fraction of the MLIP shortlist reserved for AI-proposed novel "
+                    "candidates (they have no priors, so prior-rank would bury them)",
+    )
+    screen_generations: int = Field(
+        default=1, alias="SCREEN_GENERATIONS",
+        description="closed-loop generations: after a failed campaign, feed the results "
+                    "to the proposer to design a new generation, then re-screen (1 = off)",
     )
 
     # Layer 3 — AS-ALD surface-reactivity engine (ADR-004/009)

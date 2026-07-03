@@ -43,6 +43,30 @@ def _clamp(v: int, lo: int, hi: int) -> int:
     return max(lo, min(hi, int(v)))
 
 
+def _run_tasks(tasks: list, workers: int) -> None:
+    """Run zero-arg callables sequentially (workers<=1) or on a thread pool.
+
+    Each _screen_one task swallows its own exceptions and each worker thread gets its own
+    MLIP calculator (thread-local), so parallel screening is safe; on a single GPU expect
+    ~2-3x, not linear. Any unexpected error in a task never aborts the campaign."""
+    if workers <= 1 or len(tasks) <= 1:
+        for t in tasks:
+            try:
+                t()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("screen task failed (%s); continuing", exc)
+        return
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futures = [ex.submit(t) for t in tasks]
+        for f in futures:
+            try:
+                f.result()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("screen task failed (%s); continuing", exc)
+
+
 def _row_from(result: ValidationResult, rich: dict | None, stage: str) -> dict:
     m = {mm.name: mm.value for mm in result.metrics}
     calib = (rich or {}).get("calibration_vs_literature") or {}
@@ -150,7 +174,24 @@ def run_screening_campaign(
 
     # ---- Stage C: batch screen the shortlist on SHARED slabs -------------------------
     m_short = _clamp(settings.screen_shortlist_m, 1, len(ranked))
-    shortlist = list(ranked[:m_short])
+
+    # Reserve a fraction of the shortlist for AI-PROPOSED novel candidates. They carry no
+    # literature priors, so the Tier-0 prior rank always buries them below the known
+    # library -- meaning the MLIP would never actually evaluate the new chemistry (the
+    # whole point of proposing it). Prior rank can't judge a molecule it has no prior for;
+    # only the MLIP can. So we give novels guaranteed MLIP slots.
+    def _is_novel(name: str) -> bool:
+        return provenance.get(name, {}).get("dE_ngs_source") == "ai-proposed"
+
+    known = [(n, p) for n, p in ranked if not _is_novel(n)]
+    novel = [(n, p) for n, p in ranked if _is_novel(n)]
+    frac = getattr(settings, "screen_reserve_novel_frac", 0.5)
+    reserve = min(len(novel), int(round(m_short * max(0.0, min(1.0, frac)))))
+    shortlist = known[:m_short - reserve] + novel[:reserve]
+    if reserve:
+        logger.info("shortlist: %d known + %d AI-proposed (reserved) of top-%d",
+                    len(shortlist) - reserve, reserve, m_short)
+
     # The committed hypothesis molecule is always screened (even if prior-ranked low)
     # so the final recommendation can speak to the hypothesis with computed numbers.
     committed = (spec.inhibitor or "").strip().lower()
@@ -201,20 +242,79 @@ def run_screening_campaign(
         rows[name].update({k: v for k, v in keep.items() if v is not None})
         results[name] = res
 
-    for i, (name, props) in enumerate(shortlist):
-        _screen_one(name, props, n_batch, (gs_batch, ngs_batch), "mlip_batch", i)
+    workers = max(1, getattr(settings, "screen_workers", 1))
+    all_props: dict[str, dict] = dict(shortlist)  # props for every candidate we screen
+    _run_tasks(
+        [(lambda n=name, p=props, idx=i:
+          _screen_one(n, p, n_batch, (gs_batch, ngs_batch), "mlip_batch", idx))
+         for i, (name, props) in enumerate(shortlist)],
+        workers,
+    )
 
-    # ---- Stage D: full-fidelity re-run of the top K ----------------------------------
-    screened = [rows[n] for n, _ in shortlist if rows[n].get("S_mean") is not None]
+    # ---- Closed-loop generations: learn from the failed batch, design + MLIP-screen a
+    # NEW generation on the SAME shared slabs, until the target is met or the budget is
+    # spent. This is what turns a one-shot screen into an iterative co-scientist.
+    n_gen = max(1, getattr(settings, "screen_generations", 1))
+    gen, step = 1, len(shortlist)
+    while gen < n_gen:
+        computed = [r for r in rows.values() if r.get("S_mean") is not None]
+        best_s = max((r["S_mean"] for r in computed), default=0.0)
+        if best_s >= spec.target_selectivity:
+            logger.info("generation loop: target met (S=%.3f); stopping", best_s)
+            break
+        feedback = [
+            {"name": r["inhibitor"], "S": r["S_mean"],
+             "dE_ngs": r.get("dE_ngs_mean_eV"), "dE_gs": r.get("dE_gs_mean_eV"),
+             "differential": r.get("differential_blocking"),
+             "functional_group": r.get("functional_group"),
+             "smiles": r.get("smiles")}
+            for r in sorted(computed, key=lambda r: r["S_mean"], reverse=True)[:8]
+        ]
+        gen_lib: dict = {"inhibitors": {}}
+        gen_prov: dict = {}
+        added = designer._merge_proposed(gen_lib, gen_prov, spec, concept_names,
+                                         n=max(1, m_short), prior_results=feedback)
+        if not added:
+            logger.info("generation %d: proposer added nothing new; stopping", gen + 1)
+            break
+        logger.info("generation %d/%d: designed %d new candidate(s) from prior failures",
+                    gen + 1, n_gen, added)
+        provenance.update(gen_prov)
+        gen_ranked = designer.rank_candidates(gen_lib, spec, concept_names, gen_prov,
+                                              honor_committed=False)
+        for name, props in gen_ranked:
+            all_props.setdefault(name, props)
+            if name not in rows:
+                prov = gen_prov.get(name, {})
+                rows[name] = {
+                    "inhibitor": name, "precursor": precursor, "stage": f"gen{gen}",
+                    "status": "ok", "S_mean": None,
+                    "dE_ngs_prior_eV": props.get("dE_ngs"),
+                    "dE_gs_prior_eV": props.get("dE_gs"),
+                    "functional_group": props.get("functional_group"),
+                    "smiles": props.get("smiles"),
+                    "prior_source": prov.get("dE_ngs_source", "ai-proposed"),
+                    "generation": gen,
+                }
+        gen_tasks = []
+        for name, props in gen_ranked:
+            gen_tasks.append(
+                lambda n=name, p=props, s=step:
+                _screen_one(n, p, n_batch, (gs_batch, ngs_batch), f"gen{gen}_batch", s)
+            )
+            step += 1
+        _run_tasks(gen_tasks, workers)
+        gen += 1
+
+    # ---- Stage D: full-fidelity re-run of the GLOBAL top-K (initial + all generations) --
+    screened = [r for r in rows.values() if r.get("S_mean") is not None]
     screened.sort(key=lambda r: (r["S_mean"], r.get("differential_blocking") or 0.0),
                   reverse=True)
     k = _clamp(settings.screen_top_k, 1, max(1, len(screened)))
     top_names = [r["inhibitor"] for r in screened[:k]]
 
-    # SURFACE_ENSEMBLE_N directly sets the full-fidelity re-run ensemble (the "n=" in
-    # the log line below) so the UI slider has sole authority over this cost. When it
-    # is <= the batch ensemble, reuse (a slice of) the already-built, already-gated
-    # batch slabs -- no new fidelity tests; only a larger n triggers a rebuild.
+    # SURFACE_ENSEMBLE_N directly sets the full-fidelity re-run ensemble; reuse a slice of
+    # the already-gated batch slabs unless a larger n is requested.
     n_full = max(1, settings.surface_ensemble_n)
     if top_names:
         if n_full > n_batch:
@@ -226,10 +326,12 @@ def run_screening_campaign(
             gs_full, ngs_full = gs_batch[:n_full], ngs_batch[:n_full]
         logger.info("top-%d full-fidelity re-run (n=%d, tier=%d): %s",
                     len(top_names), n_full, tier, ", ".join(top_names))
-        by_name = dict(shortlist)
-        for j, name in enumerate(top_names):
-            _screen_one(name, by_name[name], n_full, (gs_full, ngs_full),
-                        "full", len(shortlist) + j)
+        _run_tasks(
+            [(lambda n=name, j=j:
+              _screen_one(n, all_props.get(n, {}), n_full, (gs_full, ngs_full), "full", step + j))
+             for j, name in enumerate(top_names)],
+            workers,
+        )
 
     # ---- Winner + recommendation ------------------------------------------------------
     finalists = [rows[n] for n in top_names if rows[n].get("S_mean") is not None]

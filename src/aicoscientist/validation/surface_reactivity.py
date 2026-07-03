@@ -492,7 +492,8 @@ class SurfaceReactivityValidator:
         try:
             from .mlip import make_calculator
 
-            calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device)
+            calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device,
+                                   dispersion=getattr(settings, "mlip_dispersion", True))
             return calc, f"{settings.mlip_model}@{settings.resolved_mlip_device}"
         except Exception as exc:  # noqa: BLE001
             logger.warning("MLIP unavailable (%s); falling back to Tier-0 priors", exc)
