@@ -163,8 +163,19 @@ any expensive reactivity call. Per-site-type acceptance bands (nm⁻²):
 | a-SiN | –NH₂ amine | ~2.5 – 5.5 | 5.97 |
 | a-SiN | –NH– imide bridge | ~2.0 – 5.5 | — |
 
-Emits `surface_fidelity.json` with the crystalline references recorded for contrast. True
-melt-quench AIMD amorphous networks are **Phase 3** (opt-in future work; see below).
+Emits `surface_fidelity.json` with the crystalline references recorded for contrast.
+
+**Two builder modes, one gate.** The default `procedural` path (crystalline-derived +
+passivation + geometric bridge anneal) is fast and passes the gate on CPU. An opt-in
+`md-amorphous` path (`SLAB_SOURCE=md-amorphous`, Tier ≥ 1) runs a **real MLIP-driven
+melt-quench MD** on the slab's mobile region — heat to ~3500 K, hold to disorder, quench on a
+temperature ramp, relax to 0 K — producing a genuinely amorphized network rather than a
+geometric approximation, then passivates and anneals bridges as before. It self-heals: an MD
+blow-up degrades gracefully to the geometric amorphizer and then the toy slab. An **LLM
+param-tuning agent** (`MQ_AUTOTUNE`) can iterate melt-T / quench-steps on a small cheap probe
+slab, scoring each trial by the fidelity gate + Si-coordination quality until it converges,
+then reuses the tuned parameters for the full ensemble (deterministic heuristic fallback
+offline). Both modes feed the *same* fidelity gate and ensemble machinery.
 
 ### Deliverable 2 — Site-matched selection (not strongest-binder)
 
@@ -205,7 +216,7 @@ For each candidate the `surface_reactivity` engine records every intermediate to
 | Tier | Where | What runs |
 | --- | --- | --- |
 | **0** (default) | anywhere, no GPU | fidelity gate + site-resolved blocking + `SelectivityModel` + verdict, using literature/xTB adsorption-energy priors |
-| **1** | CUDA / CPU | real molecules (rdkit) on passivated + bridge-annealed slabs (pymatgen); multi-site/orientation foundation-MLIP (`mace_mp(model="medium")`) adsorption search; optional `reaction_energetics` (ΔEr endpoints) and NEB Ea when `COMPUTE_ACTIVATION_ENERGY=true` |
+| **1** | CUDA / CPU | real molecules (rdkit) on passivated + bridge-annealed slabs (pymatgen), optionally on **MLIP melt-quench MD-amorphized** slabs (`SLAB_SOURCE=md-amorphous`); multi-site/orientation foundation-MLIP (`mace_mp(model="medium")`, or `chgnet`) adsorption search; optional `reaction_energetics` (ΔEr endpoints) and NEB Ea when `COMPUTE_ACTIVATION_ENERGY=true` |
 | **2** | optional | xTB spot-checks anchoring Tier-1, reported as a `calibration_vs_literature` validity flag |
 
 Set the tier via `COMPUTE_TIER` (0/1/2). MACE energy differences require float64, which the
@@ -221,20 +232,32 @@ value carries a predicted-vs-reference delta — never hidden.
 Layer 3 runs as a batch **screening campaign** rather than a single-candidate test
 (`SCREENING_MODE=funnel`, the default; `single` restores the legacy one-candidate loop):
 
-1. **Pool** (`SCREEN_POOL_SIZE`, 10–50, default 20): built-in library + KG-mined priors +
+1. **Pool** (`SCREEN_POOL_SIZE`, 10–50, default 40): built-in library + KG-mined priors +
    manual `selection_criteria.md` + AI-proposed novel molecules to fill the pool.
 2. **Tier-0 prior rank** over all N — honest (no committed-candidate pin, no fabricated
    default priors; unevidenced candidates are flagged `no-prior` and ranked below).
-3. **MLIP batch screen** of the shortlist (`SCREEN_SHORTLIST_M`, default 8) on **shared,
+3. **MLIP batch screen** of the shortlist (`SCREEN_SHORTLIST_M`, default 10) on **shared,
    seed-identical gated slab ensembles** (`SCREEN_ENSEMBLE_N`, default 2) — every candidate is
    scored on the same surfaces, and slabs are built once per campaign, not per molecule. The
-   committed hypothesis molecule is always screened, even if prior-ranked low.
+   committed hypothesis molecule is always screened, even if prior-ranked low; a slice of the
+   shortlist (`SCREEN_RESERVE_NOVEL_FRAC`, default ½) is reserved for AI-proposed molecules so
+   novel candidates with no priors are not buried by the prior rank. Candidates can be screened
+   concurrently on the shared slabs (`SCREEN_WORKERS`).
 4. **Top-k full-fidelity re-run** (`SCREEN_TOP_K`, default 3) at `SURFACE_ENSEMBLE_N` (xTB
    cross-check included at Tier ≥ 2).
 5. **Recommendation agent** writes the final judgement (winner, runners-up, risks,
    committed-hypothesis outcome); a deterministic fallback runs offline. Reflection may re-run
    the winner with a larger ensemble, bounded by `MAX_VALIDATION_ITERS` — it never switches
    molecules.
+
+**Closed-loop generational design** (`SCREEN_GENERATIONS`, 1 = off). When a campaign fails to
+clear the target, the results (which sites still leaked, which chemistries under-blocked) are
+fed back to the novel-compound proposer, which designs a *new generation* of candidates and
+re-screens — an evolutionary loop rather than a one-shot pool. An optional **AI experiment
+planner** (`USE_AI_PLANNER`) lets the LLM decide, per iteration, *which* inhibitor to test and
+at *what* compute tier (cheap Tier-0 screen vs. expensive real-MLIP Tier-1), grounded in the
+deep-research context and prior reflections; it falls back to the deterministic rank-index +
+global tier when disabled.
 
 ### What makes the campaign trustworthy
 
@@ -306,21 +329,21 @@ Tier-0 funnel end-to-end (`docker build -t asald . && docker run --rm asald`).
 
 ### Technology & agentic patterns
 
-- **Orchestration** — LangGraph state machines; Supervisor + Swarm; ReAct designer; Reflection loop.
-- **Atomistic engine** — ASE + foundation MLIP (MACE); rdkit molecules; pymatgen slabs; xTB cross-check.
+- **Orchestration** — LangGraph state machines; Supervisor + Swarm; ReAct designer; bounded Reflection loop; an AI experiment planner (which candidate, which tier); a closed-loop generational proposer; an LLM melt-quench param-tuner.
+- **Atomistic engine** — ASE + foundation MLIP (MACE, CHGNet) with real MLIP melt-quench MD amorphization; rdkit molecules; pymatgen slabs; torch-dftd D3 dispersion; xTB cross-check.
 - **Data & models** — typed knowledge graph; Pydantic schemas; scholarly source clients; provenance store.
-- **Delivery** — CLI (three entry points); LaTeX manuscript stitcher (IEEEtran, tectonic/latexmk/pdflatex); Docker + locked env.
+- **Delivery** — CLI (three entry points); refresh-proof Gradio UI on a Hugging Face Space (detached background runs, reattach-after-disconnect, persistent storage); LaTeX manuscript stitcher (IEEEtran, tectonic/latexmk/pdflatex); Docker + locked env.
 
 ### Utilized Software
 
 **LLMs & orchestration**
 - **LLMs** — provider-agnostic via LangChain's `init_chat_model`; supports **OpenAI (GPT)**, **Anthropic (Claude)**, and **Google Gemini** (both AI Studio API-key and Vertex AI routes). The provider/model is a runtime config switch (`LLM_PROVIDER`/`LLM_MODEL`), not hardcoded — we ran with Gemini during development. Every stage has a deterministic, keyless offline fallback, so the pipeline is fully reproducible without any LLM.
-- **LangGraph** — state-machine orchestration across all four layers: a Supervisor + Swarm pattern for the literature-mining agents, a ReAct-style designer for the surface/inhibitor selection agent, and a bounded Reflection loop that closes the validation cycle.
+- **LangGraph** — state-machine orchestration across all four layers: a Supervisor + Swarm pattern for the literature-mining agents, a ReAct-style designer for the surface/inhibitor selection agent, a bounded Reflection loop that closes the validation cycle, and additional agentic loops — an AI experiment planner (chooses which candidate and which compute tier per iteration), a closed-loop generational proposer (evolves new candidates after a failed campaign), and an LLM param-tuner for the melt-quench surface builder.
 - **LangChain** — model abstraction, structured-output parsing, and the scholarly source clients.
 
 **Atomistic / scientific computing**
-- **ASE** (Atomic Simulation Environment) — slab construction, adsorption geometry search, structure I/O.
-- **MACE** (`mace-torch`) — the foundation machine-learning interatomic potential (MLIP) used for Tier-1 adsorption-energy calculations on real 3D slabs; **CHGNet** and **torch-dftd** (D3 dispersion) as alternate/supplementary MLIP backends; **PyTorch** as the compute backend (CPU/CUDA).
+- **ASE** (Atomic Simulation Environment) — slab construction, adsorption geometry search, MLIP molecular-dynamics melt-quench, structure I/O.
+- **MACE** (`mace-torch`) — the foundation machine-learning interatomic potential (MLIP) used for Tier-1 adsorption-energy calculations *and* the real melt-quench MD amorphization of the slabs; **CHGNet** and **torch-dftd** (D3 dispersion) as alternate/supplementary MLIP backends; **PyTorch** as the compute backend (CPU/CUDA).
 - **RDKit** — builds real 3D inhibitor/precursor molecules from SMILES (ETKDGv3 embedding + MMFF).
 - **pymatgen** — generates the crystalline-derived amorphous slabs (α-quartz SiO₂, β-Si₃N₄).
 - **tblite** (GFN2-xTB) — semi-empirical Tier-2 spot-checks that calibrate the MLIP energies against a cheaper independent method.
@@ -331,14 +354,16 @@ Tier-0 funnel end-to-end (`docker build -t asald . && docker run --rm asald`).
 - **httpx** — clients for the scholarly literature sources (arXiv, OpenAlex, Crossref, PubMed, Semantic Scholar) that ground every hypothesis in real, DOI-cited literature.
 - **Matplotlib** — the figure suite (selectivity curves, growth curves, adsorption-energy bars, site-density bars, and rendered atomic-model slab/molecule views).
 - **LaTeX** (IEEEtran class, compiled via `tectonic`/`latexmk`/`pdflatex`) — the autonomously authored manuscript.
+- **Gradio** on a **Hugging Face Space** — the interactive front-end over the CLI pipeline: long runs execute in a detached background thread (refresh-/disconnect-proof, reattach by run id), with auto-detected persistent storage for artifacts and MACE/torch caches.
 - **Docker** + a locked `environment.yml`/`requirements.txt` — pinned, reproducible environment.
 
 **Techniques**
 - A **four-layer agentic funnel**: literature-grounded hypothesis generation → human-in-the-loop commitment → tiered in-silico validation → autonomous manuscript authoring.
-- **Fidelity-gated amorphous surface generation** — slabs are rejected outright if their per-site-type densities fall outside published (Kim et al. 2026) experimental bands, before any expensive reactivity compute is spent.
+- **Fidelity-gated amorphous surface generation** — slabs are rejected outright if their per-site-type densities fall outside published (Kim et al. 2026) experimental bands, before any expensive reactivity compute is spent. A high-fidelity opt-in path amorphizes the slab with a **real foundation-MLIP melt-quench MD** (heat → disorder → quench → relax), auto-tuned by an LLM agent against the same gate.
 - **Site-matched (not strongest-binder) inhibitor screening** — a three-step protocol scoring candidates by how well they passivate the precursor's actual reactive sites.
 - **Tiered compute with literature calibration** — cheap Tier-0 literature-prior screens promoted to real Tier-1 MLIP calculations (and optional Tier-2 xTB cross-checks) only for promising/committed candidates, with every predicted energy compared against a literature anchor and flagged if it diverges.
 - **Bounded Reflection loop** — a closed-loop refine/accept cycle with a fixed iteration budget, so the agent can revise a rejected hypothesis without running indefinitely.
+- **Closed-loop generational design** — after a failed campaign the results are fed back to the novel-compound proposer, which designs and re-screens a fresh generation of candidates (an evolutionary search), optionally steered by an AI planner that picks the candidate and compute tier each round.
 - **A LangGraph swarm of section-writer agents** authors the IEEE-format manuscript itself: each section is drafted in parallel, grounded strictly in the run's own JSON artifacts (no invented numbers), with deterministic fallbacks if the LLM output fails validation.
 
 ---
@@ -408,29 +433,38 @@ src/aicoscientist/
   knowledge_graph.py     # networkx KG: provenance, merge, dedup
   sources/               # arxiv/openalex/crossref/pubmed/semantic_scholar + seed_asald + mock
   agents/                # orchestrator, research/hypothesis agents, inhibitor_proposer, recommender
-  surfaces/              # Deliverable #1: amorphous_builder, fidelity_gate, descriptors
+  surfaces/              # Deliverable #1: amorphous_builder (procedural + MLIP melt-quench),
+                         #   fidelity_gate, descriptors, param_tuner (LLM melt-quench autotuner)
   validation/            # Layer 3
     designer.py          # Deliverable #2: ReAct selection agent + candidate pool
-    screening.py         # screening-funnel campaign orchestrator
+    screening.py         # screening-funnel campaign orchestrator (+ generational loop)
     reflection.py        # bounded closed-loop refinement
     surface_reactivity.py#  protocol engine
     selectivity_model.py #  nucleation-delay -> S(N)
-    mlip.py              # Tier-1 foundation-MLIP hooks (ASE/MACE)
+    mlip.py              # Tier-1 foundation-MLIP hooks (ASE/MACE/CHGNet)
     registry.py / runner.py
   layer4_paper/          # 7: template.tex, sections, figures, compiler, stitcher
   layer1_graph.py / layer2_graph.py / layer3_graph.py / graph.py
   cli.py / cli_validate.py / cli_paper.py
+app.py                   # Gradio UI over the CLI pipeline (Hugging Face Space entry point)
 selection_criteria.md    # human-editable selection criteria + candidate library
 ```
 
-## Phase 3 (opt-in future work): melt-quench AIMD amorphous surfaces
+## Slab fidelity: procedural → MLIP melt-quench → AIMD
 
-The reference amorphous SiO₂/SiN networks are generated via melt-quench AIMD before cleaving
-and saturating. The current pipeline uses faster crystalline-derived slabs + Table-1
-passivation + bridge anneal as a procedural approximation, declared in provenance. A future
-opt-in `SLAB_SOURCE=aimd` path would follow the full melt-quench protocol when AIMD-capable
-calculators are available; until then, per-site DFT priors ground Tier-0/Tier-1 reactivity
-while the slab geometry remains approximate.
+Three levels of surface realism, each declared in provenance:
+
+- **`procedural`** (default, any tier) — crystalline-derived slab + Table-1 passivation +
+  geometric bridge anneal. Fast, CPU-friendly, passes the fidelity gate; the slab *geometry* is
+  an approximation but per-site DFT priors ground the reactivity.
+- **`md-amorphous`** (opt-in, Tier ≥ 1) — **now implemented**: a real foundation-MLIP (MACE)
+  melt-quench MD disorders the slab before passivation, with an optional LLM param-tuning agent
+  (`MQ_AUTOTUNE`) that searches melt-T / quench-steps against the fidelity gate. This is a
+  genuinely amorphized network, not a geometric knob, and runs on a GPU (or slowly on CPU).
+- **AIMD-quality melt-quench** (future work) — replacing the MLIP quench with a DFT/AIMD
+  calculator for reference-grade networks, when such calculators are affordable in-loop. Until
+  then the `md-amorphous` path is the high-fidelity option and per-site DFT priors anchor the
+  energetics.
 
 ---
 
