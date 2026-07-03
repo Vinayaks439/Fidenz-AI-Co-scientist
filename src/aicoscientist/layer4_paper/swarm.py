@@ -26,74 +26,91 @@ logger = logging.getLogger(__name__)
 
 # (key, IEEE title, target words, section-specific brief)
 SECTION_SPECS: list[tuple[str, str, int, str]] = [
-    ("abstract", "Abstract", 220,
+    ("abstract", "Abstract", 170,
      "Single paragraph, no citations, no \\ref. State the problem (AS-ALD selectivity "
      "prediction), the system (four-layer agentic co-scientist), the experiment "
      "(surfaces built+gated, pair tested, engine/tier), the key numbers (dE_ads on NGS "
      "and GS in eV, differential blocking, S at the target thickness in nm), and the "
-     "verdict. If the calibration flag is 'review', say the energetics are flagged."),
+     "verdict. If the calibration flag is 'review', say the energetics are flagged. "
+     "If payload['screening'] is non-null, this was a screening CAMPAIGN: state the "
+     "pool size, how many candidates were computed, and that the reported molecule is "
+     "the recommended winner of the funnel."),
     ("keywords", "Keywords", 15,
      "6-9 comma-separated IEEE keywords. No LaTeX commands, one line."),
-    ("introduction", "Introduction", 650,
+    ("introduction", "Introduction", 320,
      "Motivate AS-ALD for self-aligned nanofabrication (3D-NAND cell isolation); "
      "explain the inhibitor mechanism (chemisorb on NGS, physisorb+purge on GS, "
      "nucleation delay = selectivity, the S(N) metric); explain the two computational "
      "failure modes (crystalline-slab error on amorphous surfaces; site-matching, not "
      "strongest-binder); state the committed hypothesis verbatim from the payload; "
      "close with an explicit numbered contributions list (\\begin{itemize})."),
-    ("architecture", "System Architecture", 750,
+    ("architecture", "System Architecture", 320,
      "Describe the four-layer funnel in \\subsection blocks (Layer 1 deep-research KG "
      "swarm; Layer 2 human-in-the-loop commitment; Layer 3 validation loop = surface "
      "builder + selection designer + tiered reactivity engine + Reflection refine "
      "loop + AI experiment planner choosing tier per iteration; Layer 4 this "
      "manuscript swarm). Emphasize the in-silico testing design: fidelity gate before "
      "compute, tiered compute, literature anchoring with validity flags, bounded "
-     "reflection. Reference Table~\\ref{tab:provenance}."),
-    ("methods_surfaces", "Methods: Amorphous Surface Builder", 650,
+     "reflection. Reference Table~\\ref{tab:provenance}. When describing Layer 1/2, "
+     "point to Table~\\ref{tab:hypotheses}, the complete generated hypothesis slate "
+     "with the committed (Selected) hypothesis marked, as evidence of the "
+     "ranked-then-gated selection."),
+    ("methods_surfaces", "Methods: Amorphous Surface Builder", 360,
      "Deliverable 1. Describe seed->cleave->saturate (passivation rule table) -> "
      "bridge anneal -> fidelity gate -> ensemble. Quote the measured per-site "
      "densities and bands from the payload's surface_fidelity (nm^-2), name the slab "
      "source from provenance, and reference Table~\\ref{tab:fidelity}, "
      "Fig.~\\ref{fig:sites}, and Fig.~\\ref{fig:slabs} (the rendered atomic models)."),
-    ("methods_selection", "Methods: Agentic Inhibitor/Precursor Selection", 550,
+    ("methods_selection", "Methods: Agentic Inhibitor/Precursor Selection", 360,
      "Deliverable 2. Describe the three-step site-matched screening protocol, the "
      "ranking axes (differential adsorption, volatility, removability, site-match, "
-     "steric footprint), the prior merging (KG-mined / manual criteria file / "
-     "built-in), and the AI experiment planner (which candidate, which tier, per "
-     "iteration). Reproduce the designer's reasoning trace from the payload as an "
-     "itemized list. Reference Fig.~\\ref{fig:molecule}."),
-    ("methods_protocol", "Methods: In-Silico Testing Protocol", 700,
-     "The five-step ADR-009 protocol. Define dEr and Ea with display equations "
+     "steric footprint), and the prior merging (KG-mined / manual criteria file / "
+     "built-in). If payload['screening'] is non-null, describe the screening FUNNEL "
+     "from payload['screening']['config']: pool assembly (library + AI-proposed "
+     "novel candidates), honest Tier-0 prior rank (no committed-candidate pin), "
+     "MLIP batch screen of the shortlist on identical seed-shared slab ensembles, "
+     "full-fidelity top-k re-run, and the recommendation agent that may narrate but "
+     "never override the computed ranking. Reproduce the designer's reasoning trace "
+     "from the payload as an itemized list. Reference Fig.~\\ref{fig:molecule}."),
+    ("methods_protocol", "Methods: In-Silico Testing Protocol", 300,
+     "The five-step in-silico protocol. Define dEr and Ea with display equations "
      "(\\begin{equation}), the purge argument, the tiered compute (Tier 0 priors / "
      "Tier 1 MLIP multi-site x orientation x height search with frozen-slab "
      "reference / Tier 2 xTB spot-check), the blocking-coverage sum, differential "
      "blocking -> nucleation delay -> S(N) with the S equation, and the "
      "calibration/validity-flag discipline. Name the exact MLIP and device from "
      "provenance. Reference Table~\\ref{tab:calibration}."),
-    ("results", "Results", 600,
+    ("results", "Results", 420,
      "Report EVERY number from the payload with units: dE_ads NGS/GS (eV, with std), "
      "blocking coverages, differential blocking, S at target thickness (nm) with "
      "std vs the target, verdict. Walk the reader through "
      "Table~\\ref{tab:adsorption}, Fig.~\\ref{fig:energetics}, "
      "Fig.~\\ref{fig:growth}, Fig.~\\ref{fig:selectivity}, and "
-     "Table~\\ref{tab:calibration}. If the calibration flag is 'review' or energies "
+     "Table~\\ref{tab:calibration}. If payload['screening'] is non-null, FIRST "
+     "present the campaign comparatively (Table~\\ref{tab:screening}, "
+     "Fig.~\\ref{fig:screening}): how the winner ranked against the runners-up on "
+     "computed S and differential blocking, the committed-candidate outcome from "
+     "payload['screening']['recommendation'], and any per-candidate flags "
+     "(extrapolated/missing priors, ai-proposed, calibration review) -- then give the "
+     "winner's deep-dive. Never present the winner as if it were the only molecule "
+     "tested. If the calibration flag is 'review' or energies "
      "sit at the clamp bounds (-3.0/+1.0 eV), state plainly that the energetics are "
      "fallback values and the verdict is a pipeline demonstration, not a "
      "quantitative claim."),
-    ("discussion", "Discussion", 550,
+    ("discussion", "Discussion", 240,
      "Interpret: differential blocking (not raw Langmuir coverage) as the selectivity "
      "driver; the purge argument; site-matching vs strongest-binder; why the fidelity "
      "gate is the load-bearing rigor element; what the ensemble convention buys; what "
      "the calibration flag means for trust. Be honest about weaknesses."),
-    ("limitations", "Limitations", 350,
+    ("limitations", "Limitations", 150,
      "Enumerate: 0 K energetics + ~0.25 eV entropy at process temperature; MLIP "
      "barrier underestimation (lower bounds); procedural slab vs true melt-quench "
      "AIMD; unmodeled byproducts/lateral interactions; calibration-flag caveat; "
      "ensemble size from provenance."),
-    ("conclusion", "Conclusion", 300,
+    ("conclusion", "Conclusion", 170,
      "Verdict with its numbers, what the autonomous pipeline demonstrated end-to-end, "
      "and the reproducibility guarantee. No new information."),
-    ("reproducibility", "Reproducibility and Provenance", 300,
+    ("reproducibility", "Reproducibility and Provenance", 140,
      "List the artifact files and what each contains; reference "
      "Table~\\ref{tab:provenance}; include the exact reproduction command in a "
      "verbatim block using the compute tier and device from provenance."),
@@ -101,8 +118,10 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
 
 _SYSTEM_TEMPLATE = (
     "You are the '{title}' section-writer agent in a LangGraph swarm autonomously "
-    "authoring an IEEE journal manuscript (IEEEtran, two-column) for an in-silico "
-    "AI co-scientist study of area-selective atomic layer deposition.\n\n"
+    "authoring an IEEE journal manuscript (IEEEtran, two-column) for a study run with the "
+    "Fidenz AI Co-scientist (an autonomous in-silico co-scientist, by Pavan Kumar L and "
+    "Vinayak S) on area-selective atomic layer deposition. Refer to the system by name as "
+    "the 'Fidenz AI Co-scientist'.\n\n"
     "SECTION BRIEF: {brief}\n\n"
     "TARGET LENGTH: about {words} words of substantive technical prose. Long, "
     "detailed, publication-grade IEEE register -- no filler, no marketing.\n\n"
@@ -118,10 +137,12 @@ _SYSTEM_TEMPLATE = (
     "4. You may reference ONLY these floats (they exist): Fig.~\\ref{{fig:slabs}}, "
     "Fig.~\\ref{{fig:sites}}, Fig.~\\ref{{fig:molecule}}, "
     "Fig.~\\ref{{fig:energetics}}, Fig.~\\ref{{fig:growth}}, "
-    "Fig.~\\ref{{fig:selectivity}}, Table~\\ref{{tab:fidelity}}, "
+    "Fig.~\\ref{{fig:selectivity}}, Table~\\ref{{tab:hypotheses}}, "
+    "Table~\\ref{{tab:fidelity}}, "
     "Table~\\ref{{tab:adsorption}}, Table~\\ref{{tab:calibration}}, "
-    "Table~\\ref{{tab:provenance}} -- and \\cite only keys listed in "
-    "payload['citation_keys'].\n"
+    "Table~\\ref{{tab:provenance}} -- plus Fig.~\\ref{{fig:screening}} and "
+    "Table~\\ref{{tab:screening}} ONLY when payload['screening'] is non-null -- "
+    "and \\cite only keys listed in payload['citation_keys'].\n"
     "5. Scientific honesty is non-negotiable: flagged calibrations, clamped "
     "energies, and small ensembles must be stated, not smoothed over."
 )

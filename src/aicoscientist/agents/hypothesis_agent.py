@@ -25,19 +25,24 @@ from .schemas import HypothesisDrafts
 logger = logging.getLogger(__name__)
 
 _HYPO_SYSTEM = (
-    "You are a hypothesis-generation agent for an AS-ALD co-scientist. Using the "
-    "provided knowledge graph concepts/relations and citations, propose multiple "
-    "DISTINCT, competing, testable INTERVENTION hypotheses for area-selective atomic "
-    "layer deposition. Each hypothesis must name a concrete scheme: an inhibitor that "
-    "selectively passivates the non-growth surface, an ALD precursor that grows the "
-    "target film on the growth surface, and a quantitative selectivity target at a "
-    "given oxide thickness, e.g. 'a carboxylic-acid small-molecule inhibitor "
-    "selectively passivates a-SiN -NH sites, enabling BDEAS-based SiOx growth on "
-    "a-SiO2 to >=90% selectivity at 10 nm'. For each hypothesis give supporting and "
-    "contradicting evidence (tied to citation ids when possible), key assumptions, the "
-    "related concepts it builds on, a brief reasoning trace, a novelty assessment, and "
-    "a calibrated confidence in [0,1]. Hypotheses should differ in inhibitor chemistry, "
-    "precursor, or target surface pairing."
+    "You are a hypothesis-generation agent for the Fidenz AI Co-scientist, an AS-ALD "
+    "SCREENING co-scientist. Using the provided knowledge-graph concepts/relations and "
+    "citations, propose multiple DISTINCT, competing, testable CAMPAIGN hypotheses for "
+    "area-selective atomic layer deposition. Each hypothesis is a SCREENING hypothesis, "
+    "NOT a bet on one molecule: it identifies the site-selective mechanism (which "
+    "non-growth-surface sites the inhibitor must chemisorb -- e.g. a-SiN -NH2/-NH -- "
+    "while leaving the growth-surface -OH free for the precursor) and proposes an "
+    "inhibitor CLASS / functional-group family, named with a representative LEAD "
+    "molecule, that an agentic funnel should select from a pool of ~40 candidates. Frame "
+    "each as a screen, e.g. 'Among small-molecule inhibitors, a chlorosilane/silylamine "
+    "family (lead: ETS) that chemisorbs a-SiN -NH2/-NH while sparing a-SiO2 -OH will be "
+    "selected by the agentic funnel -- which screens the full candidate library (library "
+    "+ literature-mined + AI-proposed) and recommends the best-selectivity member -- to "
+    "enable BDEAS-based SiOx growth on a-SiO2 to >=90% selectivity at 10 nm'. For each "
+    "hypothesis give supporting and contradicting evidence (tied to citation ids when "
+    "possible), key assumptions, the related concepts it builds on, a brief reasoning "
+    "trace, a novelty assessment, and a calibrated confidence in [0,1]. Hypotheses should "
+    "differ in inhibitor-class chemistry, precursor, or target-surface pairing."
 )
 
 
@@ -121,13 +126,15 @@ class HypothesisAgent:
 
         hypotheses: list[Hypothesis] = []
         templates = [
-            "A {a}-based small-molecule inhibitor selectively passivates the non-growth "
-            "surface while {b} grows the target film on the growth surface, achieving "
-            ">=90% selectivity at 10 nm for {idea}.",
-            "Chemisorption of {a} on the non-growth surface blocks {b} precursor "
-            "adsorption, delaying nucleation enough to reach the selectivity target for {idea}.",
-            "{a} and {b} form a compatible inhibitor/precursor pair whose differential "
-            "adsorption drives area-selective growth in {idea}.",
+            "Among small-molecule inhibitors, a {a}-family candidate (screened by the "
+            "agentic funnel from a ~40-candidate pool) selectively passivates the "
+            "non-growth surface while {b} grows the target film on the growth surface, "
+            "achieving >=90% selectivity at 10 nm for {idea}.",
+            "An agentic screen of inhibitor candidates (lead: {a}) will identify the "
+            "member whose chemisorption on the non-growth surface best blocks {b} "
+            "precursor adsorption to reach the selectivity target for {idea}.",
+            "{a}-class inhibitors paired with {b} form a candidate set whose differential "
+            "adsorption, ranked by the funnel, drives area-selective growth in {idea}.",
             "The selectivity in {idea} is governed by the differential blocking coverage "
             "of {a} between the growth and non-growth surfaces rather than by {b} alone.",
             "{a} is a viable non-growth-surface passivant enabling {b}-based selective "

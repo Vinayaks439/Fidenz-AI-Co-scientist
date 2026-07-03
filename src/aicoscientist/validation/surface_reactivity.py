@@ -82,7 +82,15 @@ class SurfaceReactivityValidator:
         plan: ValidationPlan,
         datasets_dir: Path,
         logs_dir: Path,
+        surfaces: tuple[list, list] | None = None,
     ) -> ValidationResult:
+        """Run the ADR-009 protocol for one candidate.
+
+        ``surfaces=(gs_surfaces, ngs_surfaces)`` lets the screening funnel pass
+        prebuilt gated ensembles so every candidate is scored on IDENTICAL slabs
+        (apples-to-apples) and the ensembles are built once per campaign, not once
+        per candidate. The MLIP search never mutates the slabs (relax() copies).
+        """
         settings = get_settings()
         spec = plan.data_spec or {}
         run_dir = datasets_dir.parent
@@ -111,14 +119,17 @@ class SurfaceReactivityValidator:
         seed0 = plan.seed or 42
 
         # ---- Step 1: build & gate the surface ensembles -----------------------------
-        gs_surfaces = build_ensemble(
-            gs_label, n=n, seed0=seed0, compute_tier=tier,
-            target_density=spec.get("target_density_gs"),
-        )
-        ngs_surfaces = build_ensemble(
-            ngs_label, n=n, seed0=seed0 + 1000, compute_tier=tier,
-            target_density=spec.get("target_density_ngs"),
-        )
+        if surfaces is not None:
+            gs_surfaces, ngs_surfaces = surfaces
+        else:
+            gs_surfaces = build_ensemble(
+                gs_label, n=n, seed0=seed0, compute_tier=tier,
+                target_density=spec.get("target_density_gs"),
+            )
+            ngs_surfaces = build_ensemble(
+                ngs_label, n=n, seed0=seed0 + 1000, compute_tier=tier,
+                target_density=spec.get("target_density_ngs"),
+            )
         gs_pass = [s for s in gs_surfaces if s.passed] or gs_surfaces
         ngs_pass = [s for s in ngs_surfaces if s.passed] or ngs_surfaces
 
@@ -481,7 +492,8 @@ class SurfaceReactivityValidator:
         try:
             from .mlip import make_calculator
 
-            calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device)
+            calc = make_calculator(settings.mlip_model, settings.resolved_mlip_device,
+                                   dispersion=getattr(settings, "mlip_dispersion", True))
             return calc, f"{settings.mlip_model}@{settings.resolved_mlip_device}"
         except Exception as exc:  # noqa: BLE001
             logger.warning("MLIP unavailable (%s); falling back to Tier-0 priors", exc)

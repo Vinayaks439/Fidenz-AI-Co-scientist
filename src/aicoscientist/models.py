@@ -356,6 +356,13 @@ class Layer3Output(BaseModel):
     history: list[ValidationResult] = Field(default_factory=list)
     reflections: list[Reflection] = Field(default_factory=list)
     iterations: int = 1
+    screening: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Screening-funnel campaign summary (pool, per-candidate table, winner, "
+            "recommendation) when SCREENING_MODE=funnel; None in legacy single mode."
+        ),
+    )
     agentic_pattern: str = "Supervisor + Swarm + ReAct + Reflection"
     methodology_citations: list[str] = Field(default_factory=lambda: list(METHODOLOGY_CITATIONS))
     generated_at: str = Field(default_factory=_now)

@@ -73,7 +73,10 @@ RUN mkdir -p /home/user/.cache /tmp/torchinductor \
     && chmod -R 777 /home/user /tmp/torchinductor
 
 ENV PYTHONUNBUFFERED=1
-ENV ARTIFACTS_DIR=/app/artifacts
+# ARTIFACTS_DIR is intentionally NOT set here: app.py auto-detects HF persistent
+# storage and uses /data/artifacts when the Space has storage enabled (Settings ->
+# Storage), falling back to ./artifacts (ephemeral) otherwise. Setting it here would
+# pin runs to the ephemeral container filesystem. /app/artifacts stays as the fallback.
 RUN mkdir -p /app/artifacts && chmod 777 /app/artifacts
 
 EXPOSE 7860

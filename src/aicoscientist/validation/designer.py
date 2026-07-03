@@ -145,6 +145,13 @@ def _merge_libraries(manual: dict, kg: dict, run_id: str) -> tuple[dict, dict]:
     else:  # auto (default): literature (KG) wins over the shipped manual defaults
         layers = [("builtin", default_inh), ("manual", manual_inh), ("kg-mined", kg)]
 
+    # Case-insensitive names: 'ETS' (manual file) and 'ets' (built-in) are the same
+    # molecule; without normalization they enter the pool twice and burn a screening
+    # slot on a duplicate.
+    layers = [
+        (src, {k.strip().lower(): v for k, v in (layer or {}).items()})
+        for src, layer in layers
+    ]
     names = set().union(*(set(layer.keys()) for _, layer in layers))
     merged: dict[str, dict] = {}
     provenance: dict[str, dict] = {}
@@ -173,6 +180,12 @@ def _merge_libraries(manual: dict, kg: dict, run_id: str) -> tuple[dict, dict]:
                     prov["source_ids"] = src.get("source_ids", prov["source_ids"])
                 else:
                     entry[k] = v
+        # A candidate with NO energetics evidence must not inherit favorable numbers
+        # silently: mark it so ranking places it below any evidenced candidate and the
+        # calibration reference is suppressed. The numeric defaults keep it runnable.
+        prov["prior_missing"] = "dE_ngs" not in entry
+        if prov["prior_missing"]:
+            prov["dE_ngs_source"] = "none"
         entry.setdefault("dE_ngs", -1.0)
         entry.setdefault("dE_gs", -0.2)
         merged[name] = entry
@@ -188,6 +201,50 @@ class ExperimentDesigner:
     def __init__(self, offline: bool = False) -> None:
         self.offline = offline
 
+    def build_candidate_pool(
+        self,
+        official: OfficialHypothesis,
+        concept_names: list[str] | None = None,
+        pool_size: int | None = None,
+    ) -> tuple[dict, dict, dict]:
+        """Assemble the candidate library: built-in + manual + KG-mined (+ proposer).
+
+        When ``pool_size`` is given (screening funnel), the generative proposer fills
+        the pool up to that size with novel, SMILES-validated candidates (tagged
+        ai-proposed / extrapolated). Returns ``(library, provenance, meta)``.
+        """
+        settings = get_settings()
+        concept_names = concept_names or []
+        spec = official.asald or ASALDSpec()
+
+        manual = _load_manual_library(settings.selection_criteria_path)
+        kg = _load_kg_candidates(official.run_id)
+        library, provenance = _merge_libraries(manual, kg, official.run_id)
+
+        # Phase 2: let the generative agent invent NOVEL candidates and merge them in.
+        # Tagged ai-proposed + extrapolated so they can never be "supported" on priors
+        # alone. In funnel mode the proposer also fills the pool to pool_size.
+        n_known = len(library.get("inhibitors", {}))
+        want = 0
+        if getattr(settings, "use_inhibitor_proposer", False):
+            want = getattr(settings, "n_proposed_inhibitors", 3)
+        if pool_size is not None:
+            want = max(want, pool_size - n_known)
+        n_proposed = 0
+        if want > 0:
+            n_proposed = self._merge_proposed(
+                library, provenance, spec, concept_names, n=want
+            )
+
+        meta = {
+            "n_kg": len(kg),
+            "n_manual": len((manual or {}).get("inhibitors", {})),
+            "n_builtin": len(_DEFAULT_LIBRARY["inhibitors"]),
+            "n_proposed": n_proposed,
+            "pool_size": len(library.get("inhibitors", {})),
+        }
+        return library, provenance, meta
+
     def design(
         self,
         official: OfficialHypothesis,
@@ -199,18 +256,9 @@ class ExperimentDesigner:
         concept_names = concept_names or []
         spec = official.asald or ASALDSpec()
 
-        manual = _load_manual_library(settings.selection_criteria_path)
-        kg = _load_kg_candidates(official.run_id)
-        library, provenance = _merge_libraries(manual, kg, official.run_id)
-
-        # Phase 2: let the generative agent invent NOVEL candidates and merge them in
-        # (ranked below the known library; picked on later refine iterations). Tagged
-        # ai-proposed + extrapolated so they can never be "supported" on priors alone.
-        n_proposed = 0
-        if getattr(settings, "use_inhibitor_proposer", False):
-            n_proposed = self._merge_proposed(
-                library, provenance, spec, concept_names
-            )
+        library, provenance, meta = self.build_candidate_pool(official, concept_names)
+        n_proposed = meta["n_proposed"]
+        n_kg, n_manual = meta["n_kg"], meta["n_manual"]
 
         ranked = self._rank_inhibitors(library, spec, concept_names, provenance)
         # On refinement, advance to the next-ranked inhibitor (persist / keep exploring).
@@ -246,8 +294,6 @@ class ExperimentDesigner:
 
         precursor, target_film = self._choose_precursor(library, spec)
 
-        n_kg = len(kg)
-        n_manual = len((manual or {}).get("inhibitors", {}))
         trace = [
             f"Prior sources merged (mode={settings.priors_source}): {n_kg} KG-mined, "
             f"{n_manual} manual, {len(_DEFAULT_LIBRARY['inhibitors'])} built-in defaults.",
@@ -259,6 +305,26 @@ class ExperimentDesigner:
             + ".",
             f"Paired with precursor '{precursor}' for target film {target_film}.",
         ]
+        # Coherence guard: the committed inhibitor should resolve to a real candidate. If
+        # it does not (e.g. the hypothesis parser failed to recognize the named molecule),
+        # the "honor committed choice" pin never fires and a DIFFERENT molecule gets tested
+        # -- flag it loudly rather than silently swapping (the aniline-for-ETS bug).
+        committed = (spec.inhibitor or "").strip().lower()
+        known_keys = {k.lower() for k in library.get("inhibitors", {})}
+        if committed and committed not in known_keys:
+            logger.warning(
+                "committed inhibitor '%s' is not a known candidate; testing '%s' instead",
+                spec.inhibitor, inhibitor,
+            )
+            trace.append(
+                f"WARNING: committed inhibitor '{spec.inhibitor}' did not resolve to a "
+                f"known candidate (hypothesis parse may have failed); tested '{inhibitor}' "
+                f"by ranking instead."
+            )
+        elif committed and inhibitor.lower() != committed and not planner_rationale:
+            trace.append(
+                f"NOTE: committed '{spec.inhibitor}' but ranking selected '{inhibitor}'."
+            )
         if planner_rationale:
             trace.append(
                 f"AI planner (max tier {settings.ai_planner_max_tier}): tier {tier} -- "
@@ -269,10 +335,33 @@ class ExperimentDesigner:
         if prior_critique and prior_critique.decision == "refine":
             trace.append(f"Refinement: {prior_critique.critique}")
 
-        plan = ValidationPlan(
+        return self.build_plan(
+            spec, inhibitor, props, prov, precursor, target_film,
+            tier=tier, ensemble_n=settings.surface_ensemble_n,
+            seed=42 + iteration, iteration=iteration, trace=trace,
+        )
+
+    def build_plan(
+        self,
+        spec: ASALDSpec,
+        inhibitor: str,
+        props: dict,
+        prov: dict,
+        precursor: str,
+        target_film: str,
+        *,
+        tier: int,
+        ensemble_n: int,
+        seed: int,
+        iteration: int,
+        trace: list[str],
+    ) -> ValidationPlan:
+        """Encode one (inhibitor, precursor) candidate into a runnable ValidationPlan."""
+        settings = get_settings()
+        return ValidationPlan(
             domain="surface_reactivity",
             method=(
-                f"AS-ALD differential-reactivity protocol (ADR-009): inhibitor "
+                f"AS-ALD differential-reactivity protocol: inhibitor "
                 f"adsorption screen on {spec.non_growth_surface} (NGS) vs "
                 f"{spec.growth_surface} (GS) over a gated surface ensemble, "
                 f"blocking coverage -> nucleation delay -> S(N)."
@@ -289,7 +378,7 @@ class ExperimentDesigner:
                 "Only chemisorbed, purge-surviving inhibitor blocks the precursor.",
                 "Selectivity is reported as mean +/- std over the surface ensemble.",
             ],
-            seed=42 + iteration,
+            seed=seed,
             iteration=iteration,
             data_spec={
                 "inhibitor": inhibitor,
@@ -303,21 +392,25 @@ class ExperimentDesigner:
                 "dE_ngs_eV": props["dE_ngs"],
                 "dE_gs_eV": props["dE_gs"],
                 "dE_prior_std": 0.08,
-                # An extrapolated or AI-guessed dE_ngs is NOT a valid calibration
-                # reference for the MLIP (that produced the earlier 3.3 eV "error").
+                # An extrapolated, AI-guessed, or missing dE_ngs is NOT a valid
+                # calibration reference for the MLIP (that produced the earlier
+                # 3.3 eV "error").
                 "literature_dE_ngs_eV": (
                     None
-                    if prov["ngs_extrapolated"] or prov["dE_ngs_source"] == "ai-proposed"
+                    if prov.get("ngs_extrapolated")
+                    or prov.get("prior_missing")
+                    or prov.get("dE_ngs_source") in ("ai-proposed", "none")
                     else props["dE_ngs"]
                 ),
                 "temperature_K": settings.ald_temperature_k,
                 "dose_ratio": 1.0,
-                "ensemble_n": settings.surface_ensemble_n,
+                "ensemble_n": ensemble_n,
                 "compute_tier": tier,
                 "provenance_refs": spec.provenance_refs,
-                "prior_source": prov["dE_ngs_source"],
-                "prior_extrapolated": prov["ngs_extrapolated"],
-                "prior_source_ids": prov["source_ids"],
+                "prior_source": prov.get("dE_ngs_source", "builtin"),
+                "prior_extrapolated": bool(prov.get("ngs_extrapolated")),
+                "prior_missing": bool(prov.get("prior_missing")),
+                "prior_source_ids": prov.get("source_ids", []),
                 "site_reactivity": props.get("site_reactivity"),
                 "literature_Ea_ngs_eV": _literature_ea_ngs(props),
             },
@@ -336,13 +429,15 @@ class ExperimentDesigner:
                 ),
             ],
         )
-        return plan
 
-    def _merge_proposed(self, library, provenance, spec, concept_names) -> int:
+    def _merge_proposed(self, library, provenance, spec, concept_names,
+                        n: int | None = None, prior_results: list | None = None) -> int:
         """Generate novel candidates and merge them into ``library`` in-place.
 
         Returns the number of novel candidates added. Existing library names are never
-        overwritten; provenance records them as ai-proposed / extrapolated.
+        overwritten; provenance records them as ai-proposed / extrapolated. ``prior_results``
+        (a failed prior generation's screened rows) makes the proposer design a better next
+        generation instead of guessing.
         """
         try:
             from ..agents.inhibitor_proposer import InhibitorProposer, to_library_entries
@@ -353,12 +448,14 @@ class ExperimentDesigner:
         settings = get_settings()
         inhibitors = library.setdefault("inhibitors", {})
         existing = set(inhibitors.keys())
-        n = getattr(settings, "n_proposed_inhibitors", 3)
+        if n is None:
+            n = getattr(settings, "n_proposed_inhibitors", 3)
         try:
             proposer = InhibitorProposer(offline=self.offline)
             candidates = proposer.propose(
                 spec, concept_names=concept_names, existing_names=existing,
                 n=n, citations=list(spec.provenance_refs or []),
+                prior_results=prior_results,
             )
         except Exception as exc:  # noqa: BLE001
             logger.warning("inhibitor proposer failed (%s)", exc)
@@ -383,8 +480,15 @@ class ExperimentDesigner:
 
     def _rank_inhibitors(
         self, library: dict, spec: ASALDSpec, concept_names: list[str],
-        provenance: dict | None = None,
+        provenance: dict | None = None, honor_committed: bool = True,
     ) -> list[tuple[str, dict]]:
+        """Rank candidates by the Tier-0 heuristic.
+
+        ``honor_committed=True`` (legacy single-candidate mode) pins the committed
+        inhibitor to rank 1 so the hypothesis is always tested first. The screening
+        funnel passes ``False``: the committed molecule competes honestly and the
+        recommendation agent reports whether it won.
+        """
         inhibitors = library.get("inhibitors", {})
         provenance = provenance or {}
         kg_text = " ".join(concept_names).lower()
@@ -401,13 +505,17 @@ class ExperimentDesigner:
             if provenance.get(name, {}).get("ngs_extrapolated"):
                 s = min(s, 0.8 + 0.2 * vol + 0.2 * rem)
                 s -= 0.4
+            # No energetics evidence at all (defaults were substituted): rank below any
+            # evidenced candidate so fabricated defaults cannot flood a large pool.
+            if provenance.get(name, {}).get("prior_missing"):
+                s = min(s, 0.4)
             # Site-matched screening (Kim et al. 2026): inhibitor should passivate
             # the sites the precursor uses on the NGS.
             s += _site_match_score(props, spec.precursor)
             if props.get("provenance") == "ai-proposed":
                 s -= 0.5
-            if name.lower() == spec.inhibitor.lower():  # honor the committed choice first
-                s += 100.0
+            if honor_committed and name.lower() == spec.inhibitor.lower():
+                s += 100.0               # honor the committed choice first
             return s
 
         ranked = sorted(inhibitors.items(), key=lambda kv: score(*kv), reverse=True)
@@ -415,6 +523,15 @@ class ExperimentDesigner:
             ranked = [(spec.inhibitor, {"dE_ngs": -1.0, "dE_gs": -0.2,
                                         "functional_group": "n/a"})]
         return ranked
+
+    def rank_candidates(
+        self, library: dict, spec: ASALDSpec, concept_names: list[str],
+        provenance: dict, honor_committed: bool = False,
+    ) -> list[tuple[str, dict]]:
+        """Public honest ranking used by the screening funnel."""
+        return self._rank_inhibitors(
+            library, spec, concept_names, provenance, honor_committed=honor_committed
+        )
 
     @staticmethod
     def _choose_precursor(library: dict, spec: ASALDSpec) -> tuple[str, str]:
@@ -440,19 +557,31 @@ def _literature_ea_ngs(props: dict) -> float | None:
 
 
 def _site_match_score(props: dict, precursor: str) -> float:
-    """Bonus when inhibitor passivates precursor-preferred NGS sites (Kim et al. 2026)."""
-    prefs = PRECURSOR_SITE_PREFS.get(precursor.upper(), ["NH2"])
-    sr = (props.get("site_reactivity") or {}).get("SiN") or {}
+    """Kim et al. 2026 site match for 'passivate the NGS, grow on the GS'.
+
+    A good inhibitor (a) chemisorbs on the NON-growth surface's amine sites (SiN -NH2 /
+    -NH), passivating it, and (b) does NOT react the growth sites the precursor needs
+    (SiO2 -OH for BDEAS-type), which would kill selectivity. Both terms are scaled by the
+    reaction exothermicity (deltaEr) so, e.g., ETS (weak on SiO2-OH) clearly beats DMATMS
+    (strongly reacts SiO2-OH). The previous version searched for the precursor's -OH site
+    inside the SiN dict, so the bonus was always 0 for BDEAS and the screen never worked.
+    """
+    sr = props.get("site_reactivity") or {}
     if not sr:
         return 0.0
     score = 0.0
+    # (a) reward passivating the NGS (SiN) at its amine sites -- more exothermic is better
+    sin = sr.get("SiN") or {}
+    for st in ("NH2", "NH_bridge"):
+        d = (sin.get(st) or {}).get("deltaEr_eV")
+        if d is not None and d < 0:
+            score += min(0.4, -0.4 * d)
+    # (b) penalize reacting the growth sites the precursor uses (SiO2 -OH) -- this blocks
+    # the surface we want to grow on, so a strong exothermic dEr there is disqualifying.
+    prefs = PRECURSOR_SITE_PREFS.get(precursor.upper(), ["OH"])
+    sio2 = sr.get("SiO2") or {}
     for st in prefs:
-        p = sr.get(st) or sr.get(st.replace("_bridge", ""))
-        if not p:
-            continue
-        delta = p.get("deltaEr_eV", 0.0)
-        if delta < 0:
-            score += 0.25
-        elif delta > 0:
-            score -= 0.15  # endothermic at a precursor site -> penalise
+        d = (sio2.get(st) or sio2.get(st.replace("_bridge", "")) or {}).get("deltaEr_eV")
+        if d is not None and d < 0:
+            score -= min(0.6, -0.6 * d)
     return score

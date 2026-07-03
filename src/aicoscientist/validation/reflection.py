@@ -17,10 +17,20 @@ logger = logging.getLogger(__name__)
 
 _REFLECT_SYSTEM = (
     "You are a Reflection agent reviewing an in-silico validation of a scientific "
-    "hypothesis. Judge whether the result is trustworthy and complete, or whether the "
-    "experiment should be refined (e.g. more data, a different engine, stricter "
-    "criteria). Decide 'accept' or 'refine', give a brief critique, and list concrete "
-    "suggested adjustments if refining."
+    "hypothesis. Judge whether the EVIDENCE is trustworthy and complete, or whether "
+    "the experiment should be refined. Decide 'accept' or 'refine', give a brief "
+    "critique, and list concrete suggested adjustments if refining.\n\n"
+    "Scope discipline:\n"
+    "- Judge evidence QUALITY only: ensemble size / spread, calibration flags, "
+    "convergence, whether metrics map to the declared success criteria. In "
+    "screening-funnel mode the candidate space was already explored by a batch "
+    "screen, so 'refine' means re-running the SAME winner with better statistics "
+    "(e.g. a larger surface ensemble) - never suggest switching molecules.\n"
+    "- A clear negative result on solid evidence is an ACCEPT (a trustworthy "
+    "rejection), not a reason to refine.\n"
+    "- Refining costs real compute: only refine when a concrete deficiency "
+    "(wide ensemble spread, flagged calibration, unconverged search) would "
+    "plausibly change or solidify the verdict."
 )
 
 _CONFIDENCE_FLOOR = 0.6
@@ -62,14 +72,41 @@ class ReflectionAgent:
             return self._review_heuristic(result)
 
     def _review_heuristic(self, result: ValidationResult) -> Reflection:
+        from ..config import get_settings
+
         inconclusive = result.verdict == ValidationVerdict.INCONCLUSIVE
         partial = result.verdict == ValidationVerdict.PARTIALLY_SUPPORTED
         rejected = result.verdict == ValidationVerdict.REJECTED
         low_conf = result.confidence < _CONFIDENCE_FLOOR
+        funnel = get_settings().screening_mode.strip().lower() == "funnel"
 
-        # A rejected committed candidate -> explore an alternative inhibitor/precursor pair
-        # (the "keep exploring" behavior); the designer advances to the next-ranked pair.
+        # Legacy single mode: a rejected committed candidate -> explore an alternative
+        # inhibitor/precursor pair; the designer advances to the next-ranked pair.
+        # Funnel mode: the candidate space was already screened, so a decisive
+        # rejection of the pool's best candidate is a trustworthy negative -> accept.
         if rejected:
+            if funnel:
+                if low_conf:
+                    return Reflection(
+                        decision="refine",
+                        critique=(
+                            f"Winner rejected at low confidence "
+                            f"({result.confidence:.2f}); re-run with a larger surface "
+                            "ensemble to solidify the negative before reporting it."
+                        ),
+                        suggested_adjustments=[
+                            "Increase the surface ensemble for tighter S statistics",
+                        ],
+                    )
+                return Reflection(
+                    decision="accept",
+                    critique=(
+                        "Screening winner rejected decisively "
+                        f"(confidence {result.confidence:.2f}): the pool's best "
+                        "candidate does not meet the target -- a trustworthy "
+                        "negative result."
+                    ),
+                )
             return Reflection(
                 decision="refine",
                 critique=(

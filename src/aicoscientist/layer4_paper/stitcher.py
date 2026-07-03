@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -58,14 +59,136 @@ def _load_json(path: Path) -> dict:
 # ─────────────────────────── payload for the swarm ───────────────────────────
 
 
-def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 25) -> list[dict]:
-    """Curated anchors + hypothesis provenance first, then the rest, capped."""
+# Domain vocabulary that marks a mined citation as on-topic for AS-ALD / surface chemistry.
+# Layer-1 mining can return off-domain papers for a generic term (e.g. "termination" hit
+# pile-driving, quantum-loop verification, and theology papers); those pad the reference
+# list with nonsense. Curated anchors (seed + hypothesis provenance) are always kept; the
+# rest must match at least one of these to be cited.
+_CITATION_DOMAIN_TERMS = (
+    "atomic layer deposition", "area-selective", "area selective", "selective deposition",
+    "as-ald", "asd of", "(ald", "ald)", " ald ", "ald of", "thin film",
+    "passivat", "inhibitor", "precursor", "nucleation",
+    "self-assembled monolayer", "silane", "silanol", "siloxane", "chlorosilane",
+    "aminosilane", "silylamine", "silica", "silicon nitride", "silicon oxide",
+    "sio2", "si3n4", "sinx", "siox", "dielectric",
+    "hydroxylat", "amorphous silica", "amorphous silicon", "amorphous surface",
+    "adsorption energ", "molecular adsorption", "chemisorption", "physisorption",
+    "mace", "interatomic potential", "machine-learning potential",
+    "machine learning potential", "foundation model", "melt-quench", "melt quench",
+)
+
+
+def _sanitize_cites(text: str, valid_keys: set) -> str:
+    """Remove \\cite keys not present in the bibliography (they render as '[?]').
+
+    A \\cite with only-invalid keys is dropped entirely; a mixed one keeps its valid
+    keys. Prevents undefined-citation '[?]' marks from the LLM inventing keys."""
+    if not text:
+        return text
+
+    def repl(m):
+        keys = [k.strip() for k in m.group(1).split(",") if k.strip()]
+        keep = [k for k in keys if k in valid_keys or _safe_key_local(k) in valid_keys]
+        return ("\\cite{" + ",".join(keep) + "}") if keep else ""
+
+    return re.sub(r"\\cite\{([^}]*)\}", repl, text)
+
+
+def _safe_key_local(cid: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", cid) or "ref"
+
+
+def _strip_adr(text: str) -> str:
+    """Remove internal 'ADR-NNN' design-record tags from rendered paper text.
+
+    These are internal engineering references that should not appear in a
+    publication. Handles parentheticals '(ADR-008)', '(ADR-004/009)', inline
+    'ADR-009', and 'see ADR-007', then tidies the punctuation/space scars."""
+    if not text:
+        return text
+    # Parentheticals that are purely an ADR tag (+ optional 'see').
+    text = re.sub(r"\s*\((?:see\s+)?ADR-[0-9][0-9/,\s-]*\)", "", text)
+    # Inline mentions, with an optional leading 'see '.
+    text = re.sub(r"\s*(?:see\s+)?ADR-[0-9][0-9/-]*", "", text)
+    # Tidy scars: space-before-punct, doubled punctuation/space.
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    return text
+
+
+def _sanitize_refs(body: str) -> str:
+    """Drop \\ref/\\eqref to labels that are not \\label-defined in the body.
+
+    Safety net for LLM drift after we stop rendering some figures: an undefined
+    \\ref prints '??' in the PDF. We strip the whole cross-reference clause
+    (optional leading 'Fig.~'/'Table~'/'see ' and wrapping parens), then tidy the
+    punctuation/whitespace scars, so the sentence still reads."""
+    if not body:
+        return body
+    defined = set(re.findall(r"\\label\{([^}]+)\}", body))
+
+    # 1) Parentheticals that are ENTIRELY cross-refs, at least one of them dangling:
+    #    "(Fig.~\ref{a}, Fig.~\ref{b})" -> "" when every kept label would be gone.
+    def _paren(m):
+        inner = m.group(1)
+        labels = re.findall(r"\\(?:ref|eqref)\{([^}]+)\}", inner)
+        # only collapse if the parenthetical is purely refs (+ connective words)
+        residue = re.sub(r"(?:Figs?\.?|Figures?|Tables?|Tab\.?|Secs?\.?|"
+                         r"Sections?|see|and|,|~|\s|\\(?:ref|eqref)\{[^}]+\})+",
+                         "", inner)
+        if residue:
+            return m.group(0)  # has real prose -> leave it
+        kept = [l for l in labels if l in defined]
+        if not kept:
+            return ""
+        rebuilt = ", ".join("Fig.~\\ref{" + l + "}" for l in kept)
+        return "(" + rebuilt + ")"
+
+    body = re.sub(r"\(([^()]*\\(?:ref|eqref)\{[^}]+\}[^()]*)\)", _paren, body)
+
+    # 2) Inline dangling refs: strip an optional float word + the \ref itself.
+    def _inline(m):
+        return m.group(0) if m.group("lab") in defined else ""
+
+    body = re.sub(
+        r"(?:Figs?\.?|Figures?|Tables?|Tab\.?|Secs?\.?|Sections?)?~?\s*"
+        r"\\(?:ref|eqref)\{(?P<lab>[^}]+)\}",
+        _inline, body,
+    )
+
+    # 3) Tidy scars: doubled spaces, space-before-punct, empty parens, ", and".
+    body = re.sub(r"\(\s*\)", "", body)
+    body = re.sub(r"\s+([,.;:])", r"\1", body)
+    body = re.sub(r"([,;]\s*){2,}", ", ", body)
+    body = re.sub(r"\band\s*([,.])", r"\1", body)
+    body = re.sub(r"[ \t]{2,}", " ", body)
+    return body
+
+
+def _is_on_domain(c: dict) -> bool:
+    text = " ".join(str(c.get(k, "")) for k in ("title", "venue", "abstract")).lower()
+    kws = c.get("keywords") or c.get("concepts") or []
+    if isinstance(kws, list):
+        text += " " + " ".join(str(k) for k in kws).lower()
+    return any(t in text for t in _CITATION_DOMAIN_TERMS)
+
+
+def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 12) -> list[dict]:
+    """Curated anchors + hypothesis provenance first, then on-domain mined refs, capped.
+
+    Off-domain mined papers are dropped so the bibliography stays AS-ALD / surface-chemistry
+    (the earlier version padded to the cap with whatever was mined, incl. unrelated
+    'termination' hits)."""
     refs = set(hypothesis.get("provenance_refs", []))
     anchors = [c for c in citations
                if c.get("id") in refs or str(c.get("id", "")).startswith("seed_asald")]
     rest = [c for c in citations if c not in anchors]
+    on_domain = [c for c in rest if _is_on_domain(c)]
+    dropped = len(rest) - len(on_domain)
+    if dropped:
+        logger.info("citation filter: dropped %d off-domain mined reference(s)", dropped)
     seen, out = set(), []
-    for c in anchors + rest:
+    for c in anchors + on_domain:
         cid = c.get("id")
         if cid in seen:
             continue
@@ -77,7 +200,8 @@ def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 25) 
 
 
 def _build_payload(run_id: str, rich: dict, fidelity: dict, plan: dict,
-                   summary_md: str, cited: list[dict]) -> dict:
+                   summary_md: str, cited: list[dict],
+                   screening: dict | None = None) -> dict:
     ads = rich.get("inhibitor_adsorption", {})
     return {
         "run_id": run_id,
@@ -95,6 +219,9 @@ def _build_payload(run_id: str, rich: dict, fidelity: dict, plan: dict,
         "plan_reasoning_trace": plan.get("reasoning_trace", []),
         "validation_summary_md": summary_md,
         "architecture_digest": sections.ARCH_DIGEST,
+        # Screening-funnel campaign (winner deep-dive numbers are the rich dict above;
+        # this carries the full comparative table + recommendation for the writers).
+        "screening": screening,
         "citation_keys": [
             {"key": sections._safe_key(c.get("id", "ref")),
              "title": c.get("title", ""), "year": c.get("year")}
@@ -117,7 +244,8 @@ def _fig_block(name: str, label: str, caption: str, width: float = 1.0,
 
 
 def _render_figures(run_dir: Path, paper_dir: Path, rich: dict,
-                    fidelity: dict) -> tuple[dict[str, str], list[Path]]:
+                    fidelity: dict,
+                    screening: dict | None = None) -> tuple[dict[str, str], list[Path]]:
     """Render the figure suite; return ({section_key: latex_floats}, written_paths)."""
     hyp = rich.get("hypothesis", {})
     prov = rich.get("provenance", {})
@@ -195,6 +323,24 @@ def _render_figures(run_dir: Path, paper_dir: Path, rich: dict,
             "and its eventual rise is the residual defect nucleation that makes "
             "selectivity finite."))
 
+    if screening:
+        p = figures.screening_funnel_figure(screening, paper_dir / "screening.png")
+        if p:
+            written.append(p)
+            n_pool = (screening.get("config") or {}).get("pool_size", "N")
+            blocks["results"].append(_fig_block(
+                p.name, "fig:screening",
+                f"Screening-funnel outcome over the {n_pool}-candidate inhibitor "
+                "pool: computed area selectivity $S$ at the target thickness "
+                "(ensemble mean $\\pm\\sigma$) for every candidate that reached the "
+                "MLIP batch screen (light blue) or the full-fidelity top-$k$ re-run "
+                "(dark blue), all scored on identical seed-shared gated slab "
+                "ensembles. The recommended winner (orange) is the candidate the "
+                "recommendation agent selected; the dashed line marks the committed "
+                "selectivity target. Candidates eliminated at the Tier-0 prior rank "
+                "carry no computed $S$ and appear only in "
+                "Table~\\ref{tab:screening}."))
+
     p = figures.selectivity_figure(rich, paper_dir / "selectivity.png")
     if p:
         written.append(p)
@@ -229,11 +375,16 @@ _SECTION_ORDER = [
 
 
 def _assemble_body(drafts: dict[str, str], fig_blocks: dict[str, str],
-                   rich: dict, fidelity: dict, run_id: str) -> str:
+                   rich: dict, fidelity: dict, run_id: str,
+                   screening: dict | None = None,
+                   hyp_table: str = "") -> str:
     tables_for = {
+        "architecture": hyp_table,
         "methods_surfaces": sections.fidelity_table(fidelity),
-        "results": "\n\n".join(t for t in (sections.adsorption_table(rich),
-                                           sections.calibration_table(rich)) if t),
+        "results": "\n\n".join(t for t in (
+            sections.screening_table(screening) if screening else "",
+            sections.adsorption_table(rich),
+            sections.calibration_table(rich)) if t),
         "reproducibility": sections.provenance_table(rich, run_id),
     }
     parts = []
@@ -262,6 +413,11 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     fidelity = _load_json(run_dir / "surface_fidelity.json")
     plan = _load_json(run_dir / "validation_plan.json")
     citations = _load_json(run_dir / "citation_repository.json").get("citations", [])
+    screening = _load_json(run_dir / "screening_results.json") or None
+    hyps = _load_json(run_dir / "hypothesis_state_graphs.json").get("hypotheses", [])
+    official = _load_json(run_dir / "official_hypothesis.json")
+    selected_ids = official.get("source_hypothesis_ids", []) if official else []
+    hyp_table = sections.hypotheses_table(hyps, selected_ids)
     summary_md = ""
     if (run_dir / "validation_summary.md").exists():
         summary_md = (run_dir / "validation_summary.md").read_text(encoding="utf-8")
@@ -270,24 +426,51 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     paper_dir.mkdir(parents=True, exist_ok=True)
 
     # Figure agents (real numbers/geometries only).
-    fig_blocks, fig_paths = _render_figures(run_dir, paper_dir, rich, fidelity)
+    fig_blocks, fig_paths = _render_figures(run_dir, paper_dir, rich, fidelity,
+                                            screening=screening)
 
     # Section-writer swarm (LangGraph fan-out; deterministic fallback offline).
     cited = _select_citations(citations, rich.get("hypothesis", {}))
-    payload = _build_payload(run_id, rich, fidelity, plan, summary_md, cited)
+    payload = _build_payload(run_id, rich, fidelity, plan, summary_md, cited,
+                             screening=screening)
     drafts = swarm.run_swarm(payload, offline=offline)
 
-    body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id)
+    body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id,
+                          screening=screening, hyp_table=hyp_table)
+    # Strip \cite keys that are not in the bibliography so IEEEtran doesn't print "[?]"
+    # (the LLM occasionally cites a key we never provided). Also sanitize the abstract.
+    valid_keys = {sections._safe_key(c.get("id", "")) for c in cited}
+    body = _sanitize_cites(body, valid_keys)
+    drafts["abstract"] = _sanitize_cites(drafts.get("abstract", ""), valid_keys)
+    # Strip \ref to any float we did not render so IEEEtran doesn't print an
+    # undefined-reference "??" (safety net for LLM drift).
+    body = _sanitize_refs(body)
+    # Remove internal ADR-NNN design-record tags from the published text.
+    body = _strip_adr(body)
+    drafts["abstract"] = _strip_adr(drafts.get("abstract", ""))
 
     hyp = rich.get("hypothesis", {})
-    title = (
-        "An Agentic In-Silico Co-Scientist for Area-Selective ALD: "
-        f"Fidelity-Gated Amorphous {sections.latex_escape(hyp.get('growth_surface', ''))}"
-        f"/{sections.latex_escape(hyp.get('non_growth_surface', ''))} Surfaces and "
-        f"Site-Matched {sections.latex_escape(hyp.get('inhibitor', ''))} Passivation "
-        f"for {sections.latex_escape(hyp.get('precursor', ''))}-Based "
-        f"{sections.latex_escape(hyp.get('target_film', ''))} Growth"
-    )
+    gs = sections.latex_escape(hyp.get("growth_surface", ""))
+    ngs = sections.latex_escape(hyp.get("non_growth_surface", ""))
+    precursor = sections.latex_escape(hyp.get("precursor", ""))
+    film = sections.latex_escape(hyp.get("target_film", ""))
+    if screening and screening.get("winner"):
+        # Screening campaign: frame the paper around the two Challenge-4 deliverables
+        # (the amorphous surface builder + the agentic inhibitor screen), not one molecule.
+        n_scored = len([r for r in screening.get("rows", []) if r.get("S_mean") is not None])
+        n_pool = (screening.get("config") or {}).get("pool_size") or n_scored
+        title = (
+            "The Fidenz AI Co-scientist for Area-Selective ALD: A Fidelity-Gated "
+            f"Amorphous {gs}/{ngs} Surface Builder and an Agentic Screen of "
+            f"{n_pool} Inhibitor Candidates for {precursor}-Based {film} Growth"
+        )
+    else:
+        title = (
+            "An Agentic In-Silico Co-Scientist for Area-Selective ALD: "
+            f"Fidelity-Gated Amorphous {gs}/{ngs} Surfaces and Site-Matched "
+            f"{sections.latex_escape(hyp.get('inhibitor', ''))} Passivation for "
+            f"{precursor}-Based {film} Growth"
+        )
 
     filled = _TEMPLATE.read_text(encoding="utf-8")
     for key, val in {

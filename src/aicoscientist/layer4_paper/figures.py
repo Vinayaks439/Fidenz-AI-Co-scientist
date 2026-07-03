@@ -143,6 +143,49 @@ def energetics_figure(rich: dict, out_path: Path) -> Path | None:
     return out_path
 
 
+def screening_funnel_figure(screening: dict, out_path: Path) -> Path | None:
+    """Ranked bar chart of computed selectivity per screened candidate (the funnel).
+
+    Candidates that reached the MLIP batch or full-fidelity stage are shown with
+    their ensemble S +/- sigma; the recommended winner is highlighted. Tier-0-only
+    candidates carry no computed S and are summarized in the caption instead.
+    """
+    try:
+        plt = _plt()
+    except Exception:  # noqa: BLE001
+        return None
+    rows = [r for r in screening.get("rows", []) if r.get("S_mean") is not None]
+    if not rows:
+        return None
+    rows.sort(key=lambda r: r["S_mean"])
+    winner = screening.get("winner")
+    names = [r["inhibitor"] for r in rows]
+    s = [r["S_mean"] for r in rows]
+    err = [r.get("S_std") or 0.0 for r in rows]
+    colors = ["#ff7f0e" if n == winner
+              else ("#1f77b4" if r.get("stage") == "full" else "#9ecae1")
+              for n, r in zip(names, rows)]
+
+    fig, ax = plt.subplots(figsize=(3.5, max(2.2, 0.32 * len(rows) + 0.9)))
+    ax.barh(names, s, xerr=err, color=colors, height=0.62, capsize=3, alpha=0.9)
+    target = (screening.get("config") or {}).get("target_selectivity", 0.9)
+    ax.axvline(float(target), ls="--", color="#d62728", lw=1)
+    ax.set_xlabel(r"$S$ at target thickness (ensemble mean $\pm\sigma$)")
+    ax.set_xlim(0, 1.05)
+    from matplotlib.patches import Patch
+
+    ax.legend(handles=[
+        Patch(color="#ff7f0e", label="recommended"),
+        Patch(color="#1f77b4", label="full-fidelity re-run"),
+        Patch(color="#9ecae1", label="MLIP batch screen"),
+    ], loc="lower right", fontsize=6)
+    ax.tick_params(axis="y", labelsize=6.5)
+    fig.tight_layout()
+    fig.savefig(out_path)
+    plt.close(fig)
+    return out_path
+
+
 def site_density_figure(fidelity: dict, out_path: Path) -> Path | None:
     """Per-site-type surface densities vs the Kim 2026 acceptance bands."""
     try:
@@ -236,72 +279,102 @@ def _load_or_rebuild_slabs(run_dir: Path, rich: dict):
 
 
 def slab_figure(run_dir: Path, rich: dict, out_path: Path) -> Path | None:
-    """Top + side atomic-model views of the GS and NGS slabs used in the run."""
+    """Top + side atomic-model views of the GS and NGS slabs used in the run, rendered
+    as depth-shaded 3D ball-and-stick (bonds + perspective) to match the viewer."""
     try:
         plt = _plt()
-        from ase.visualize.plot import plot_atoms
     except Exception as exc:  # noqa: BLE001
-        logger.warning("ase/matplotlib unavailable (%s); skipping slab figure", exc)
+        logger.warning("matplotlib unavailable (%s); skipping slab figure", exc)
         return None
 
     slabs = _load_or_rebuild_slabs(run_dir, rich)
     if not slabs:
         return None
 
-    colors_of = None
-    try:
-        colors_of = lambda a: [_ECOLOR.get(sym, "#B0B0B0") for sym in a.get_chemical_symbols()]  # noqa: E731
-    except Exception:  # noqa: BLE001
-        pass
-
     fig, axes = plt.subplots(len(slabs), 2, figsize=(5.2, 2.6 * len(slabs)),
                              squeeze=False)
     for row, (label, atoms) in enumerate(slabs):
-        for col, (rot, view) in enumerate((("0x,0y,0z", "top view"),
-                                           ("-90x,0y,0z", "side view"))):
+        for col, view_name in enumerate(("top view", "side view")):
             ax = axes[row][col]
-            kwargs = {"radii": 0.45, "rotation": rot}
-            if colors_of is not None:
-                kwargs["colors"] = colors_of(atoms)
             try:
-                plot_atoms(atoms, ax, **kwargs)
+                _ball_and_stick(atoms, ax, view=col)
             except Exception as exc:  # noqa: BLE001
-                logger.warning("plot_atoms failed for %s (%s)", label, exc)
+                logger.warning("slab render failed for %s (%s)", label, exc)
                 plt.close(fig)
                 return None
-            ax.set_title(f"{label} — {view}", fontsize=9)
-            ax.set_axis_off()
+            ax.set_title(f"{label} — {view_name}", fontsize=9)
     fig.tight_layout()
-    fig.savefig(out_path)
+    fig.savefig(out_path, dpi=200)
     plt.close(fig)
     return out_path
 
 
+def _ball_and_stick(atoms, ax, view: int = 0) -> None:
+    """Draw a 3D ball-and-stick of ``atoms`` on ``ax`` (bonds + depth-sorted CPK balls),
+    matching the interactive viewer's look. ``view`` 0 looks down z, 1 down y."""
+    import numpy as np
+    from ase.data import covalent_radii
+
+    pos = atoms.get_positions().astype(float)
+    pos = pos - pos.mean(axis=0)
+    Z = atoms.get_atomic_numbers()
+    syms = atoms.get_chemical_symbols()
+    if view == 0:                       # look down z
+        u, v, depth = pos[:, 0], pos[:, 1], pos[:, 2]
+    else:                               # orthogonal view: look down y
+        u, v, depth = pos[:, 0], pos[:, 2], pos[:, 1]
+
+    # Depth in [0,1] (0 = far, 1 = near) drives 3D shading: nearer atoms/bonds are
+    # larger and more opaque, which reads as perspective instead of a flat scatter.
+    span = float(depth.max() - depth.min())
+    dz = (depth - depth.min()) / span if span > 1e-6 else np.full(len(depth), 0.5)
+    n = len(atoms)
+    scale = 60.0 if n <= 40 else 34.0   # smaller balls for dense slabs
+
+    # Bonds: atom pairs within ~1.15 x (sum of covalent radii), gray sticks behind atoms.
+    for i in range(n):
+        for j in range(i + 1, n):
+            d = float(np.linalg.norm(pos[i] - pos[j]))
+            if d < 1.15 * (covalent_radii[Z[i]] + covalent_radii[Z[j]]):
+                m = 0.5 * (dz[i] + dz[j])
+                ax.plot([u[i], u[j]], [v[i], v[j]], color="#555555",
+                        lw=1.0 + 1.8 * m, alpha=0.30 + 0.60 * m,
+                        solid_capstyle="round", zorder=1 + m)
+    # Atoms painted far-to-near so nearer atoms overlap correctly.
+    for rank, k in enumerate(np.argsort(depth)):
+        r = float(covalent_radii[Z[k]])
+        near = float(dz[k])
+        ax.scatter(u[k], v[k], s=max(30.0, (r * scale * (0.65 + 0.35 * near)) ** 2),
+                   c=_ECOLOR.get(syms[k], "#B0B0B0"),
+                   edgecolors="#222222", linewidths=0.5,
+                   alpha=0.60 + 0.40 * near, zorder=2 + rank)
+    ax.set_aspect("equal")
+    ax.set_axis_off()
+    pad = 1.0
+    ax.set_xlim(u.min() - pad, u.max() + pad)
+    ax.set_ylim(v.min() - pad, v.max() + pad)
+
+
 def molecule_figure(rich: dict, out_path: Path) -> Path | None:
-    """3D render of the inhibitor molecule (rdkit 2D fallback -> ase render)."""
+    """3D ball-and-stick render of the inhibitor molecule (rdkit 2D fallback)."""
     hyp = rich.get("hypothesis", {})
     name = rich.get("novel_compound", {}) or {}
     ident = name.get("smiles") or hyp.get("inhibitor")
     if not ident:
         return None
 
-    # Preferred: 3D conformer via the validation builder, rendered with ase.
+    # Preferred: 3D conformer via the validation builder, rendered ball-and-stick.
     try:
         plt = _plt()
-        from ase.visualize.plot import plot_atoms
-
         from ..validation.mlip import build_molecule
 
         atoms = build_molecule(ident)
-        fig, axes = plt.subplots(1, 2, figsize=(4.6, 2.3))
-        for ax, rot in zip(axes, ("0x,0y,0z", "-90x,0y,0z")):
-            plot_atoms(atoms, ax, radii=0.4, rotation=rot,
-                       colors=[_ECOLOR.get(s, "#B0B0B0")
-                               for s in atoms.get_chemical_symbols()])
-            ax.set_axis_off()
+        fig, axes = plt.subplots(1, 2, figsize=(4.6, 2.4))
+        for ax, view in zip(axes, (0, 1)):
+            _ball_and_stick(atoms, ax, view=view)
         fig.suptitle(f"Inhibitor: {hyp.get('inhibitor', ident)}", fontsize=9)
         fig.tight_layout()
-        fig.savefig(out_path)
+        fig.savefig(out_path, dpi=200)
         plt.close(fig)
         return out_path
     except Exception as exc:  # noqa: BLE001

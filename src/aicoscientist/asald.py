@@ -13,12 +13,26 @@ import re
 
 from .models import ASALDSpec
 
-# Known AS-ALD vocabulary (literature-grounded candidate library).
-_INHIBITORS = [
-    "methanesulfonic acid", "octadecylphosphonic acid", "phosphonic acid",
-    "pivalic acid", "ethylbutyric acid", "acetic acid", "carboxylic acid",
-    "aniline", "dmatms", "trimethylsilyl", "silyl",
-]
+# Known AS-ALD inhibitor vocabulary -> canonical library key. Matched on word boundaries
+# so short tokens (e.g. "ets") do not hit substrings ("targets"). Includes the Kim et al.
+# 2026 silylamine / chlorosilane inhibitors (DMATMS, ETS) and their spelled-out aliases,
+# which the earlier list silently dropped -- so a committed "ETS" hypothesis actually maps
+# onto the ETS spec instead of falling through to an unrelated molecule.
+_INHIBITOR_ALIASES = {
+    "octadecylphosphonic acid": "octadecylphosphonic acid",
+    "methanesulfonic acid": "methanesulfonic acid",
+    "phosphonic acid": "octadecylphosphonic acid",
+    "pivalic acid": "pivalic acid",
+    "ethylbutyric acid": "ethylbutyric acid",
+    "acetic acid": "acetic acid",
+    "carboxylic acid": "acetic acid",
+    "aniline": "aniline",
+    "dimethylamino-trimethylsilane": "dmatms",
+    "dmatms": "dmatms",
+    "ethyltrichlorosilane": "ets",
+    "ethoxysilane": "ets",
+    "ets": "ets",
+}
 _PRECURSORS = ["bdeas", "dipas", "hcds", "tdmat", "dmai", "tma"]
 
 # Growth / non-growth surface synonyms.
@@ -32,17 +46,15 @@ _FILMS = {
 
 
 def _canonical_inhibitor(text: str) -> str | None:
-    # Match by earliest occurrence in the text, not by list order, so the molecule the
-    # author actually named wins over incidental mentions elsewhere in the corpus.
+    # Match by earliest word-boundary occurrence, not list order, so the molecule the
+    # author actually named wins over incidental mentions elsewhere in the corpus, and
+    # short tokens like "ets" match "ETS" but not "targets".
     best: tuple[int, str] | None = None
-    for name in _INHIBITORS:
-        idx = text.find(name)
-        if idx >= 0 and (best is None or idx < best[0]):
-            best = (idx, name)
-    if best is None:
-        return None
-    name = best[1]
-    return "acetic acid" if name == "carboxylic acid" else name
+    for alias, canonical in _INHIBITOR_ALIASES.items():
+        m = re.search(r"\b" + re.escape(alias) + r"\b", text)
+        if m and (best is None or m.start() < best[0]):
+            best = (m.start(), canonical)
+    return best[1] if best else None
 
 
 def _canonical_precursor(text: str) -> str | None:
