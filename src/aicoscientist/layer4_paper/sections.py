@@ -18,6 +18,25 @@ from __future__ import annotations
 import re
 
 
+# Unicode the LLM / stored statements commonly emit -> LaTeX (pdflatex-safe).
+_UNICODE_REPL = {
+    "≥": r"$\geq$", "≤": r"$\leq$", "≠": r"$\neq$",
+    "≈": r"$\approx$", "×": r"$\times$", "±": r"$\pm$",
+    "→": r"$\rightarrow$", "←": r"$\leftarrow$", "⇒": r"$\Rightarrow$",
+    "°": r"$^\circ$", "µ": r"$\mu$", "μ": r"$\mu$",
+    "–": "--", "—": "---", "−": r"$-$",
+    "‘": "`", "’": "'", "“": "``", "”": "''",
+    "…": r"\ldots{}", " ": " ", "å": r"\AA{}", "Å": r"\AA{}",
+    "₂": r"$_2$", "₃": r"$_3$", "₄": r"$_4$",
+    # Greek commonly emitted in AS-ALD prose (ΔE, θ_block, ±σ, α/β/γ, λ, Ω).
+    "Δ": r"$\Delta$", "Ω": r"$\Omega$", "Σ": r"$\Sigma$", "Θ": r"$\Theta$",
+    "α": r"$\alpha$", "β": r"$\beta$", "γ": r"$\gamma$", "δ": r"$\delta$",
+    "θ": r"$\theta$", "λ": r"$\lambda$", "σ": r"$\sigma$", "ρ": r"$\rho$",
+    "φ": r"$\phi$", "ω": r"$\omega$", "π": r"$\pi$", "τ": r"$\tau$",
+    "η": r"$\eta$", "ε": r"$\epsilon$", "χ": r"$\chi$",
+}
+
+
 def latex_escape(text: str) -> str:
     if text is None:
         return ""
@@ -26,6 +45,7 @@ def latex_escape(text: str) -> str:
         "#": r"\#", "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}",
         "^": r"\textasciicircum{}",
     }
+    repl.update(_UNICODE_REPL)
     return "".join(repl.get(ch, ch) for ch in str(text))
 
 
@@ -94,13 +114,13 @@ ARCH_DIGEST = (
     "list on rejection. Layer 4 (this manuscript) is an autonomous LaTeX stitcher: a "
     "LangGraph swarm of per-section writer agents grounded exclusively in the run "
     "artifacts, with deterministic tables/figures and a real-DOI bibliography. "
-    "Cross-cutting provenance (ADR-008) pins seeds, tiers, MLIP model/device/dtype, "
+    "Cross-cutting provenance pins seeds, tiers, MLIP model/device/dtype, "
     "slab source, temperatures, dose parameters, and package versions into "
     "*_provenance.json so every number in this paper resolves to a logged computation."
 )
 
 _IN_SILICO_DIGEST = (
-    "The graded in-silico test (ADR-009) is a five-step protocol: (1) build and gate the "
+    "The graded in-silico test is a five-step protocol: (1) build and gate the "
     "surface ensembles; (2) screen the inhibitor's site-resolved reactivity on both "
     "surfaces (dEr = E_chem - E_phys, Eq. 1; Ea = E_ts - E_phys, Eq. 2, both per the Kim "
     "2026 definitions); (3) convert per-site reactivity to an effective blocking "
@@ -245,11 +265,63 @@ def screening_table(screening: dict) -> str:
     )
 
 
+def hypotheses_table(hyps: list[dict], selected_ids) -> str:
+    """Layer-1 hypothesis slate: every generated hypothesis, ranked by composite
+    score, with a column marking the one(s) the human-in-the-loop gate committed."""
+    if not hyps:
+        return ""
+    selected = {str(s) for s in (selected_ids or [])}
+
+    def _comp(h):
+        try:
+            return float((h.get("scores") or {}).get("composite", 0.0))
+        except (TypeError, ValueError):
+            return 0.0
+
+    ordered = sorted(hyps, key=_comp, reverse=True)
+    body = []
+    for h in ordered:
+        hid = str(h.get("id", ""))
+        sc = h.get("scores") or {}
+        stmt = latex_escape((h.get("statement") or "").strip())
+        is_sel = hid in selected
+        hid_cell = f"\\textbf{{{latex_escape(hid)}}}" if is_sel else latex_escape(hid)
+        stmt_cell = f"\\textbf{{{stmt}}}" if is_sel else stmt
+
+        def _f(key):
+            try:
+                return f"{float(sc.get(key)):.2f}"
+            except (TypeError, ValueError):
+                return "n/a"
+
+        mark = "\\checkmark" if is_sel else "--"
+        body.append(
+            f"{hid_cell} & {stmt_cell} & {_f('composite')} & {_f('novelty')} & "
+            f"{_f('confidence')} & {mark} \\\\"
+        )
+    n_sel = sum(1 for h in ordered if str(h.get("id", "")) in selected)
+    return (
+        "\\begin{table*}[!t]\\centering\n"
+        "\\caption{Complete Layer-1 hypothesis slate generated for this campaign, "
+        "ranked by composite score. The \\emph{Selected} column marks the "
+        f"hypothes{'es' if n_sel != 1 else 'is'} the human-in-the-loop commit gate "
+        "(Layer 2) promoted to the official hypothesis driving the in-silico screen; "
+        "selected rows are shown in bold. Scores are the multi-agent review "
+        "aggregates (evidence quality, novelty, consistency, confidence "
+        "$\\rightarrow$ composite).}\n\\label{tab:hypotheses}\n"
+        "\\begin{tabular}{@{}l p{0.44\\textwidth} cccc@{}}\\toprule\n"
+        "ID & Hypothesis & Composite & Novelty & Confidence & Selected "
+        "\\\\\\midrule\n"
+        + "\n".join(body)
+        + "\n\\bottomrule\\end{tabular}\\end{table*}"
+    )
+
+
 def provenance_table(rich: dict, run_id: str) -> str:
     prov = rich.get("provenance", {})
     return (
         "\\begin{table}[!t]\\centering\n"
-        "\\caption{Pinned computational provenance of the validation run (ADR-008). "
+        "\\caption{Pinned computational provenance of the validation run. "
         "Re-running the recorded command with these settings reproduces every number in "
         "this manuscript.}\n\\label{tab:provenance}\n"
         "\\begin{tabular}{ll}\\toprule\n"
@@ -422,7 +494,7 @@ def _fb_architecture(p: dict) -> str:
         "running in parallel, each grounded in (and restricted to) the run artifacts "
         "and an LLM-generated validation summary; tables, figures, and the bibliography "
         "are constructed deterministically from the same artifacts. The architecture's "
-        "cross-cutting rule (ADR-008) is that every number resolves to a logged "
+        "cross-cutting rule is that every number resolves to a logged "
         "computation: seeds, tiers, potentials, devices, temperatures, and dose "
         "parameters are pinned in provenance files (Table~\\ref{tab:provenance})."
     )
@@ -506,7 +578,7 @@ def _fb_methods_selection(p: dict) -> str:
 def _fb_methods_protocol(p: dict) -> str:
     prov = p.get("provenance", {})
     return (
-        "Validation follows a five-step tiered protocol (ADR-009), recording every "
+        "Validation follows a five-step tiered protocol, recording every "
         "intermediate to the run artifacts.\n\n"
         "\\subsubsection{Energetics definitions}\n"
         "Reactivity at a surface site is characterized by two quantities defined "
@@ -728,7 +800,7 @@ def _fb_reproducibility(p: dict) -> str:
     prov = p.get("provenance", {})
     run_id = p.get("run_id", "run")
     return (
-        "Reproducibility is a first-class requirement (ADR-008). "
+        "Reproducibility is a first-class requirement. "
         "Table~\\ref{tab:provenance} pins the computational provenance of this run: "
         "engine, compute tier, potential and device, process temperature, dose ratio, "
         "ensemble size, and RNG seed. The full artifact set --- "

@@ -51,7 +51,10 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "loop + AI experiment planner choosing tier per iteration; Layer 4 this "
      "manuscript swarm). Emphasize the in-silico testing design: fidelity gate before "
      "compute, tiered compute, literature anchoring with validity flags, bounded "
-     "reflection. Reference Table~\\ref{tab:provenance}."),
+     "reflection. Reference Table~\\ref{tab:provenance}. When describing Layer 1/2, "
+     "point to Table~\\ref{tab:hypotheses}, the complete generated hypothesis slate "
+     "with the committed (Selected) hypothesis marked, as evidence of the "
+     "ranked-then-gated selection."),
     ("methods_surfaces", "Methods: Amorphous Surface Builder", 360,
      "Deliverable 1. Describe seed->cleave->saturate (passivation rule table) -> "
      "bridge anneal -> fidelity gate -> ensemble. Quote the measured per-site "
@@ -70,7 +73,7 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "never override the computed ranking. Reproduce the designer's reasoning trace "
      "from the payload as an itemized list. Reference Fig.~\\ref{fig:molecule}."),
     ("methods_protocol", "Methods: In-Silico Testing Protocol", 300,
-     "The five-step ADR-009 protocol. Define dEr and Ea with display equations "
+     "The five-step in-silico protocol. Define dEr and Ea with display equations "
      "(\\begin{equation}), the purge argument, the tiered compute (Tier 0 priors / "
      "Tier 1 MLIP multi-site x orientation x height search with frozen-slab "
      "reference / Tier 2 xTB spot-check), the blocking-coverage sum, differential "
@@ -134,7 +137,8 @@ _SYSTEM_TEMPLATE = (
     "4. You may reference ONLY these floats (they exist): Fig.~\\ref{{fig:slabs}}, "
     "Fig.~\\ref{{fig:sites}}, Fig.~\\ref{{fig:molecule}}, "
     "Fig.~\\ref{{fig:energetics}}, Fig.~\\ref{{fig:growth}}, "
-    "Fig.~\\ref{{fig:selectivity}}, Table~\\ref{{tab:fidelity}}, "
+    "Fig.~\\ref{{fig:selectivity}}, Table~\\ref{{tab:hypotheses}}, "
+    "Table~\\ref{{tab:fidelity}}, "
     "Table~\\ref{{tab:adsorption}}, Table~\\ref{{tab:calibration}}, "
     "Table~\\ref{{tab:provenance}} -- plus Fig.~\\ref{{fig:screening}} and "
     "Table~\\ref{{tab:screening}} ONLY when payload['screening'] is non-null -- "

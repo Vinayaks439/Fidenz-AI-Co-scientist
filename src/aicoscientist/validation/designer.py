@@ -361,7 +361,7 @@ class ExperimentDesigner:
         return ValidationPlan(
             domain="surface_reactivity",
             method=(
-                f"AS-ALD differential-reactivity protocol (ADR-009): inhibitor "
+                f"AS-ALD differential-reactivity protocol: inhibitor "
                 f"adsorption screen on {spec.non_growth_surface} (NGS) vs "
                 f"{spec.growth_surface} (GS) over a gated surface ensemble, "
                 f"blocking coverage -> nucleation delay -> S(N)."

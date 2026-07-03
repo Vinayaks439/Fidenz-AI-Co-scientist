@@ -98,6 +98,73 @@ def _safe_key_local(cid: str) -> str:
     return re.sub(r"[^A-Za-z0-9]", "", cid) or "ref"
 
 
+def _strip_adr(text: str) -> str:
+    """Remove internal 'ADR-NNN' design-record tags from rendered paper text.
+
+    These are internal engineering references that should not appear in a
+    publication. Handles parentheticals '(ADR-008)', '(ADR-004/009)', inline
+    'ADR-009', and 'see ADR-007', then tidies the punctuation/space scars."""
+    if not text:
+        return text
+    # Parentheticals that are purely an ADR tag (+ optional 'see').
+    text = re.sub(r"\s*\((?:see\s+)?ADR-[0-9][0-9/,\s-]*\)", "", text)
+    # Inline mentions, with an optional leading 'see '.
+    text = re.sub(r"\s*(?:see\s+)?ADR-[0-9][0-9/-]*", "", text)
+    # Tidy scars: space-before-punct, doubled punctuation/space.
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    return text
+
+
+def _sanitize_refs(body: str) -> str:
+    """Drop \\ref/\\eqref to labels that are not \\label-defined in the body.
+
+    Safety net for LLM drift after we stop rendering some figures: an undefined
+    \\ref prints '??' in the PDF. We strip the whole cross-reference clause
+    (optional leading 'Fig.~'/'Table~'/'see ' and wrapping parens), then tidy the
+    punctuation/whitespace scars, so the sentence still reads."""
+    if not body:
+        return body
+    defined = set(re.findall(r"\\label\{([^}]+)\}", body))
+
+    # 1) Parentheticals that are ENTIRELY cross-refs, at least one of them dangling:
+    #    "(Fig.~\ref{a}, Fig.~\ref{b})" -> "" when every kept label would be gone.
+    def _paren(m):
+        inner = m.group(1)
+        labels = re.findall(r"\\(?:ref|eqref)\{([^}]+)\}", inner)
+        # only collapse if the parenthetical is purely refs (+ connective words)
+        residue = re.sub(r"(?:Figs?\.?|Figures?|Tables?|Tab\.?|Secs?\.?|"
+                         r"Sections?|see|and|,|~|\s|\\(?:ref|eqref)\{[^}]+\})+",
+                         "", inner)
+        if residue:
+            return m.group(0)  # has real prose -> leave it
+        kept = [l for l in labels if l in defined]
+        if not kept:
+            return ""
+        rebuilt = ", ".join("Fig.~\\ref{" + l + "}" for l in kept)
+        return "(" + rebuilt + ")"
+
+    body = re.sub(r"\(([^()]*\\(?:ref|eqref)\{[^}]+\}[^()]*)\)", _paren, body)
+
+    # 2) Inline dangling refs: strip an optional float word + the \ref itself.
+    def _inline(m):
+        return m.group(0) if m.group("lab") in defined else ""
+
+    body = re.sub(
+        r"(?:Figs?\.?|Figures?|Tables?|Tab\.?|Secs?\.?|Sections?)?~?\s*"
+        r"\\(?:ref|eqref)\{(?P<lab>[^}]+)\}",
+        _inline, body,
+    )
+
+    # 3) Tidy scars: doubled spaces, space-before-punct, empty parens, ", and".
+    body = re.sub(r"\(\s*\)", "", body)
+    body = re.sub(r"\s+([,.;:])", r"\1", body)
+    body = re.sub(r"([,;]\s*){2,}", ", ", body)
+    body = re.sub(r"\band\s*([,.])", r"\1", body)
+    body = re.sub(r"[ \t]{2,}", " ", body)
+    return body
+
+
 def _is_on_domain(c: dict) -> bool:
     text = " ".join(str(c.get(k, "")) for k in ("title", "venue", "abstract")).lower()
     kws = c.get("keywords") or c.get("concepts") or []
@@ -106,7 +173,7 @@ def _is_on_domain(c: dict) -> bool:
     return any(t in text for t in _CITATION_DOMAIN_TERMS)
 
 
-def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 25) -> list[dict]:
+def _select_citations(citations: list[dict], hypothesis: dict, limit: int = 12) -> list[dict]:
     """Curated anchors + hypothesis provenance first, then on-domain mined refs, capped.
 
     Off-domain mined papers are dropped so the bibliography stays AS-ALD / surface-chemistry
@@ -309,8 +376,10 @@ _SECTION_ORDER = [
 
 def _assemble_body(drafts: dict[str, str], fig_blocks: dict[str, str],
                    rich: dict, fidelity: dict, run_id: str,
-                   screening: dict | None = None) -> str:
+                   screening: dict | None = None,
+                   hyp_table: str = "") -> str:
     tables_for = {
+        "architecture": hyp_table,
         "methods_surfaces": sections.fidelity_table(fidelity),
         "results": "\n\n".join(t for t in (
             sections.screening_table(screening) if screening else "",
@@ -345,6 +414,10 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     plan = _load_json(run_dir / "validation_plan.json")
     citations = _load_json(run_dir / "citation_repository.json").get("citations", [])
     screening = _load_json(run_dir / "screening_results.json") or None
+    hyps = _load_json(run_dir / "hypothesis_state_graphs.json").get("hypotheses", [])
+    official = _load_json(run_dir / "official_hypothesis.json")
+    selected_ids = official.get("source_hypothesis_ids", []) if official else []
+    hyp_table = sections.hypotheses_table(hyps, selected_ids)
     summary_md = ""
     if (run_dir / "validation_summary.md").exists():
         summary_md = (run_dir / "validation_summary.md").read_text(encoding="utf-8")
@@ -363,12 +436,18 @@ def stitch_paper(run_id: str, offline: bool = False) -> PaperResult:
     drafts = swarm.run_swarm(payload, offline=offline)
 
     body = _assemble_body(drafts, fig_blocks, rich, fidelity, run_id,
-                          screening=screening)
+                          screening=screening, hyp_table=hyp_table)
     # Strip \cite keys that are not in the bibliography so IEEEtran doesn't print "[?]"
     # (the LLM occasionally cites a key we never provided). Also sanitize the abstract.
     valid_keys = {sections._safe_key(c.get("id", "")) for c in cited}
     body = _sanitize_cites(body, valid_keys)
     drafts["abstract"] = _sanitize_cites(drafts.get("abstract", ""), valid_keys)
+    # Strip \ref to any float we did not render so IEEEtran doesn't print an
+    # undefined-reference "??" (safety net for LLM drift).
+    body = _sanitize_refs(body)
+    # Remove internal ADR-NNN design-record tags from the published text.
+    body = _strip_adr(body)
+    drafts["abstract"] = _strip_adr(drafts.get("abstract", ""))
 
     hyp = rich.get("hypothesis", {})
     gs = sections.latex_escape(hyp.get("growth_surface", ""))
