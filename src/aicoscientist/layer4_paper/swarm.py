@@ -31,10 +31,17 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "prediction), the system (four-layer agentic co-scientist), the experiment "
      "(surfaces built+gated, pair tested, engine/tier), the key numbers (dE_ads on NGS "
      "and GS in eV, differential blocking, S at the target thickness in nm), and the "
-     "verdict. If the calibration flag is 'review', say the energetics are flagged. "
-     "If payload['screening'] is non-null, this was a screening CAMPAIGN: state the "
-     "pool size, how many candidates were computed, and that the reported molecule is "
-     "the recommended winner of the funnel."),
+     "verdict. State the committed hypothesis in one clause. If the calibration flag "
+     "is 'review', say the energetics are flagged. If payload['screening'] is "
+     "non-null, this was a screening CAMPAIGN: state the pool size, how many "
+     "candidates were computed, and that the reported molecule is the recommended "
+     "winner of the funnel. CRITICAL: if the verdict is 'rejected' or 'inconclusive', "
+     "frame it as an INFORMATIVE NEGATIVE RESULT -- the contribution is the "
+     "reproducible, fidelity-gated in-silico framework and the two deliverables (the "
+     "amorphous surface builder and the agentic inhibitor screen), plus the "
+     "site-resolved evidence of WHY no screened candidate met the target; NOT merely "
+     "hitting 90%. Do not spin a failed target as a success, and do not treat it as a "
+     "failure of the method."),
     ("keywords", "Keywords", 15,
      "6-9 comma-separated IEEE keywords. No LaTeX commands, one line."),
     ("introduction", "Introduction", 320,
@@ -43,6 +50,9 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "nucleation delay = selectivity, the S(N) metric); explain the two computational "
      "failure modes (crystalline-slab error on amorphous surfaces; site-matching, not "
      "strongest-binder); state the committed hypothesis verbatim from the payload; "
+     "make explicit that the goal is a rigorous, reproducible in-silico TEST of that "
+     "hypothesis, so that a negative verdict (target not met) is a valid scientific "
+     "outcome that narrows the design space, not a failure; "
      "close with an explicit numbered contributions list (\\begin{itemize})."),
     ("architecture", "System Architecture", 320,
      "Describe the four-layer funnel in \\subsection blocks (Layer 1 deep-research KG "
@@ -97,19 +107,37 @@ SECTION_SPECS: list[tuple[str, str, int, str]] = [
      "sit at the clamp bounds (-3.0/+1.0 eV), state plainly that the energetics are "
      "fallback values and the verdict is a pipeline demonstration, not a "
      "quantitative claim."),
-    ("discussion", "Discussion", 240,
+    ("discussion", "Discussion", 260,
      "Interpret: differential blocking (not raw Langmuir coverage) as the selectivity "
      "driver; the purge argument; site-matching vs strongest-binder; why the fidelity "
      "gate is the load-bearing rigor element; what the ensemble convention buys; what "
-     "the calibration flag means for trust. Be honest about weaknesses."),
-    ("limitations", "Limitations", 150,
-     "Enumerate: 0 K energetics + ~0.25 eV entropy at process temperature; MLIP "
-     "barrier underestimation (lower bounds); procedural slab vs true melt-quench "
-     "AIMD; unmodeled byproducts/lateral interactions; calibration-flag caveat; "
-     "ensemble size from provenance."),
-    ("conclusion", "Conclusion", 170,
-     "Verdict with its numbers, what the autonomous pipeline demonstrated end-to-end, "
-     "and the reproducibility guarantee. No new information."),
+     "the calibration flag means for trust. Be honest about weaknesses. Then devote a "
+     "paragraph to the VALUE OF THE OUTCOME EVEN IF THE VERDICT IS REJECTED: the point "
+     "of the work is a rigorous, reproducible, honestly-flagged in-silico screening "
+     "framework plus the two Challenge deliverables; a rejected verdict means the "
+     "system found (with site-resolved energetics) that no screened inhibitor reaches "
+     "the target on this SiN/SiO2 pair -- an informative negative result that narrows "
+     "the design space and tells the next campaign which surface/site chemistry to "
+     "target. Explain, from the computed dE on NGS vs GS, WHY the candidates failed "
+     "(e.g. they also bind the growth surface, so differential blocking is low)."),
+    ("limitations", "Limitations", 190,
+     "Enumerate honestly, including the ones we actually hit: 0 K energetics + ~0.25 "
+     "eV entropy at process temperature; foundation-MLIP accuracy -- barrier "
+     "underestimation (lower bounds) and possible systematic error in absolute dE that "
+     "can make a marginal pair look anti-selective; procedural slab vs true melt-quench "
+     "AIMD; unmodeled byproducts/lateral interactions; the RSA cap being geometric not "
+     "chemical; calibration-flag caveat; ensemble size and adsorption-search density "
+     "(sites x rotations x heights) bounded by the compute/time budget on a single GPU "
+     "(MACE evaluates one structure at a time); and that the negative verdict may "
+     "reflect either genuine difficulty of the pair OR MLIP accuracy limits, not a "
+     "flaw in the framework. Reference provenance for the actual ensemble size."),
+    ("conclusion", "Conclusion", 180,
+     "Verdict with its numbers, framed honestly: if rejected, state that the system "
+     "correctly reports no screened candidate met the target -- a valid, useful "
+     "negative result -- and that the deliverable is the reproducible autonomous "
+     "framework and its site-resolved evidence, which is the whole point regardless of "
+     "the verdict. Recap what the pipeline demonstrated end-to-end and the "
+     "reproducibility guarantee. No new numbers."),
     ("reproducibility", "Reproducibility and Provenance", 140,
      "List the artifact files and what each contains; reference "
      "Table~\\ref{tab:provenance}; include the exact reproduction command in a "

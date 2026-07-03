@@ -47,8 +47,10 @@ def run(args: argparse.Namespace) -> int:
         console.print(f"[green]Compiled PDF:[/green] {result.pdf_path}")
     else:
         console.print(
-            "[yellow]No LaTeX toolchain found; wrote .tex source only. "
-            "Install tectonic or latexmk to build the PDF.[/yellow]"
+            "[yellow]No LaTeX toolchain found; wrote .tex source only. On HF Spaces "
+            "this means the container was built before TeX Live was added -- rebuild "
+            "the Space (the Dockerfile installs latexmk + texlive). Locally, install "
+            "texlive + latexmk.[/yellow]"
         )
     console.print(f"[dim]Verdict carried into the manuscript: {result.verdict}[/dim]")
     return 0
