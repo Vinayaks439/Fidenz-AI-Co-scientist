@@ -1,12 +1,11 @@
----
-title: AS-ALD Co-Scientist
-emoji: 🧪
-colorFrom: indigo
-colorTo: blue
-sdk: docker
-app_port: 7860
-pinned: false
----
+# AS-ALD Co-Scientist
+
+An autonomous **in-silico AI co-scientist for area-selective atomic layer deposition
+(AS-ALD)**. It turns a surface-chemistry research idea into ranked, literature-grounded
+intervention hypotheses, lets a human commit one inhibitor/precursor scheme, **screens a
+batch of candidate inhibitors** computationally on experiment-faithful amorphous surfaces,
+recommends a winner, and then autonomously stitches a reproducible LaTeX manuscript of the
+result.
 
 > **Running on Hugging Face:** this Space wraps the pipeline in a Gradio UI. Default is
 > Tier-0 (CPU, free `cpu-basic` hardware) in offline/mock mode — no key needed. Uncheck
@@ -29,139 +28,195 @@ pinned: false
 > app falls back to the container filesystem and every restart wipes it (each run's log
 > header tells you which mode you're in).
 
+---
 
-# AS-ALD Co-Scientist — Layers 1–4
+## 1 · The problem
 
-An autonomous in-silico co-scientist for **area-selective atomic layer deposition
-(AS-ALD)**. It turns a surface-chemistry research idea into ranked, literature-grounded
-intervention hypotheses, lets a human commit one inhibitor/precursor scheme, validates the
-selectivity claim computationally on experiment-faithful amorphous surfaces, and then
-autonomously stitches a reproducible LaTeX manuscript of the result.
+### Challenge 4 — the goal
 
-Target problem (Merck KGaA 2026 Innovation Cup, Challenge 4): *passivate SiN, deposit
-SiOₓ-on-SiOₓ at ≥90 % selectivity at 10 nm oxide (3D-NAND cell isolation).*
+> **Passivate SiN (nitride) to deposit SiOₓ on SiOₓ (oxide) with 90 % selectivity at 10 nm
+> of oxide thickness.** *(Merck KGaA 2026 Innovation Cup, Challenge 4 — 3D-NAND cell
+> isolation.)*
+
+The brief asks for an in-silico AI co-scientist with two graded deliverables:
+
+1. **An amorphous surface builder** that better reflects experimental surfaces (SiOₓ models
+   over-count reactive sites; SiNₓ –NH₂/–NH sites have irregular spacing).
+2. **Agentic selection logic** for inhibitor/precursor candidates, grounded in literature and
+   steerable via a supplemental criteria file.
+
+Selectivity metric: **`S = (Thk_GS − Thk_NGS) / (Thk_GS + Thk_NGS)`**, evaluated where the
+growth-surface film reaches 10 nm.
+
+### Why area-selective ALD — and why it is hard
+
+AS-ALD deposits film only where wanted: an inhibitor **chemisorbs on the non-growth surface
+(NGS)** and survives the purge, so the precursor nucleates only on the **growth surface (GS)**.
+The nucleation delay on the NGS *is* the selectivity. In 3D-NAND, growing oxide-on-oxide
+isolates charge-trap nitride on adjacent cells to reduce cross-talk, with fewer patterning
+and etch steps.
+
+The central difficulty — and the challenge's stated risk — is that **computed selectivity is
+dominated by the assumed amorphous-surface model**. Amorphous surfaces expose *terminal* and
+*bridge* sites and carry ~35 % fewer terminal sites than crystalline references; a screening
+tool built on crystalline slabs gets the *sign* of selectivity decisions wrong. Getting the
+surface right is where the challenge is won or lost.
+
+---
+
+## 2 · The approach
+
+### A four-layer agentic funnel
 
 ```mermaid
 flowchart TD
   idea["AS-ALD research idea"] --> L1["Layer 1: Deep Research Engine (surface-chem)"]
-  L1 --> kg["Knowledge graph: Surface / Inhibitor / Precursor / Mechanism / SelectivityResult"]
+  L1 --> kg["Knowledge graph: Surface / Site / Inhibitor / Precursor / Mechanism / SelectivityResult"]
   kg --> L2["Layer 2: human commits inhibitor/precursor scheme"]
   L2 --> official["official_hypothesis.json (structured ASALDSpec)"]
-  official --> SEL["Selection Agent (ReAct, Deliverable #2)"]
-  SEL --> SR
-  subgraph L3 [Layer 3 In-Silico Validation]
+  official --> SEL["Selection Agent + candidate pool (Deliverable #2)"]
+  subgraph L3 [Layer 3 In-Silico Validation — screening funnel]
     SB["Surface Builder + Fidelity Gate (Deliverable #1)"] --> SR["surface_reactivity engine"]
+    SEL --> SR
     SR --> SM["SelectivityModel -> S(N)"]
-    SM --> reflect["Reflection (bounded refine)"]
-    reflect -->|refine| SEL
+    SM --> REC["Recommendation agent (winner + runners-up + risks)"]
+    REC --> reflect["Reflection (bounded refine of the winner)"]
   end
-  L3 --> results["validation_results.json + asald_results.json + surface_fidelity.json"]
+  L3 --> results["screening_results.json + recommendation.json + asald_results.json"]
   results --> L4["Layer 4: Agentic LaTeX paper stitcher"]
   L4 --> pdf["manuscript.pdf / manuscript.tex"]
 ```
 
-## The two graded deliverables
+| Layer | What it does |
+| --- | --- |
+| **1 · Deep Research Engine** | A literature-mining swarm builds a typed knowledge graph of surfaces, sites, inhibitors, precursors, mechanisms, and prior selectivity results. |
+| **2 · Human-in-the-loop** | The researcher reviews ranked intervention hypotheses and commits one inhibitor/precursor scheme — the expensive branch point. |
+| **3 · In-silico validation & screening** | Surface builder + fidelity gate, agentic candidate selection, tiered reactivity engine, screening funnel, recommendation agent, and a bounded reflection loop. |
+| **4 · Autonomous manuscript** | A section-writer swarm stitches a reproducible LaTeX paper — every number and figure pulled from the run artifacts, nothing invented. |
 
-1. **Amorphous surface builder** (`surfaces/`, ADR-003) — crystalline-derived slabs with
-   Kim et al. 2026 Table-1 passivation + geometric bridge anneal (`-O-` siloxane,
-   `-NH-` imide), an explicit *target site density*, and a *fidelity gate* that rejects
-   slabs outside the paper's measured bands (a-SiO₂ −OH ~4.5–7.5 nm⁻²; a-SiN −NH₂
-   ~2.5–5.5 nm⁻²; crystalline references c-SiO₂ 9.57, c-Si₃N₄ 5.97). It generates an
-   *ensemble* of N slabs per condition so selectivity is reported as a distribution, not a
-   fragile point estimate. True melt-quench AIMD amorphous networks are **Phase 3**
-   (opt-in future work; see below).
-2. **Agentic inhibitor/precursor selection** (`validation/designer.py`, ADR-005) — a ReAct
-   selection agent that retrieves candidates from the knowledge graph, ranks them against a
-   human-editable [`selection_criteria.md`](selection_criteria.md), and feeds the chosen
-   pair into the validation loop (which can refine to another pair via the Reflection agent).
+### The two graded deliverables
 
-## Compute tiers (runs on a laptop or Colab)
+1. **Amorphous surface builder** (`surfaces/`) — crystalline-derived slabs with
+   Table-1 passivation + a geometric bridge anneal (`-O-` siloxane, `-NH-` imide), an
+   explicit *target site density*, and a *fidelity gate* that rejects slabs outside the
+   measured acceptance bands. It generates an *ensemble* of N slabs per condition so
+   selectivity is reported as a distribution, not a fragile point estimate.
+2. **Agentic inhibitor/precursor selection** (`validation/designer.py`, 5) — a ReAct
+   selection agent that assembles a candidate pool from the knowledge graph, ranks it against
+   a human-editable [`selection_criteria.md`](selection_criteria.md), and feeds candidates
+   into the screening funnel. A generative proposer can inject novel candidates that can
+   never be reported "supported" on priors alone.
+
+---
+
+## 3 · The science
+
+### Layer 1 — Deep Research Engine
+
+A swarm mines open scholarly sources by DOI and normalizes everything to one citation schema,
+populating a typed, *site-resolved* knowledge graph: `Surface{material, phase, site_type,
+density}`, `Inhibitor`, `Precursor`, `Mechanism{site_type, ΔEr, Ea, byproduct}`,
+`SelectivityResult`. A curated seed of real-DOI anchors guarantees no run is left without
+domain-grounded literature; mined papers merge on top.
+
+**Why the knowledge graph is the backbone.** The graph is not a bibliography — it is the
+system's memory and the single source of truth that binds *literature → hypothesis → surface
+→ site-resolved reactivity → selectivity → manuscript*. It earns its place for four reasons:
+
+- **It dissolves the domain gap.** We do not personally hold deep AS-ALD surface chemistry;
+  the graph lets the *system* learn the field. Typed, site-resolved nodes (silanol –OH,
+  siloxane –O–, amine –NH₂, imide –NH–, each with its own ΔEr/Ea and byproduct) mean the
+  hard chemistry is captured as structured facts an agent can reason over, not prose.
+- **It is the candidate library and the prior store.** The selection agent draws its
+  inhibitor/precursor pool from the graph, and the Tier-0 reactivity engine reads per-site
+  energetics priors off the same nodes — so screening decisions rest on literature-grounded
+  numbers with a traceable source, not model guesswork.
+- **It makes every claim auditable.** Because each fact is a node with a DOI and each result
+  links back in as a `validation_result:*` node joined by `evidence_for` edges, every number
+  in the final paper resolves to either a logged computation or a cited source. That
+  provenance chain is what separates a credible in-silico result from a number generator.
+- **It is persistent, mergeable, and deduplicated.** New mined literature merges on top of the
+  seeded anchors (with conflict resolution and dedup), so the graph grows across runs and
+  improves the priors available to future screens.
+
+One graph, three consumers: hypothesis generation (Layer 2), the selection agent's candidate
+library + priors (Layer 3), and the real-DOI bibliography (Layer 4).
+
+### Layer 2 — Human-in-the-loop commitment
+
+"Which inhibitor/precursor scheme do we commit compute to?" is the expensive branch point, so
+a human gate sits before the validation spend. The researcher selects, edits, merges, or
+redirects the top hypotheses; the decision is saved as a structured `ASALDSpec` (GS/NGS,
+inhibitor, precursor, target film, thickness, selectivity threshold, provenance) that seeds
+the builder, the selection agent, the scoring model, and the manuscript.
+
+### Deliverable 1 — Amorphous surface builder + fidelity gate
+
+`seed bulk → cleave + vacuum → passivate sites → bridge anneal → fidelity gate → ensemble of
+N`. The gate is the load-bearing rigor element: pathological surfaces are thrown out **before**
+any expensive reactivity call. Per-site-type acceptance bands (nm⁻²):
+
+| Surface | Site | Acceptance band | Crystalline ref. |
+| --- | --- | --- | --- |
+| a-SiO₂ | –OH silanol | ~4.5 – 7.5 | 9.57 |
+| a-SiO₂ | –O– siloxane bridge | ~2.0 – 6.0 | — |
+| a-SiN | –NH₂ amine | ~2.5 – 5.5 | 5.97 |
+| a-SiN | –NH– imide bridge | ~2.0 – 5.5 | — |
+
+Emits `surface_fidelity.json` with the crystalline references recorded for contrast. True
+melt-quench AIMD amorphous networks are **Phase 3** (opt-in future work; see below).
+
+### Deliverable 2 — Site-matched selection (not strongest-binder)
+
+A good inhibitor must passivate the *specific sites the precursor attacks* on the NGS —
+ranking on raw binding strength selects the wrong pair. Precursors carry preferred reactive
+sites (e.g. BDEAS → –OH); inhibitors are scored by how completely their exothermic,
+kinetically-open site reactivity covers those preferences on the NGS **while staying inert on
+the GS**. Ranking axes:
+
+- Differential adsorption (chemisorb NGS / physisorb GS)
+- Site-match to the precursor's preferred sites
+- Volatility (dosable from vapor) · removability after growth · steric blocking footprint
+- Literature grounding in the knowledge graph
+
+Ranking is **honest**: the committed molecule is not auto-promoted; every candidate competes,
+and candidates with no energetics evidence are flagged and ranked below evidenced ones.
+
+### The in-silico testing protocol
+
+For each candidate the `surface_reactivity` engine records every intermediate to
+`asald_results.json`:
+
+1. **Build & gate surfaces** — N a-SiO₂ (GS) and N a-SiN (NGS) slabs; discard gate failures.
+2. **Site-resolved reactivity screen** — per-site reaction energy `ΔEr` (and barrier `Ea`
+   where available) for the inhibitor on each surface; adsorption `dE_ads = E(slab+mol) −
+   E(slab) − E(mol_gas)` (chemisorb on NGS ≲ −0.7 eV, physisorb on GS ≳ −0.3 eV).
+3. **Effective blocking coverage** — blocking = Σ (site fraction × reactivity), counting only
+   chemisorbed, purge-surviving inhibitor. The **differential blocking**
+   `θ_block(NGS) − θ_block(GS)` is the selectivity driver — *not* raw Langmuir coverage, which
+   saturates at process temperature and falsely washes out selectivity.
+4. **[Tier-2, optional] precursor barrier** — NEB lower bound, calibrated vs literature DFT.
+5. **Selectivity & verdict** — differential blocking → nucleation delay → `S(N)`, reported as
+   mean ± std at 10 nm with a supported / partially-supported / rejected verdict and a
+   calibration flag.
+
+### Tiered compute (laptop or GPU)
 
 | Tier | Where | What runs |
 | --- | --- | --- |
-| **0** (default) | anywhere, no GPU (M4 Pro native) | fidelity gate + site-resolved blocking (Kim 2026 priors for DMATMS/ETS; legacy terminal curve for carboxylic acids) + `SelectivityModel` + verdict, using literature/xTB adsorption-energy priors from `selection_criteria.md` |
-| **1** | Colab CUDA / CPU | real molecules (rdkit) on Table-1 passivated + bridge-annealed slabs (pymatgen); multi-site/orientation foundation-MLIP (`mace_mp(model="medium")`) adsorption search; optional `reaction_energetics` (ΔEr two-state endpoints) and NEB Ea when `COMPUTE_ACTIVATION_ENERGY=true` |
-| **2** | optional | xTB / small-DFT spot-checks to anchor Tier-1; reported as a `calibration_vs_literature` validity flag |
+| **0** (default) | anywhere, no GPU | fidelity gate + site-resolved blocking + `SelectivityModel` + verdict, using literature/xTB adsorption-energy priors |
+| **1** | CUDA / CPU | real molecules (rdkit) on passivated + bridge-annealed slabs (pymatgen); multi-site/orientation foundation-MLIP (`mace_mp(model="medium")`) adsorption search; optional `reaction_energetics` (ΔEr endpoints) and NEB Ea when `COMPUTE_ACTIVATION_ENERGY=true` |
+| **2** | optional | xTB spot-checks anchoring Tier-1, reported as a `calibration_vs_literature` validity flag |
 
 Set the tier via `COMPUTE_TIER` (0/1/2). MACE energy differences require float64, which the
 Apple **MPS** backend does not support, so on the M4 Pro the MLIP tier runs on CPU while
-Tier-0 stays interactive; `MLIP_DEVICE=auto` resolves to CUDA on Colab.
+Tier-0 stays interactive; `MLIP_DEVICE=auto` resolves to CUDA when present. Discipline
+throughout: foundation-model barriers are treated as **lower bounds**, and every energetics
+value carries a predicted-vs-reference delta — never hidden.
 
-### Realistic Tier-1 surfaces (Phase 1)
+---
 
-With the `structures` extra (`pip install -e ".[structures]"` -> rdkit + pymatgen), Tier-1
-builds physically real inputs instead of toy grids:
-
-- **Molecules**: inhibitor/precursor SMILES embedded in 3D (rdkit ETKDGv3 + MMFF); raw SMILES
-  are also accepted (used by the Phase-2 proposer).
-- **Slabs**: `SLAB_SOURCE=procedural` cuts an alpha-quartz (`SiO2`) or beta-Si3N4 (`SiN`) slab
-  (`SLAB_MILLER`, `SLAB_SUPERCELL`), applies Kim Table-1 passivation (Si(OH)₂H / SiOH / OH /
-  NH₂ / NH by dangling-bond count), then a geometric bridge anneal to form `-O-` and
-  `-NH-` sites; per-site-type densities are checked against Kim et al. 2026 bands. Provenance
-  (phase, Miller index, capping, bridge counts) is recorded.
-- **Adsorption**: a multi-site x multi-orientation x multi-height search
-  (`N_ADSORPTION_SITES`, `ADSORPTION_ROTATIONS`, `ADSORPTION_HEIGHTS`) returns the most stable
-  dE and every sampled configuration, calibrated against the mined literature dE.
-
-Run the full Tier-1 funnel on a Colab GPU:
-
-```bash
-pip install -e ".[openai,mlip,structures]"
-MLIP_DEVICE=cuda COMPUTE_TIER=1 aicoscientist-validate --run-id demo --offline
-```
-
-On the M4 Pro use `MLIP_DEVICE=cpu` (float64 MACE is unsupported on MPS); keep
-`SLAB_SUPERCELL=2,2` and small search counts for a smoke test. Caveats: MLIP adsorption
-energies can differ ~0.1-0.4 eV from DFT and are only valid as differences within one
-calculator, so they are always reported with a `calibration_vs_literature` delta + flag;
-Phase-1 slabs are crystalline-derived + annealed (not melt-quench amorphous), and `SiN`
-carries larger uncertainty than `SiO2`.
-
-### Kim et al. 2026 site-resolved reactivity (Phase 2b)
-
-Grounded in Kim et al., *Appl. Surf. Sci.* 730 (2026) (DOI
-[10.1016/j.apsusc.2026.166294](https://doi.org/10.1016/j.apsusc.2026.166294)):
-
-- **Seeded priors** (`seed_asald.py`): measured site densities, DMATMS/ETS activation
-  energies (Ea), and reaction energies (ΔEr) per site type (−OH, −O−, −NH₂, −NH−).
-- **Site-resolved blocking** (`selectivity_model.py`): blocking = Σ (site fraction ×
-  reactivity), where reactivity requires exothermic ΔEr **and** (when known) Arrhenius
-  kinetics over `DOSE_TIME_S`. Carboxylic-acid inhibitors keep the legacy terminal-site
-  `blocking_coverage_from_dE` curve so the verified aniline → acetic acid funnel is unchanged.
-- **Site-matched screening** (`designer.py`): precursors carry preferred reactive sites
-  (e.g. BDEAS → −OH); inhibitors are scored by how well their site reactivity covers those
-  preferences, on top of differential adsorption + volatility + removability.
-- **Tier-1 `reaction_energetics`** (`mlip.py`): builds physisorption + chemisorption
-  endpoints and returns ΔEr = E_chem − E_phys (Eq. 1); bridge sites and Ea default to mined
-  literature priors unless `COMPUTE_ACTIVATION_ENERGY=true` enables NEB.
-
-Caveats (from the paper): 0 K internal energies; entropic shift up to ~0.25 eV at 150 °C
-(keep calibration delta + flag); procedural slabs approximate but are not true melt-quench
-networks; MLIP ΔEr/Ea valid only as differences within one calculator.
-
-### Innovation + calibration rigor (Phase 2)
-
-- **xTB cross-check** (`pip install -e ".[xtb]"`, Tier ≥ 2): GFN2-xTB recomputes a subset of
-  adsorption configs; a large MLIP-vs-xTB gap flags the calibration for review.
-- **RSA steric coverage** (`USE_RSA_COVERAGE`, Tier ≥ 1): caps blocking coverage at the
-  random-sequential-adsorption jamming limit for the inhibitor's footprint, so bulky
-  molecules can't reach an unphysical full monolayer.
-- **Novel-compound proposer** (`USE_INHIBITOR_PROPOSER=true`): a generative agent invents new
-  inhibitor candidates as SMILES (LLM with a key, deterministic combinatorial fallback
-  offline), which are merged into the ranked selection loop tagged `ai-proposed`. They are
-  built with rdkit and validated on the real slabs; a novel compound is **never** reported
-  `supported` on Tier-0 priors alone (capped at `partially_supported`, calibration flagged
-  `review`) — it must clear the Tier-1 MLIP search on real surfaces.
-
-Full Phase-2 innovation run on a Colab GPU:
-
-```bash
-pip install -e ".[openai,mlip,structures,xtb]"
-MLIP_DEVICE=cuda COMPUTE_TIER=2 USE_INHIBITOR_PROPOSER=true \
-  aicoscientist-validate --run-id demo   # add --offline for the keyless combinatorial proposer
-```
-
-### Screening funnel (Phase 3, default)
+## 4 · The screening funnel
 
 Layer 3 runs as a batch **screening campaign** rather than a single-candidate test
 (`SCREENING_MODE=funnel`, the default; `single` restores the legacy one-candidate loop):
@@ -171,25 +226,122 @@ Layer 3 runs as a batch **screening campaign** rather than a single-candidate te
 2. **Tier-0 prior rank** over all N — honest (no committed-candidate pin, no fabricated
    default priors; unevidenced candidates are flagged `no-prior` and ranked below).
 3. **MLIP batch screen** of the shortlist (`SCREEN_SHORTLIST_M`, default 8) on **shared,
-   seed-identical gated slab ensembles** (`SCREEN_ENSEMBLE_N`, default 2) — every candidate
-   is scored on the same surfaces, and slabs are built once per campaign, not per molecule.
-   The committed hypothesis molecule is always screened, even if prior-ranked low.
-4. **Top-k full-fidelity re-run** (`SCREEN_TOP_K`, default 3) at `SURFACE_ENSEMBLE_N`
-   (xTB cross-check included at Tier ≥ 2).
-5. **Recommendation agent**: an LLM writes the final judgement (winner, runners-up, risks,
-   committed-hypothesis outcome) but can never override the computed ranking; a
-   deterministic fallback runs offline. Reflection may re-run the winner with a larger
-   ensemble, bounded by `MAX_VALIDATION_ITERS` — it never switches molecules.
+   seed-identical gated slab ensembles** (`SCREEN_ENSEMBLE_N`, default 2) — every candidate is
+   scored on the same surfaces, and slabs are built once per campaign, not per molecule. The
+   committed hypothesis molecule is always screened, even if prior-ranked low.
+4. **Top-k full-fidelity re-run** (`SCREEN_TOP_K`, default 3) at `SURFACE_ENSEMBLE_N` (xTB
+   cross-check included at Tier ≥ 2).
+5. **Recommendation agent** writes the final judgement (winner, runners-up, risks,
+   committed-hypothesis outcome); a deterministic fallback runs offline. Reflection may re-run
+   the winner with a larger ensemble, bounded by `MAX_VALIDATION_ITERS` — it never switches
+   molecules.
+
+### What makes the campaign trustworthy
+
+- **Apples-to-apples** — every candidate is scored on the *same* seed-identical gated slab
+  ensembles; differences are chemistry, not surface luck. Slabs are built once per campaign.
+- **Honest competition** — no candidate is auto-promoted; the recommendation states plainly
+  whether the committed molecule won or lost, and to whom.
+- **Evidence discipline** — extrapolated, missing, or AI-proposed priors are flagged and can
+  never be reported "supported" on priors alone; a calibration delta rides every value.
+- **The agent can't cheat physics** — the recommendation agent may narrate risk and context,
+  but a guard forces the winner to be the top candidate by *computed* selectivity.
 
 Artifacts: `screening_results.json` (full campaign table), `recommendation.json`,
-`screening/asald_<candidate>.json` (per-candidate rich results); `asald_results.json`
-holds the winner. The Layer-4 manuscript gains a campaign table (`tab:screening`) and a
+`screening/asald_<candidate>.json` (per-candidate rich results); `asald_results.json` holds
+the winner. The Layer-4 manuscript gains a campaign table (`tab:screening`) and a
 ranked-selectivity funnel figure (`fig:screening`) alongside the winner deep-dive.
 
 ```bash
 SCREEN_POOL_SIZE=30 SCREEN_SHORTLIST_M=10 SCREEN_TOP_K=3 \
 MLIP_DEVICE=cuda COMPUTE_TIER=1 aicoscientist-validate --run-id demo
 ```
+
+The novel-compound proposer (`USE_INHIBITOR_PROPOSER=true`) fills the pool with generative
+SMILES candidates (LLM with a key, deterministic combinatorial fallback offline), built with
+rdkit and tagged `ai-proposed`; the RSA steric-coverage cap (`USE_RSA_COVERAGE`, Tier ≥ 1)
+prevents bulky molecules from reaching an unphysical full monolayer.
+
+---
+
+## 5 · Layer 4 — the co-scientist authors its own paper
+
+A section-writer swarm fans out one agent per section (abstract, introduction, architecture,
+methods, results, discussion, limitations, conclusion, reproducibility). Hard rules: **no
+invented numbers** (every value grounded in the artifacts; absent values written as "not
+recorded"), a **real bibliography** from the Layer-1 mined DOIs, and a **campaign-aware**
+Results section that presents the whole screen (comparison table + ranked figure) before the
+winner deep-dive. A deterministic offline path writes the full paper without a key.
+
+---
+
+## 6 · Results & rigor
+
+### Example screening campaign
+
+A keyless Tier-0 run over a 12-candidate pool (shortlist 5, top-2 re-run at full fidelity)
+selects **acetic acid** (S ≈ 0.92 at 10 nm, differential blocking ≈ 0.94 → *supported*) over
+the committed `aniline` (S ≈ 0.23 → *rejected*) — and says so honestly. These numbers are a
+pipeline demonstration, not a quantitative claim; the manuscript labels them as such when the
+calibration flag reads `review` or energies sit at the clamp bounds.
+
+### How the system meets Challenge 4
+
+| Challenge requirement | How the co-scientist delivers it |
+| --- | --- |
+| Amorphous surface builder that better reflects experiment | Site-density target + fidelity gate against measured bands; ensembles; no over-counted sites |
+| Agentic inhibitor/precursor selection | ReAct selection agent + generative proposer, site-matched, steerable via a criteria file |
+| 90 % selectivity at 10 nm oxide | Site-resolved blocking → nucleation delay → `S(N)` reported at 10 nm as mean ± std |
+| In-silico testing with computed results | Five-step protocol emitting a full JSON record; batch campaign over 10–50 candidates |
+| Reproducible, Python, easy to use | Pinned provenance, Docker, CLI + Gradio UI, deterministic offline mode |
+
+### Reproducibility & provenance
+
+Seeds, compute tier, MLIP model/device/dtype, slab source and supercell, temperature, dose
+time, ensemble size, and package versions are all logged into `asald_results.json` /
+`surface_fidelity.json` / the screening artifacts. Results link back into the knowledge graph
+so every claim resolves to a logged computation and every prior to a source. A CPU
+[`Dockerfile`](Dockerfile) and a locked [`environment.yml`](environment.yml) reproduce the
+Tier-0 funnel end-to-end (`docker build -t asald . && docker run --rm asald`).
+
+### Technology & agentic patterns
+
+- **Orchestration** — LangGraph state machines; Supervisor + Swarm; ReAct designer; Reflection loop.
+- **Atomistic engine** — ASE + foundation MLIP (MACE); rdkit molecules; pymatgen slabs; xTB cross-check.
+- **Data & models** — typed knowledge graph; Pydantic schemas; scholarly source clients; provenance store.
+- **Delivery** — CLI (three entry points); LaTeX manuscript stitcher (IEEEtran, tectonic/latexmk/pdflatex); Docker + locked env.
+
+### Utilized Software
+
+**LLMs & orchestration**
+- **LLMs** — provider-agnostic via LangChain's `init_chat_model`; supports **OpenAI (GPT)**, **Anthropic (Claude)**, and **Google Gemini** (both AI Studio API-key and Vertex AI routes). The provider/model is a runtime config switch (`LLM_PROVIDER`/`LLM_MODEL`), not hardcoded — we ran with Gemini during development. Every stage has a deterministic, keyless offline fallback, so the pipeline is fully reproducible without any LLM.
+- **LangGraph** — state-machine orchestration across all four layers: a Supervisor + Swarm pattern for the literature-mining agents, a ReAct-style designer for the surface/inhibitor selection agent, and a bounded Reflection loop that closes the validation cycle.
+- **LangChain** — model abstraction, structured-output parsing, and the scholarly source clients.
+
+**Atomistic / scientific computing**
+- **ASE** (Atomic Simulation Environment) — slab construction, adsorption geometry search, structure I/O.
+- **MACE** (`mace-torch`) — the foundation machine-learning interatomic potential (MLIP) used for Tier-1 adsorption-energy calculations on real 3D slabs; **CHGNet** and **torch-dftd** (D3 dispersion) as alternate/supplementary MLIP backends; **PyTorch** as the compute backend (CPU/CUDA).
+- **RDKit** — builds real 3D inhibitor/precursor molecules from SMILES (ETKDGv3 embedding + MMFF).
+- **pymatgen** — generates the crystalline-derived amorphous slabs (α-quartz SiO₂, β-Si₃N₄).
+- **tblite** (GFN2-xTB) — semi-empirical Tier-2 spot-checks that calibrate the MLIP energies against a cheaper independent method.
+
+**Data, knowledge graph & delivery**
+- **NetworkX** — the typed knowledge graph (surfaces, inhibitors, precursors, mechanisms, citations) that Layer 1 builds and every later layer queries.
+- **Pydantic** — schema validation across every inter-layer JSON artifact, so hand-offs between layers are typed and self-checking.
+- **httpx** — clients for the scholarly literature sources (arXiv, OpenAlex, Crossref, PubMed, Semantic Scholar) that ground every hypothesis in real, DOI-cited literature.
+- **Matplotlib** — the figure suite (selectivity curves, growth curves, adsorption-energy bars, site-density bars, and rendered atomic-model slab/molecule views).
+- **LaTeX** (IEEEtran class, compiled via `tectonic`/`latexmk`/`pdflatex`) — the autonomously authored manuscript.
+- **Docker** + a locked `environment.yml`/`requirements.txt` — pinned, reproducible environment.
+
+**Techniques**
+- A **four-layer agentic funnel**: literature-grounded hypothesis generation → human-in-the-loop commitment → tiered in-silico validation → autonomous manuscript authoring.
+- **Fidelity-gated amorphous surface generation** — slabs are rejected outright if their per-site-type densities fall outside published (Kim et al. 2026) experimental bands, before any expensive reactivity compute is spent.
+- **Site-matched (not strongest-binder) inhibitor screening** — a three-step protocol scoring candidates by how well they passivate the precursor's actual reactive sites.
+- **Tiered compute with literature calibration** — cheap Tier-0 literature-prior screens promoted to real Tier-1 MLIP calculations (and optional Tier-2 xTB cross-checks) only for promising/committed candidates, with every predicted energy compared against a literature anchor and flagged if it diverges.
+- **Bounded Reflection loop** — a closed-loop refine/accept cycle with a fixed iteration budget, so the agent can revise a rejected hypothesis without running indefinitely.
+- **A LangGraph swarm of section-writer agents** authors the IEEE-format manuscript itself: each section is drafted in parallel, grounded strictly in the run's own JSON artifacts (no invented numbers), with deterministic fallbacks if the LLM output fails validation.
+
+---
 
 ## Setup
 
@@ -221,7 +373,7 @@ offline fallback, so the full funnel runs with no key.
 aicoscientist --idea "passivate a-SiN, grow SiOx-on-a-SiO2 to 90% selectivity at 10 nm" \
               --offline --run-id demo --auto select:1
 
-# Layer 3: in-silico surface-reactivity validation (Tier-0 by default)
+# Layer 3: in-silico screening funnel (Tier-0 by default)
 aicoscientist-validate --run-id demo --offline
 
 # Layer 4: stitch the reproducible manuscript
@@ -229,26 +381,7 @@ aicoscientist-paper --run-id demo
 ```
 
 Interactive Layer 2 actions: `select <n>`, `modify <n>`, `merge <n,m>`, `new`, `quit`.
-For Tier-1 reactivity: `COMPUTE_TIER=1 aicoscientist-validate --run-id demo`.
-
-## In-silico testing protocol (ADR-009)
-
-For the committed hypothesis the `surface_reactivity` engine records every intermediate to
-`asald_results.json`:
-
-1. **Build & gate surfaces** — N a-SiO₂ (GS) and N a-SiN (NGS) slabs; discard gate failures.
-2. **Inhibitor adsorption screen** — `dE_ads = E(slab+mol) − E(slab) − E(mol_gas)` on GS vs
-   NGS (chemisorb on NGS ≲ −0.7 eV, physisorb on GS ≳ −0.3 eV).
-3. **Effective blocking coverage** — site-resolved (Kim 2026) or terminal-site legacy
-   blocking; only chemisorbed, purge-surviving inhibitor blocks the precursor; the
-   differential `θ_block(NGS) − θ_block(GS)` drives selectivity. Per-site ΔEr/Ea are stored
-   in `asald_results.json` under `site_resolved`.
-4. **[Tier-2, optional] precursor barrier** — NEB lower bound, calibrated vs literature DFT.
-5. **Selectivity & verdict** — differential blocking → nucleation delay → `S(N)`, reported as
-   mean ± std at the target thickness with a supported / partially-supported / rejected verdict.
-
-The verified worked example (carboxylic-acid SMI on a-SiN, BDEAS on a-SiO₂) yields
-differential blocking ≈ 0.94 and **S ≈ 0.92 at 10 nm → supported**.
+For a Tier-1 GPU screen: `MLIP_DEVICE=cuda COMPUTE_TIER=1 aicoscientist-validate --run-id demo`.
 
 ## Output artifacts (`artifacts/<run_id>/`)
 
@@ -256,40 +389,35 @@ Layers 1–2: `knowledge_graph.json`/`.graphml`, `citation_repository.json` (rea
 `hypothesis_state_graphs.json`, `research_provenance.json`, `confidence_scores.json`,
 `official_hypothesis.json` (with the structured `ASALDSpec`).
 
-Layer 3: `validation_plan.json`, `validation_results.json`, `asald_results.json` (the
-paper-ready protocol output), `surface_fidelity.json`, `simulation_logs/`, updated KG with
-`validation_result:*` nodes.
+Layer 3: `screening_results.json` (campaign table), `recommendation.json`,
+`screening/asald_<candidate>.json`, `validation_plan.json`, `validation_results.json`,
+`asald_results.json` (paper-ready winner output), `surface_fidelity.json`, `simulation_logs/`,
+updated KG with `validation_result:*` nodes.
 
-Layer 4: `manuscript/manuscript.tex` (+ `manuscript.pdf` when a TeX toolchain is present)
-and `manuscript/selectivity.png`. Every number and citation is pulled from the artifacts —
-nothing is invented.
-
-## Reproducibility (ADR-008)
-
-Seeds, engine/tier, MLIP model + device, temperature, ensemble size, and surface-generation
-parameters are logged into `asald_results.json` / `surface_fidelity.json`. A CPU
-[`Dockerfile`](Dockerfile) and a locked [`environment.yml`](environment.yml) reproduce the
-Tier-0 funnel end-to-end (`docker build -t asald . && docker run --rm asald`).
+Layer 4: `manuscript/manuscript.tex` (+ `manuscript.pdf` when a TeX toolchain is present) and
+its figures (`screening.png`, `selectivity.png`, `energetics.png`, `slabs.png`, …). Every
+number and citation is pulled from the artifacts — nothing is invented.
 
 ## Project layout
 
 ```
 src/aicoscientist/
-  config.py              # env-driven settings (incl. MLIP tier/model/device)
+  config.py              # env-driven settings (MLIP tier/model/device, screening funnel)
   models.py              # pydantic artifacts (incl. ASALDSpec, SurfaceFidelityReport)
   asald.py               # derive ASALDSpec from a committed hypothesis
   knowledge_graph.py     # networkx KG: provenance, merge, dedup
   sources/               # arxiv/openalex/crossref/pubmed/semantic_scholar + seed_asald + mock
-  agents/                # orchestrator, research_agent, hypothesis_agent (surface-chem)
+  agents/                # orchestrator, research/hypothesis agents, inhibitor_proposer, recommender
   surfaces/              # Deliverable #1: amorphous_builder, fidelity_gate, descriptors
   validation/            # Layer 3
-    designer.py          # Deliverable #2: ReAct inhibitor/precursor selection agent
+    designer.py          # Deliverable #2: ReAct selection agent + candidate pool
+    screening.py         # screening-funnel campaign orchestrator
     reflection.py        # bounded closed-loop refinement
-    surface_reactivity.py# ADR-004/009 protocol engine
-    selectivity_model.py # ADR-006 nucleation-delay -> S(N)
+    surface_reactivity.py#  protocol engine
+    selectivity_model.py #  nucleation-delay -> S(N)
     mlip.py              # Tier-1 foundation-MLIP hooks (ASE/MACE)
     registry.py / runner.py
-  layer4_paper/          # ADR-007: template.tex, sections, figures, compiler, stitcher
+  layer4_paper/          # 7: template.tex, sections, figures, compiler, stitcher
   layer1_graph.py / layer2_graph.py / layer3_graph.py / graph.py
   cli.py / cli_validate.py / cli_paper.py
 selection_criteria.md    # human-editable selection criteria + candidate library
@@ -297,17 +425,56 @@ selection_criteria.md    # human-editable selection criteria + candidate library
 
 ## Phase 3 (opt-in future work): melt-quench AIMD amorphous surfaces
 
-Kim et al. 2026 generate true amorphous SiO₂/SiN networks via melt-quench AIMD before
-cleaving and saturating. The current pipeline uses faster crystalline-derived slabs +
-Table-1 passivation + bridge anneal as a procedural approximation. A future opt-in
-`SLAB_SOURCE=aimd` path would follow the paper's melt-quench protocol when AIMD-capable
-calculators are available; until then, per-site DFT priors from the paper ground Tier-0/Tier-1
-reactivity while the slab geometry remains approximate.
+The reference amorphous SiO₂/SiN networks are generated via melt-quench AIMD before cleaving
+and saturating. The current pipeline uses faster crystalline-derived slabs + Table-1
+passivation + bridge anneal as a procedural approximation, declared in provenance. A future
+opt-in `SLAB_SOURCE=aimd` path would follow the full melt-quench protocol when AIMD-capable
+calculators are available; until then, per-site DFT priors ground Tier-0/Tier-1 reactivity
+while the slab geometry remains approximate.
 
-## Methodology references
+---
 
-Kim et al., Appl. Surf. Sci. 730 (2026) (amorphous AS-ALD screening, site-resolved ΔEr/Ea) ·
-Parsons & Clark, Chem. Mater. 2020 (ASD review) · Tezsevin et al., Langmuir 2023 (aniline
-SMI) · MSA inhibitor, Chem. Mater. 2024 · dehydroxylated silica slabs, PCCP 2025 · MLIP
-barrier underestimation, arXiv:2502.15582 · Seal et al., arXiv:2510.27130 (Supervisor /
-Swarm / ReAct / Reflection).
+## References
+
+Kept off the narrative above by design; these ground the system's science and architecture.
+
+### Domain literature
+
+- Kim, Kim, Hahm, Kwon, Park, Hong & Han. *A computational study for screening high-selectivity
+  inhibitors in area-selective ALD on amorphous surfaces.* Appl. Surf. Sci. **730** (2026)
+  166294. [10.1016/j.apsusc.2026.166294](https://doi.org/10.1016/j.apsusc.2026.166294) —
+  anchor methodology (slab protocol, measured site densities, site-resolved ΔEr/Ea, three-step
+  screening).
+- Parsons & Clark. *Area-selective deposition: fundamentals, applications, and future outlook.*
+  Chem. Mater. 2020. [10.1021/acs.chemmater.0c00722](https://doi.org/10.1021/acs.chemmater.0c00722)
+- Mameli & Teplyakov. *Selection criteria for small-molecule inhibitors in area-selective ALD.*
+  Acc. Chem. Res. 2023. [10.1021/acs.accounts.3c00221](https://doi.org/10.1021/acs.accounts.3c00221)
+- Soethoudt et al. *Selective surface reactions of dimethylamino-trimethylsilane for
+  area-selective deposition.* J. Phys. Chem. C 2020. [10.1021/acs.jpcc.9b11270](https://doi.org/10.1021/acs.jpcc.9b11270)
+- Merkx et al. *Relation between reactive surface sites and precursor choice for AS-ALD using
+  small-molecule inhibitors.* J. Phys. Chem. C 2022. [10.1021/acs.jpcc.1c10816](https://doi.org/10.1021/acs.jpcc.1c10816)
+- Tezsevin et al. *Computational investigation of precursor blocking with an aniline SMI.*
+  Langmuir 2023. [10.1021/acs.langmuir.2c03214](https://doi.org/10.1021/acs.langmuir.2c03214)
+- Karasulu, Roozeboom & Mameli. *High-throughput area-selective spatial ALD of SiO₂ with
+  interleaved small-molecule inhibitors.* Adv. Mater. 2023. [10.1002/adma.202301204](https://doi.org/10.1002/adma.202301204)
+- Zhuravlev. *The surface chemistry of amorphous silica.* Colloids Surf. A 2000.
+  [10.1016/s0927-7757(00)00556-2](https://doi.org/10.1016/s0927-7757(00)00556-2)
+
+### Methods & agentic architecture
+
+- Ewing et al. *Accurate amorphous silica surface models from first-principles thermodynamics
+  of surface dehydroxylation.* Langmuir 2014. [10.1021/la500422p](https://doi.org/10.1021/la500422p)
+- *MAD-SURF: fine-tuning MACE-MPA-0 for molecular adsorption on surfaces.* arXiv:2601.18852 —
+  Tier-1 engine basis.
+- *Fine-tuning foundation MLIPs with frozen transfer learning.* arXiv:2502.15582 — foundation
+  MLIPs underestimate reaction barriers (the Ea lower-bound rule).
+- Werbrouck et al. *LLM Agents for Knowledge Discovery in Atomic Layer Processing.*
+  arXiv:2509.26201 — agent/swarm exploration and persistence.
+- Ghafarollahi & Buehler. *SparksMatter.* arXiv:2508.02956 — ideation → planning →
+  experimentation → reporting.
+- Gottweis et al. *Towards an AI Co-Scientist.* arXiv:2502.18864 — co-scientist framing.
+- Lu et al. *The AI Scientist.* arXiv:2408.06292 (Nature, 2026) — autonomous LaTeX authoring +
+  figure QA + automated review.
+- *PaperOrchestra: multi-agent LaTeX manuscript assembly.* arXiv:2604.05018
+- Seal et al. arXiv:2510.27130 — the Supervisor / Swarm / ReAct / Reflection architecture used
+  in Layer 3.
